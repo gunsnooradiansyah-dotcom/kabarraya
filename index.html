@@ -148,17 +148,17 @@
       <!-- CINEMATIC FULL-BLEED HEADER + HERO SECTION (ALA REFERENSI GAMBAR)   -->
       <!-- =================================================================== -->
       <div id="cinematic-hero-shell" class="relative w-full bg-brandSlate text-white overflow-visible">
-        <!-- Background Image Layer (Pencahayaan Seimbang & Utuh di Mobile) -->
+        <!-- Background Image Layer (Warna Asli Cerah & Bersih Tanpa Gelap) -->
         <div id="hero-bg-wrapper" class="relative sm:absolute inset-0 w-full aspect-[3/4] sm:aspect-auto overflow-hidden bg-slate-950 flex items-center justify-center">
           <img
             id="hero-bg-image"
             src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=85"
             alt="Sorotan Utama KabarRaya"
-            class="w-full h-full object-contain sm:object-cover object-center opacity-85 transition-all duration-700"
+            class="w-full h-full object-contain sm:object-cover object-top opacity-100 transition-all duration-700"
             onerror="this.src='https://placehold.co/1600x900/0F172A/FFFFFF?text=KabarRaya'"
           />
-          <div class="hidden sm:block absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/20 to-slate-950/75"></div>
-          <div class="hidden sm:block absolute inset-0 bg-gradient-to-r from-slate-950/65 via-transparent to-slate-950/50"></div>
+          <div class="hidden sm:block absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-slate-950/75 to-transparent pointer-events-none"></div>
+          <div class="hidden sm:block absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-transparent pointer-events-none"></div>
         </div>
 
         <!-- TOP BAR TRANSPARAN (LOGO BULAT + SEARCH + CUACA/TANGGAL + TERSIMPAN) -->
@@ -238,29 +238,29 @@
         </nav>
 
         <!-- AREA KONTEN UTAMA DI ATAS HERO FULL-BLEED -->
-        <div id="hero-editorial-stage" class="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 pt-5 sm:pt-10 pb-16 sm:pb-24 bg-slate-950 sm:bg-transparent">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+        <div id="hero-editorial-stage" class="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 pt-5 sm:pt-12 pb-16 sm:pb-24 bg-slate-950 sm:bg-transparent">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
 
             <!-- KIRI BAWAH HERO: BADGE KATEGORI + JUDUL UTUH DI POSISI BAWAH (WAJAH ATAS BERSIH) -->
-            <div id="hero-left-stage" class="lg:col-span-6 space-y-2.5 sm:space-y-3 pt-1 sm:pt-60">
+            <div id="hero-left-stage" class="lg:col-span-6 space-y-2.5 sm:space-y-3 pt-1 sm:pt-72">
               <!-- Diisi dinamis via JS -->
             </div>
 
-            <!-- KANAN HERO: 2 KARTU VERTIKAL ATAS + KUTIPAN SOROTAN + NOMOR SLIDE 01 02 03 -->
-            <div class="lg:col-span-6 flex flex-col justify-between space-y-4 sm:space-y-6">
-              <!-- 2 Kartu Vertikal Sorotan Kanan Atas -->
-              <div id="hero-right-cards" class="grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-md ml-auto w-full">
+            <!-- KANAN BAWAH HERO: 2 KARTU COMPACT DI BAWAH DADA + NOMOR SLIDE (AREA WAJAH KANAN 100% BEBAS) -->
+            <div class="lg:col-span-6 flex flex-col justify-end space-y-3 pt-1 sm:pt-72">
+              <!-- 2 Kartu Sorotan Compact di Pojok Kanan Bawah -->
+              <div id="hero-right-cards" class="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-md ml-auto w-full">
                 <!-- Diisi dinamis via JS -->
               </div>
 
-              <!-- Kutipan Sorotan Editorial -->
-              <blockquote id="hero-editorial-quote" class="hidden sm:block max-w-xs ml-auto pl-4 border-l-2 border-sky-400/70 text-white/95 italic font-headline text-xs sm:text-sm leading-relaxed drop-shadow">
-                “Informasi yang jernih dan terverifikasi adalah fondasi keputusan publik yang cerdas.”
-              </blockquote>
-
-              <!-- Indikator Slide Numerik (01 02 03) -->
-              <div id="hero-slide-dots" class="flex items-center justify-end gap-2 pt-1">
-                <!-- Diisi dinamis via JS -->
+              <!-- Baris Bawah Kanan: Kutipan Singkat + Indikator Slide Numerik (01 02 03) -->
+              <div class="flex items-center justify-between gap-3 max-w-md ml-auto w-full pt-1">
+                <blockquote id="hero-editorial-quote" class="hidden sm:block pl-3 border-l-2 border-sky-400 text-white/95 italic font-headline text-[11px] leading-snug drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
+                  “Informasi jernih & terverifikasi untuk keputusan publik.”
+                </blockquote>
+                <div id="hero-slide-dots" class="flex items-center justify-end gap-2 shrink-0 ml-auto">
+                  <!-- Diisi dinamis via JS -->
+                </div>
               </div>
             </div>
           </div>
@@ -1270,17 +1270,17 @@
         </div>
       `;
 
-      // 2 Kartu Vertikal di Kanan Atas Hero + Slot Sorotan Pilihan Redaksi
+      // 2 Kartu Compact di Kanan Bawah Hero (Tidak Menutupi Wajah Tokoh di Atas)
       const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
       const sideCardsHtml = sideCardsData.map(card => `
-        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-slate-900 border border-white/15 shadow-lg cursor-pointer group">
-          <img src="${card.image_url || 'https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'" />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent"></div>
-          <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-sky-500 text-white text-[9px] font-extrabold uppercase tracking-wider">
+        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-28 sm:h-32 rounded-lg overflow-hidden bg-slate-900/90 border border-white/25 shadow-lg cursor-pointer group">
+          <img src="${card.image_url || 'https://placehold.co/400x260/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x260/0F172A/FFFFFF?text=KabarRaya'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
+          <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-sky-500 text-white text-[9px] font-extrabold uppercase tracking-wider">
             ${getCategoryName(card.category_id)}
           </span>
-          <div class="absolute bottom-0 inset-x-0 p-3">
-            <h3 class="font-headline font-bold text-xs text-white leading-snug line-clamp-3 group-hover:text-sky-300 transition">
+          <div class="absolute bottom-0 inset-x-0 p-2.5">
+            <h3 class="font-headline font-bold text-[11px] text-white leading-snug line-clamp-2 group-hover:text-sky-300 transition">
               ${card.title}
             </h3>
           </div>
@@ -1289,15 +1289,15 @@
 
       const emptySideCount = Math.max(0, 2 - sideCardsData.length);
       const emptySideHtml = Array.from({ length: emptySideCount }).map((_, i) => `
-        <div onclick="window.openAdminGate()" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 p-3.5 flex flex-col justify-between cursor-pointer hover:bg-white/15 transition">
-          <span class="self-start px-2 py-0.5 rounded bg-sky-500/80 text-white text-[9px] font-extrabold uppercase tracking-wider">
+        <div onclick="window.openAdminGate()" class="relative h-28 sm:h-32 rounded-lg overflow-hidden bg-slate-950/65 backdrop-blur-md border border-white/25 p-2.5 flex flex-col justify-between cursor-pointer hover:bg-slate-900/80 transition">
+          <span class="self-start px-1.5 py-0.5 rounded bg-sky-500 text-white text-[9px] font-extrabold uppercase tracking-wider">
             Sorotan #${sideCardsData.length + i + 2}
           </span>
-          <div class="space-y-1">
-            <p class="font-headline font-bold text-xs text-white leading-snug">
+          <div class="space-y-0.5">
+            <p class="font-headline font-bold text-[11px] text-white leading-snug">
               Slot Sorotan Pilihan Redaksi
             </p>
-            <p class="text-[10px] text-white/75">Terbitkan berita berikutnya di Dapur Redaksi untuk mengisi slot sorotan ini.</p>
+            <p class="text-[9px] text-white/80 line-clamp-2">Terbitkan berita berikutnya di Dapur Redaksi.</p>
           </div>
         </div>
       `).join('');
