@@ -238,23 +238,23 @@
         </nav>
 
         <!-- AREA KONTEN UTAMA DI ATAS HERO FULL-BLEED (DESKTOP & MOBILE MENYATU) -->
-        <div id="hero-editorial-stage" class="relative z-20 w-full px-3.5 sm:px-8 lg:px-10 pt-3 sm:pt-6 pb-16 sm:pb-24 min-h-[290px] sm:min-h-[440px] lg:min-h-[540px] flex flex-col justify-between">
+        <div id="hero-editorial-stage" class="relative z-20 w-full px-3.5 sm:px-8 lg:px-10 pt-3 sm:pt-5 pb-16 sm:pb-24 min-h-[340px] sm:min-h-[480px] lg:min-h-[560px] flex flex-col justify-between">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 flex-1 items-stretch">
 
             <!-- KIRI BAWAH HERO: BADGE KATEGORI + JUDUL BESAR + BACA BERITA -->
-            <div id="hero-left-stage" class="lg:col-span-6 lg:pl-6 xl:pl-14 flex flex-col justify-end space-y-2 sm:space-y-3 order-2 lg:order-1 pt-8 sm:pt-36 lg:pt-48">
+            <div id="hero-left-stage" class="lg:col-span-6 lg:pl-6 xl:pl-14 flex flex-col justify-end space-y-2 sm:space-y-3 order-2 lg:order-1 pt-6 sm:pt-36 lg:pt-48">
               <!-- Diisi dinamis via JS -->
             </div>
 
-            <!-- KANAN HERO: 2 KARTU SOROTAN & KUTIPAN MENEMPEL DI POJOK PALING KANAN -->
-            <div class="lg:col-span-6 flex flex-col justify-between items-end space-y-4 sm:space-y-6 order-1 lg:order-2">
-              <!-- 2 Kartu Sorotan di Pojok Kanan Atas (Proporsional di HP & Desktop) -->
-              <div id="hero-right-cards" class="grid grid-cols-2 gap-1.5 sm:gap-3 max-w-[225px] sm:max-w-[340px] lg:max-w-[320px] xl:max-w-[350px] ml-auto w-full">
+            <!-- KANAN HERO: 4 KARTU SOROTAN GRID 2x2 (2 ATAS + 2 BAWAH) & KUTIPAN DI POJOK KANAN -->
+            <div class="lg:col-span-6 flex flex-col justify-between items-end space-y-3 sm:space-y-4 order-1 lg:order-2">
+              <!-- 4 Kartu Sorotan Tersusun 2x2 (2 Atas + 2 Bawah) di Pojok Kanan Atas -->
+              <div id="hero-right-cards" class="grid grid-cols-2 gap-1.5 sm:gap-2.5 max-w-[235px] sm:max-w-[330px] lg:max-w-[310px] xl:max-w-[345px] ml-auto w-full">
                 <!-- Diisi dinamis via JS -->
               </div>
 
               <!-- Kutipan Editorial + Indikator Slide Numerik (01 02 03) di Pojok Kanan Bawah -->
-              <div class="hidden lg:flex flex-col items-end space-y-3.5 max-w-[310px] xl:max-w-[330px] ml-auto w-full pt-8">
+              <div class="hidden lg:flex flex-col items-end space-y-3 max-w-[310px] xl:max-w-[345px] ml-auto w-full pt-2">
                 <blockquote id="hero-editorial-quote" class="relative pl-3.5 border-l-2 border-sky-400 text-white italic font-headline text-xs xl:text-sm leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
                   <span class="text-sky-400 font-serif text-xl leading-none mr-1">“</span>Informasi yang jernih dan terverifikasi adalah fondasi keputusan publik yang cerdas.
                 </blockquote>
@@ -1290,34 +1290,33 @@
         </div>
       `;
 
-      // 2 Kartu Sorotan di Pojok Kanan Atas (Compact di HP agar Wajah Tokoh Terlihat Utuh)
-      const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
+      // 4 Kartu Sorotan Grid 2x2 (2 Atas + 2 Bawah) di Pojok Kanan Atas
+      const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 4);
       const sideCardsHtml = sideCardsData.map(card => `
-        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-24 sm:h-44 rounded-lg overflow-hidden bg-slate-900/90 border border-white/25 shadow-lg cursor-pointer group">
+        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-[74px] sm:h-[116px] lg:h-[122px] rounded-lg overflow-hidden bg-slate-900/90 border border-white/25 shadow-lg cursor-pointer group">
           <img src="${card.image_url || 'https://placehold.co/400x300/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover object-top opacity-95 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x300/0F172A/FFFFFF?text=KabarRaya'" />
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
-          <span class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 px-1.5 py-0.5 rounded bg-sky-500 text-white text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider">
+          <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-sky-500 text-white text-[7px] sm:text-[8px] font-extrabold uppercase tracking-wider">
             ${getCategoryName(card.category_id)}
           </span>
-          <div class="absolute bottom-0 inset-x-0 p-2 sm:p-3">
-            <h3 class="font-headline font-bold text-[10px] sm:text-xs text-white leading-tight sm:leading-snug line-clamp-2 group-hover:text-sky-300 transition">
+          <div class="absolute bottom-0 inset-x-0 p-1.5 sm:p-2">
+            <h3 class="font-headline font-bold text-[9px] sm:text-[11px] text-white leading-tight line-clamp-2 group-hover:text-sky-300 transition">
               ${card.title}
             </h3>
           </div>
         </article>
       `).join('');
 
-      const emptySideCount = Math.max(0, 2 - sideCardsData.length);
+      const emptySideCount = Math.max(0, 4 - sideCardsData.length);
       const emptySideHtml = Array.from({ length: emptySideCount }).map((_, i) => `
-        <div onclick="window.openAdminGate()" class="relative h-24 sm:h-44 rounded-lg overflow-hidden bg-slate-950/55 backdrop-blur-md border border-white/25 p-2 sm:p-3 flex flex-col justify-between cursor-pointer hover:bg-slate-900/75 transition">
-          <span class="self-start px-1.5 py-0.5 rounded bg-sky-500 text-white text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider">
+        <div onclick="window.openAdminGate()" class="relative h-[74px] sm:h-[116px] lg:h-[122px] rounded-lg overflow-hidden bg-slate-950/55 backdrop-blur-md border border-white/25 p-1.5 sm:p-2 flex flex-col justify-between cursor-pointer hover:bg-slate-900/75 transition">
+          <span class="self-start px-1.5 py-0.5 rounded bg-sky-500 text-white text-[7px] sm:text-[8px] font-extrabold uppercase tracking-wider">
             Sorotan #${sideCardsData.length + i + 2}
           </span>
-          <div class="space-y-0.5">
-            <p class="font-headline font-bold text-[10px] sm:text-xs text-white leading-tight sm:leading-snug line-clamp-2">
+          <div>
+            <p class="font-headline font-bold text-[9px] sm:text-[11px] text-white leading-tight line-clamp-2">
               Slot Sorotan Pilihan Redaksi
             </p>
-            <p class="hidden sm:block text-[9px] text-white/80 line-clamp-2">Terbitkan berita berikutnya di Dapur Redaksi.</p>
           </div>
         </div>
       `).join('');
