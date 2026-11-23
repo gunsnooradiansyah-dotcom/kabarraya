@@ -148,17 +148,17 @@
       <!-- CINEMATIC FULL-BLEED HEADER + HERO SECTION (ALA REFERENSI GAMBAR)   -->
       <!-- =================================================================== -->
       <div id="cinematic-hero-shell" class="relative w-full bg-brandSlate text-white overflow-visible">
-        <!-- Background Image Layer (Full-Bleed) -->
-        <div id="hero-bg-wrapper" class="absolute inset-0 overflow-hidden bg-slate-950">
+        <!-- Background Image Layer (Full-Bleed Terang & Jernih) -->
+        <div id="hero-bg-wrapper" class="absolute inset-0 overflow-hidden bg-slate-900">
           <img
             id="hero-bg-image"
             src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=85"
             alt="Sorotan Utama KabarRaya"
-            class="w-full h-full object-cover object-center opacity-55 scale-105 transition-all duration-700"
+            class="w-full h-full object-cover object-top opacity-85 transition-all duration-700"
             onerror="this.src='https://placehold.co/1600x900/0F172A/FFFFFF?text=KabarRaya'"
           />
-          <div class="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/45 to-slate-950/90"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/35 to-slate-950/75"></div>
+          <div class="absolute inset-0 bg-gradient-to-b from-slate-950/65 via-slate-950/20 to-slate-950/80"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/25 to-slate-950/60"></div>
         </div>
 
         <!-- TOP BAR TRANSPARAN (LOGO BULAT + SEARCH + CUACA/TANGGAL + TERSIMPAN) -->
@@ -712,8 +712,8 @@
     // 1. SAKLAR PRODUKSI VS PREVIEW & KONFIGURASI SUPABASE
     // =========================================================================
     const IS_PREVIEW = false;
-const SUPABASE_URL = "https://xfxpvlbeszszmtugssgz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
+    const SUPABASE_URL = "https://xfxpvlbeszszmtugssgz.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
 
     const supabase = (!IS_PREVIEW && SUPABASE_URL !== "URL_SUPABASE_ANDA")
       ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -1273,12 +1273,12 @@ const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
         </div>
       `;
 
-      // 2 Kartu Vertikal di Kanan Atas Hero
+      // 2 Kartu Vertikal di Kanan Atas Hero (Dilengkapi slot pratinjau elegan bila berita < 3)
       const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
-      rightCards.innerHTML = sideCardsData.map(card => `
-        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-slate-900 border border-white/15 shadow-lg cursor-pointer group">
-          <img src="${card.image_url || 'https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'" />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent"></div>
+      const sideCardsHtml = sideCardsData.map(card => `
+        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-slate-900 border border-white/20 shadow-lg cursor-pointer group">
+          <img src="${card.image_url || 'https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover opacity-95 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent"></div>
           <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-sky-500 text-white text-[9px] font-extrabold uppercase tracking-wider">
             ${getCategoryName(card.category_id)}
           </span>
@@ -1289,6 +1289,23 @@ const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
           </div>
         </article>
       `).join('');
+
+      const emptySideSlotsCount = Math.max(0, 2 - sideCardsData.length);
+      const emptySideSlotsHtml = Array.from({ length: emptySideSlotsCount }).map((_, i) => `
+        <div onclick="window.openAdminGate()" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 p-3.5 flex flex-col justify-between cursor-pointer hover:bg-white/15 transition">
+          <span class="self-start px-2 py-0.5 rounded bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wider">
+            Sorotan #${sideCardsData.length + i + 2}
+          </span>
+          <div class="space-y-1">
+            <p class="font-headline font-bold text-xs text-white/95 leading-snug">
+              Slot Berita Pilihan Redaksi
+            </p>
+            <p class="text-[10px] text-white/70">Terbitkan berita berikutnya di Dapur Redaksi untuk mengisi kartu ini.</p>
+          </div>
+        </div>
+      `).join('');
+
+      rightCards.innerHTML = sideCardsHtml + emptySideSlotsHtml;
 
       // Slide Dots Numerik (01 02 03)
       if (slideDots) {
@@ -1302,9 +1319,9 @@ const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
         }).join('');
       }
 
-      // Floating White 4-Column Ticker di Batas Bawah Hero
+      // Floating White 4-Column Ticker di Batas Bawah Hero (Selalu 4 kolom seimbang)
       const tickerItems = state.articles.slice(0, 4);
-      bottomTicker.innerHTML = tickerItems.map(item => `
+      const filledTickerHtml = tickerItems.map(item => `
         <div onclick="window.openArticleDetail('${item.id}')" class="p-3.5 sm:p-4 flex items-center gap-3 hover:bg-slate-50 transition cursor-pointer group">
           <img src="${item.image_url || 'https://placehold.co/120x120/F1F5F9/0284C7?text=KR'}" alt="${item.title}" class="w-12 h-12 rounded-md object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/120x120/F1F5F9/0284C7?text=KR'" />
           <div class="min-w-0 flex-1 space-y-1">
@@ -1317,6 +1334,21 @@ const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
           </div>
         </div>
       `).join('');
+
+      const emptyTickerCount = Math.max(0, 4 - tickerItems.length);
+      const emptyTickerHtml = Array.from({ length: emptyTickerCount }).map((_, idx) => `
+        <div class="p-3.5 sm:p-4 flex items-center gap-3 bg-slate-50/70">
+          <div class="w-12 h-12 rounded-md bg-slate-200/70 flex items-center justify-center text-slate-400 font-headline font-extrabold text-xs shrink-0">
+            0${tickerItems.length + idx + 1}
+          </div>
+          <div class="min-w-0 flex-1 space-y-1">
+            <div class="text-xs font-bold text-slate-400 line-clamp-1">Slot Kabar Terkini #${tickerItems.length + idx + 1}</div>
+            <div class="text-[10px] text-slate-400">Menunggu publikasi berita berikutnya</div>
+          </div>
+        </div>
+      `).join('');
+
+      bottomTicker.innerHTML = filledTickerHtml + emptyTickerHtml;
     }
 
     function renderBookmarksView() {
