@@ -238,25 +238,25 @@
         </nav>
 
         <!-- AREA KONTEN UTAMA DI ATAS HERO FULL-BLEED (DESKTOP & MOBILE MENYATU) -->
-        <div id="hero-editorial-stage" class="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 pt-4 sm:pt-6 pb-20 sm:pb-24 min-h-[460px] sm:min-h-[540px] flex flex-col justify-between">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1">
+        <div id="hero-editorial-stage" class="relative z-20 w-full px-4 sm:px-8 lg:px-10 pt-4 sm:pt-6 pb-20 sm:pb-24 min-h-[460px] sm:min-h-[540px] flex flex-col justify-between">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 flex-1 items-stretch">
 
             <!-- KIRI BAWAH HERO: BADGE KATEGORI + JUDUL BESAR + BACA BERITA -->
-            <div id="hero-left-stage" class="lg:col-span-6 flex flex-col justify-end space-y-2.5 sm:space-y-3 order-2 lg:order-1 pt-28 sm:pt-48">
+            <div id="hero-left-stage" class="lg:col-span-6 lg:pl-6 xl:pl-14 flex flex-col justify-end space-y-2.5 sm:space-y-3 order-2 lg:order-1 pt-28 sm:pt-48">
               <!-- Diisi dinamis via JS -->
             </div>
 
-            <!-- KANAN HERO: 2 KARTU SOROTAN DI POJOK KANAN ATAS + KUTIPAN & SLIDE DI KANAN BAWAH -->
-            <div class="lg:col-span-6 flex flex-col justify-between space-y-6 order-1 lg:order-2">
-              <!-- 2 Kartu Sorotan di Pojok Kanan Atas -->
-              <div id="hero-right-cards" class="grid grid-cols-2 gap-2.5 sm:gap-3.5 max-w-[340px] sm:max-w-[400px] ml-auto w-full">
+            <!-- KANAN HERO: 2 KARTU SOROTAN & KUTIPAN MENEMPEL DI POJOK PALING KANAN -->
+            <div class="lg:col-span-6 flex flex-col justify-between items-end space-y-6 order-1 lg:order-2">
+              <!-- 2 Kartu Sorotan di Pojok Kanan Atas (Area Bendera Kanan) -->
+              <div id="hero-right-cards" class="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-[320px] sm:max-w-[340px] lg:max-w-[320px] xl:max-w-[350px] ml-auto w-full">
                 <!-- Diisi dinamis via JS -->
               </div>
 
-              <!-- Kutipan Editorial + Indikator Slide Numerik (01 02 03) di Kanan Bawah -->
-              <div class="hidden lg:flex flex-col items-end space-y-4 max-w-[380px] ml-auto w-full pt-8">
-                <blockquote id="hero-editorial-quote" class="relative pl-4 border-l-2 border-sky-400 text-white italic font-headline text-sm leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-                  <span class="text-sky-400 font-serif text-2xl leading-none mr-1">“</span>Informasi yang jernih dan terverifikasi adalah fondasi keputusan publik yang cerdas.
+              <!-- Kutipan Editorial + Indikator Slide Numerik (01 02 03) di Pojok Kanan Bawah -->
+              <div class="hidden lg:flex flex-col items-end space-y-3.5 max-w-[310px] xl:max-w-[330px] ml-auto w-full pt-8">
+                <blockquote id="hero-editorial-quote" class="relative pl-3.5 border-l-2 border-sky-400 text-white italic font-headline text-xs xl:text-sm leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] bg-slate-950/35 backdrop-blur-xs p-2.5 rounded-r-lg">
+                  <span class="text-sky-400 font-serif text-xl leading-none mr-1">“</span>Informasi yang jernih dan terverifikasi adalah fondasi keputusan publik yang cerdas.
                 </blockquote>
                 <div id="hero-slide-dots" class="flex items-center justify-end gap-2">
                   <!-- Diisi dinamis via JS -->
