@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0F766E" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>KabarRaya — Berita Terkini, Viral & Paling Banyak Dicari</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+          },
+          colors: {
+            brandTeal: '#0F766E',
+            brandTealDark: '#115E59',
+            brandSky: '#0284C7',
+            brandSlate: '#0F172A',
+            brandGold: '#D97706',
+            brandCoral: '#DC2626',
+            surfaceBg: '#F8FAFC',
+          },
+          boxShadow: {
+            card: '0 4px 20px -2px rgba(15, 23, 42, 0.06)',
+            floating: '0 18px 40px -8px rgba(15, 23, 42, 0.16)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Dinamis PWA Manifest via Data URI -->
+  <link id="pwa-manifest" rel="manifest" href="" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overflow: hidden;
+    }
+
+    /* Full Page App Shell (Menutupi Blogger 100%) */
+    #app-shell {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background-color: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .font-headline {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* Glassmorphism Surface */
+    .glass-surface {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .glass-dark {
+      background: rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Custom Scrollbar */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F8FAFC;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.25); }
+    }
+    .live-indicator {
+      animation: pulse-live 1.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell">
+    <!-- 1. BANNER MODE PREVIEW (Hanya tampil saat IS_PREVIEW = true) -->
+    <div id="preview-banner" class="hidden bg-brandSlate text-white px-3 sm:px-6 py-1.5 text-xs flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 z-50">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-400/30 text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 live-indicator"></span>
+          Mode Preview Aktif
+        </span>
+        <span class="text-slate-300 hidden md:inline text-[11px]">Simulasi lokal aktif (maks. 2 baris/tabel).</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.quickLoginAdmin()" class="px-2.5 py-1 rounded bg-brandCoral hover:bg-red-700 text-white font-semibold transition text-[11px] flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Quick Login Redaksi
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. MAIN SCROLLABLE CONTAINER (FULL-BLEED CINEMATIC HERO + FLOATING TICKER) -->
+    <div id="main-scroll-area" class="flex-1 overflow-y-auto custom-scroll pb-24 lg:pb-12">
+
+      <!-- =================================================================== -->
+      <!-- CINEMATIC FULL-BLEED HEADER + HERO SECTION (ALA REFERENSI GAMBAR)   -->
+      <!-- =================================================================== -->
+      <div id="cinematic-hero-shell" class="relative w-full bg-brandSlate text-white overflow-visible">
+        <!-- Background Image Layer (Full-Bleed) -->
+        <div id="hero-bg-wrapper" class="absolute inset-0 overflow-hidden bg-slate-950">
+          <img
+            id="hero-bg-image"
+            src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=85"
+            alt="Sorotan Utama KabarRaya"
+            class="w-full h-full object-cover object-center opacity-55 scale-105 transition-all duration-700"
+            onerror="this.src='https://placehold.co/1600x900/0F172A/FFFFFF?text=KabarRaya'"
+          />
+          <div class="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/45 to-slate-950/90"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/35 to-slate-950/75"></div>
+        </div>
+
+        <!-- TOP BAR TRANSPARAN (LOGO BULAT + SEARCH + CUACA/TANGGAL + TERSIMPAN) -->
+        <header class="relative z-30 border-b border-white/15 px-4 sm:px-8 py-3">
+          <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <!-- Brand Logo Bulat + Bold Sans (Klik 3x untuk Akses Redaksi) -->
+            <div onclick="window.handleLogoClick()" class="cursor-pointer flex items-center gap-2.5 select-none shrink-0" title="KabarRaya — Cepat, Jernih, Terpercaya">
+              <div class="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center shadow-md">
+                <svg viewBox="0 0 36 36" class="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 24C9 16.82 14.82 11 22 11" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M14 24C14 19.58 17.58 16 22 16" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
+                  <circle cx="22" cy="23.5" r="3" fill="white"/>
+                </svg>
+              </div>
+              <span class="font-headline font-extrabold text-lg sm:text-xl tracking-tight uppercase text-white">
+                KABAR<span class="text-sky-400">RAYA</span>
+              </span>
+            </div>
+
+            <!-- Search Bar Transparan Gelap di Tengah -->
+            <div class="flex-1 max-w-md relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-white/60 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+              <input
+                id="global-search-input"
+                type="text"
+                placeholder="Cari berita terkini, isu hangat, atau topik viral..."
+                oninput="window.handleSearch(this.value)"
+                class="w-full pl-9 pr-8 py-1.5 rounded-md bg-white/15 hover:bg-white/20 focus:bg-white/25 border border-white/15 text-xs text-white placeholder:text-white/65 focus:outline-none focus:border-sky-400 transition"
+              />
+              <button id="clear-search-btn" onclick="window.clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- Aksi Kanan (Info Edisi, Tersimpan, & Tombol Redaksi jika Aktif) -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="hidden xl:flex items-center gap-2 text-[11px] text-white/80 pr-2 border-r border-white/15">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 live-indicator"></span>
+                <span id="header-current-date">Jakarta, Indonesia</span>
+              </div>
+
+              <button id="pwa-install-btn" onclick="window.installPWA()" class="hidden px-2.5 py-1 rounded bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-300/30 text-[11px] font-bold items-center gap-1 transition">
+                <i data-lucide="download" class="w-3 h-3"></i> <span class="hidden sm:inline">App</span>
+              </button>
+
+              <button onclick="window.navigate('bookmarks')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/15 hover:bg-white/25 border border-white/15 text-white text-xs font-bold transition">
+                <i data-lucide="bookmark" class="w-3.5 h-3.5 text-sky-400"></i>
+                <span class="hidden sm:inline">Tersimpan</span>
+                <span id="header-bookmark-badge" class="px-1.5 py-0.2 rounded bg-sky-500 text-white text-[10px]">0</span>
+              </button>
+
+              <button id="header-admin-btn" onclick="window.navigate('admin')" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-md bg-brandCoral hover:bg-red-700 text-white text-xs font-bold transition shadow">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span class="hidden md:inline">Dapur Redaksi</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- SUB-NAVBAR KANAL HURUF KAPITAL + CUACA + GRID TOGGLE -->
+        <nav class="relative z-30 border-b border-white/10 px-4 sm:px-8 py-2">
+          <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div id="kabar-channel-bar" class="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar text-[11px] font-extrabold uppercase tracking-wider text-white/85">
+              <!-- Diisi dinamis via JS -->
+            </div>
+
+            <div class="hidden md:flex items-center gap-4 shrink-0 text-[11px] font-bold text-white/80">
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span>Jakarta 31°C</span>
+              </span>
+              <button onclick="window.navigate('trending')" class="flex items-center gap-1 text-amber-300 hover:text-amber-200 uppercase tracking-wider">
+                <i data-lucide="flame" class="w-3.5 h-3.5"></i> Viral
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <!-- AREA KONTEN UTAMA DI ATAS HERO FULL-BLEED -->
+        <div id="hero-editorial-stage" class="relative z-20 max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-10 pb-20 sm:pb-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+
+            <!-- KIRI BAWAH HERO: BADGE KATEGORI + JUDUL BESAR + READ STORY + RELATED MINI -->
+            <div id="hero-left-stage" class="lg:col-span-7 space-y-4">
+              <!-- Diisi dinamis via JS -->
+            </div>
+
+            <!-- KANAN HERO: 2 KARTU VERTIKAL ATAS + KUTIPAN SOROTAN + NOMOR SLIDE 01 02 03 -->
+            <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+              <!-- 2 Kartu Vertikal Sorotan Kanan Atas -->
+              <div id="hero-right-cards" class="grid grid-cols-2 gap-3.5">
+                <!-- Diisi dinamis via JS -->
+              </div>
+
+              <!-- Kutipan Sorotan Editorial -->
+              <blockquote id="hero-editorial-quote" class="hidden sm:block pl-4 border-l-2 border-sky-400/70 text-white/90 italic font-headline text-sm leading-relaxed">
+                “Informasi yang jernih dan terverifikasi adalah fondasi keputusan publik yang cerdas.”
+              </blockquote>
+
+              <!-- Indikator Slide Numerik (01 02 03) -->
+              <div id="hero-slide-dots" class="flex items-center justify-end gap-2.5 pt-1">
+                <!-- Diisi dinamis via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Watermark Tipografi Raksasa di Latar Bawah Hero -->
+          <div class="pointer-events-none select-none overflow-hidden mt-4 -mb-14 opacity-10 hidden md:block">
+            <div class="font-headline font-extrabold text-[86px] tracking-widest uppercase leading-none text-white whitespace-nowrap">
+              KABAR RAYA INDONESIA
+            </div>
+          </div>
+        </div>
+
+        <!-- FLOATING WHITE 4-COLUMN TICKER BAR (MENUMPUK DI BATAS BAWAH HERO) -->
+        <div id="floating-bottom-ticker-wrap" class="relative z-30 max-w-7xl mx-auto px-4 sm:px-8 -mb-12">
+          <div id="floating-4col-ticker" class="bg-white rounded-xl shadow-floating border border-slate-200/90 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80 overflow-hidden">
+            <!-- Diisi dinamis via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- MAIN CONTENT AREA DI BAWAH HERO (TERANG & BERSIH)                   -->
+      <!-- =================================================================== -->
+      <main id="below-hero-container" class="max-w-7xl mx-auto px-4 sm:px-8 pt-16 sm:pt-20">
+
+        <!-- ================================================================= -->
+        <!-- VIEW A: PORTAL UTAMA (FEED BERITA + WIDGET VIRAL & TOPIK HANGAT)  -->
+        <!-- ================================================================= -->
+        <section id="view-portal" class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+
+          <!-- KOLOM KIRI (8 dari 12 kolom): DAFTAR KABAR TERBARU -->
+          <div class="lg:col-span-8 space-y-5">
+
+            <!-- Indikator Filter Aktif -->
+            <div id="active-filter-bar" class="hidden bg-white border border-sky-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 shadow-card">
+              <div class="flex items-center gap-2 text-xs">
+                <span class="px-2 py-0.5 rounded bg-sky-50 text-brandSky font-bold">Filter Aktif</span>
+                <span id="active-filter-text" class="font-bold text-slate-800"></span>
+              </div>
+              <button onclick="window.resetAllFilters()" class="text-xs font-bold text-brandCoral hover:underline flex items-center gap-1">
+                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Reset
+              </button>
+            </div>
+
+            <!-- Feed Berita Terbaru dengan Thumbnail -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
+              <div class="px-5 py-3.5 border-b border-slate-200/80 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-1.5 h-5 rounded-full bg-brandSky"></span>
+                  <h2 id="newsfeed-heading" class="font-headline font-extrabold text-base text-brandSlate">Kabar Terbaru Hari Ini</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span id="newsfeed-counter" class="text-[11px] font-semibold text-slate-500">0 berita</span>
+                  <button onclick="window.refreshData()" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Segarkan Kabar">
+                    <i data-lucide="refresh-cw" id="refresh-icon" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div id="newsfeed-list" class="divide-y divide-slate-100">
+                <!-- Diisi via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- KOLOM KANAN (4 dari 12 kolom): WIDGET VIRAL #1-#5 & TOPIK HANGAT -->
+          <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-4">
+
+            <!-- WIDGET 1: PALING BANYAK DICARI & VIRAL (#1 - #5) -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
+              <div class="px-4 py-3 border-b border-slate-200/80 flex items-center justify-between bg-brandSlate text-white">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-sky-400"></i>
+                  <h3 class="font-headline font-extrabold text-xs sm:text-sm tracking-wide uppercase">Paling Banyak Dicari & Viral</h3>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500 text-white">Top 5</span>
+              </div>
+              <div id="sidebar-terpopuler-list" class="divide-y divide-slate-100">
+                <!-- Diisi via JS -->
+              </div>
+            </div>
+
+            <!-- WIDGET 2: TOPIK HANGAT -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4">
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-4 rounded-full bg-brandGold"></span>
+                  <h3 class="font-headline font-extrabold text-sm text-brandSlate uppercase">Topik Hangat</h3>
+                </div>
+                <span class="text-[10px] font-semibold text-slate-400">Sorotan Publik</span>
+              </div>
+              <div id="sidebar-tags-cloud" class="flex flex-wrap gap-1.5">
+                <!-- Diisi via JS -->
+              </div>
+            </div>
+
+            <!-- WIDGET 3: DAFTAR BACAAN TERSIMPAN -->
+            <div id="sidebar-account-box" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 space-y-3">
+              <!-- Diisi via JS -->
+            </div>
+
+          </aside>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW B: DETAIL ARTIKEL PENUH                                      -->
+        <!-- ================================================================= -->
+        <section id="view-detail" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+          <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 sm:p-7 space-y-5">
+            <!-- Breadcrumb Kanal -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <nav class="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                <button onclick="window.navigate('home', 'all')" class="hover:text-brandSky">Beranda</button>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                <button id="detail-breadcrumb-cat" class="text-brandSky font-bold hover:underline">Nasional</button>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span class="text-slate-400">Baca Berita</span>
+              </nav>
+              <button onclick="window.closeArticleDetail()" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 transition">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Kembali
+              </button>
+            </div>
+
+            <!-- Judul Besar & Meta Redaksi -->
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="detail-category-badge" class="px-2.5 py-0.5 rounded bg-brandSky text-white text-[11px] font-bold uppercase">Nasional</span>
+                <span id="detail-viral-badge" class="hidden px-2.5 py-0.5 rounded bg-brandCoral text-white text-[11px] font-bold flex items-center gap-1">
+                  <i data-lucide="flame" class="w-3 h-3"></i> Sedang Viral
+                </span>
+              </div>
+
+              <h1 id="detail-title" class="font-headline font-extrabold text-2xl sm:text-3xl text-brandSlate leading-snug"></h1>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-slate-500">
+                <div class="space-y-0.5">
+                  <div class="font-bold text-slate-800"><span id="detail-author">Tim Redaksi</span> — <span class="text-brandSky">KabarRaya</span></div>
+                  <div id="detail-timestamp">Minggu, 22 Nov 2026 10:50 WIB</div>
+                </div>
+
+                <!-- Tombol Aksi Artikel (Views, Simpan, Bagikan) -->
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-bold flex items-center gap-1">
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-brandSky"></i>
+                    <span id="detail-views">0</span>
+                  </span>
+                  <button id="detail-bookmark-btn" onclick="window.toggleDetailBookmark()" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brandSky text-slate-700 font-bold flex items-center gap-1 transition">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                    <span id="detail-bookmark-label">Simpan</span>
+                  </button>
+                  <button onclick="window.shareDetailArticle()" class="px-3 py-1.5 rounded-lg bg-brandSky hover:bg-sky-700 text-white font-bold flex items-center gap-1 transition">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                    <span>Salin Link</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gambar Utama & Caption -->
+            <figure class="space-y-2">
+              <div class="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 aspect-video">
+                <img id="detail-image" src="" alt="Foto Berita" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/900x506/F1F5F9/0284C7?text=KabarRaya'" />
+              </div>
+              <figcaption id="detail-caption" class="text-[11px] text-slate-500 italic"></figcaption>
+            </figure>
+
+            <!-- Lead / Ringkasan -->
+            <div id="detail-summary" class="p-4 rounded-xl bg-sky-50/80 border-l-4 border-brandSky text-sm font-semibold text-slate-800 leading-relaxed"></div>
+
+            <!-- Isi Artikel Multi-Paragraf -->
+            <div id="detail-content" class="text-[15px] text-slate-800 leading-relaxed space-y-4"></div>
+
+            <!-- Topik Hangat Terkait -->
+            <div class="pt-5 border-t border-slate-200">
+              <div class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2.5">Topik Hangat Terkait:</div>
+              <div id="detail-tags" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+
+          <!-- Sidebar Kanan pada Halaman Baca -->
+          <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-4">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
+              <div class="px-4 py-3 border-b border-slate-200/80 bg-brandSlate text-white flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-sky-400"></i>
+                <h3 class="font-headline font-extrabold text-sm uppercase">Rekomendasi Bacaan</h3>
+              </div>
+              <div id="detail-related-list" class="divide-y divide-slate-100"></div>
+            </div>
+          </aside>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW C: HALAMAN TERPOPULER & VIRAL                                -->
+        <!-- ================================================================= -->
+        <section id="view-trending" class="hidden space-y-5">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-brandCoral text-white text-[11px] font-extrabold uppercase mb-1.5">
+                <i data-lucide="flame" class="w-3.5 h-3.5"></i> Radar Viral Nasional
+              </div>
+              <h1 class="font-headline font-extrabold text-xl sm:text-2xl text-brandSlate">Paling Banyak Dicari & Viral Hari Ini</h1>
+              <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Peringkat berita berdasarkan jumlah pembaca tertinggi dan lonjakan pencarian topik hangat.</p>
+            </div>
+            <div class="bg-sky-50 border border-sky-200 rounded-xl px-4 py-3 shrink-0">
+              <div class="text-[11px] font-bold text-brandSky uppercase">Total Tayangan</div>
+              <div id="trending-total-views" class="font-headline font-extrabold text-xl text-brandSlate">0</div>
+            </div>
+          </div>
+
+          <div id="trending-full-list" class="space-y-3"></div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW D: HALAMAN TERSIMPAN (BOOKMARK PEMBACA)                      -->
+        <!-- ================================================================= -->
+        <section id="view-bookmarks" class="hidden space-y-5">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 flex items-center justify-between">
+            <div>
+              <h1 class="font-headline font-extrabold text-xl text-brandSlate">Bacaan Tersimpan Anda</h1>
+              <p class="text-xs text-slate-500 mt-0.5">Kumpulan berita pilihan yang Anda simpan untuk dibaca kembali.</p>
+            </div>
+            <button onclick="window.navigate('home', 'all')" class="px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-xs font-bold text-brandSky transition">
+              Jelajahi Kabar
+            </button>
+          </div>
+
+          <div id="bookmarks-list-container"></div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW E: DAPUR REDAKSI (ADMIN CRUD PANEL)                          -->
+        <!-- ================================================================= -->
+        <section id="view-admin" class="hidden space-y-5">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-sky-50 text-brandSky text-[11px] font-extrabold uppercase mb-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Sistem Manajemen Redaksi
+              </div>
+              <h1 class="font-headline font-extrabold text-xl sm:text-2xl text-brandSlate">Dapur Redaksi KabarRaya</h1>
+              <p class="text-xs text-slate-500 mt-0.5">Kelola publikasi berita, penentuan Sorotan Utama, status Viral, dan Kanal Berita.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="window.openArticleForm()" class="px-4 py-2.5 rounded-xl bg-brandSky hover:bg-sky-700 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Tulis Kabar Baru
+              </button>
+              <button onclick="window.logoutAdmin()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition" title="Keluar Sesi Redaksi">
+                <i data-lucide="log-out" class="w-4 h-4 text-brandCoral"></i> Keluar
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub-Navigasi Admin -->
+          <div class="flex gap-2 overflow-x-auto no-scrollbar">
+            <button onclick="window.switchAdminTab('articles')" id="admin-tab-articles" class="px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition">
+              Daftar Berita
+            </button>
+            <button onclick="window.switchAdminTab('categories')" id="admin-tab-categories" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">
+              Kanal / Kategori
+            </button>
+          </div>
+
+          <!-- Panel 1: Tabel Berita -->
+          <div id="admin-panel-articles" class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50/90 border-b border-slate-200 text-[11px] font-extrabold uppercase text-slate-500">
+                    <th class="py-3 px-4">Judul Berita & Kanal</th>
+                    <th class="py-3 px-4">Sorotan</th>
+                    <th class="py-3 px-4">Views</th>
+                    <th class="py-3 px-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-articles-tbody" class="divide-y divide-slate-100 text-xs"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Panel 2: Manajemen Kanal / Kategori -->
+          <div id="admin-panel-categories" class="hidden grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 h-fit">
+              <h3 class="font-headline font-extrabold text-sm text-brandSlate mb-3">Tambah Kanal Baru</h3>
+              <form onsubmit="window.handleSaveCategory(event)" class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Nama Kanal</label>
+                  <input id="cat-name-input" type="text" required placeholder="Contoh: Nasional, Ekonomi, Tekno..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandSky" />
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-brandSky hover:bg-sky-700 text-white text-xs font-bold transition">
+                  Simpan Kanal
+                </button>
+              </form>
+            </div>
+            <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+              <h3 class="font-headline font-extrabold text-sm text-brandSlate mb-3">Daftar Kanal Aktif</h3>
+              <div id="admin-categories-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FOOTER EDITORIAL BERSIH DENGAN PINTU MASUK HALUS AKSES REDAKSI -->
+        <footer class="mt-12 pt-6 pb-4 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
+          <div class="flex items-center gap-2">
+            <span class="font-headline font-extrabold text-brandSlate uppercase">KABAR<span class="text-brandSky">RAYA</span></span>
+            <span>— Cepat, Jernih, Terpercaya • © 2026 Hak Cipta Dilindungi.</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <button onclick="window.navigate('home', 'all')" class="hover:text-brandSky transition">Beranda</button>
+            <button onclick="window.navigate('trending')" class="hover:text-brandSky transition">Sedang Viral</button>
+            <button onclick="window.navigate('bookmarks')" class="hover:text-brandSky transition">Tersimpan</button>
+            <button onclick="window.openAdminGate()" class="text-slate-400 hover:text-brandSky transition">Akses Redaksi</button>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+
+    <!-- 5. FLOATING BOTTOM NAVIGATION BAR DI MOBILE (Bersih Tanpa Tombol Login Publik) -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass-surface border-t border-slate-200/90 px-2 py-1.5 flex items-center justify-around shadow-floating">
+      <button data-mnav="portal" onclick="window.navigate('home', 'all')" class="mnav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-brandSky font-bold text-[10px]">
+        <i data-lucide="compass" class="w-5 h-5"></i>
+        <span>Beranda</span>
+      </button>
+      <button data-mnav="trending" onclick="window.navigate('trending')" class="mnav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-slate-500 font-semibold text-[10px]">
+        <i data-lucide="flame" class="w-5 h-5"></i>
+        <span>Viral</span>
+      </button>
+      <button data-mnav="bookmarks" onclick="window.navigate('bookmarks')" class="mnav-btn flex flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-slate-500 font-semibold text-[10px]">
+        <i data-lucide="bookmark" class="w-5 h-5"></i>
+        <span>Tersimpan</span>
+      </button>
+      <button id="mobile-admin-btn" data-mnav="admin" onclick="window.navigate('admin')" class="mnav-btn hidden flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-slate-500 font-semibold text-[10px]">
+        <i data-lucide="edit-3" class="w-5 h-5"></i>
+        <span>Redaksi</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL TERSEMBUNYI: PINTU MASUK REDAKSI / ADMIN (SUPABASE AUTH)        -->
+  <!-- ===================================================================== -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-[1000001] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="px-5 py-4 bg-gradient-to-r from-brandSlate to-brandTeal text-white flex items-center justify-between">
+        <div class="font-headline font-extrabold text-base flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i>
+          <span>Akses Redaksi <span class="text-amber-300">KabarRaya</span></span>
+        </div>
+        <button onclick="window.closeAuthModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <form id="form-login-admin" onsubmit="window.handleAdminLogin(event)" class="space-y-3.5">
+          <div class="p-3 rounded-xl bg-teal-50/80 border border-teal-100 text-brandTealDark text-[11px] font-semibold leading-relaxed">
+            Jalur masuk khusus Jurnalis & Administrator Redaksi KabarRaya. Pengunjung umum dapat langsung membaca dan menyimpan berita tanpa login.
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Email Redaksi</label>
+            <input id="login-admin-email" type="email" required placeholder="redaksi@kabarraya.id" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <input id="login-admin-password" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-brandTeal hover:bg-brandTealDark text-white text-xs font-bold transition shadow-sm">
+            Masuk ke Dapur Redaksi
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL FORM TAMBAH / EDIT ARTIKEL (ADMIN)                              -->
+  <!-- ===================================================================== -->
+  <div id="article-form-modal" class="hidden fixed inset-0 z-[1000002] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="px-5 py-3.5 bg-gradient-to-r from-brandSlate to-brandTeal text-white flex items-center justify-between">
+        <h3 id="article-form-modal-title" class="font-headline font-extrabold text-base">Tulis Kabar Baru</h3>
+        <button onclick="window.closeArticleForm()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form onsubmit="window.handleSaveArticle(event)" class="flex-1 overflow-y-auto custom-scroll p-5 space-y-3.5">
+        <input type="hidden" id="form-article-id" />
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Judul Berita *</label>
+          <input id="form-article-title" type="text" required placeholder="Judul berita jernih & informatif..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kanal / Kategori *</label>
+            <select id="form-article-category" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-brandTeal"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Jurnalis / Penulis *</label>
+            <input id="form-article-author" type="text" required placeholder="Tim Redaksi" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">URL Gambar Utama (Rasio 16:9)</label>
+          <input id="form-article-image" type="url" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Lead / Ringkasan Berita *</label>
+          <textarea id="form-article-summary" rows="2" required placeholder="Paragraf pembuka singkat..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Isi Lengkap Berita *</label>
+          <textarea id="form-article-content" rows="5" required placeholder="Tulis isi lengkap laporan berita di sini..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Topik Hangat / Kata Kunci (Pisahkan dengan koma)</label>
+          <input id="form-article-keywords" type="text" placeholder="Contoh: Ekonomi RI, Inovasi AI, Jakarta Terkini" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandTeal" />
+        </div>
+        <div class="flex flex-wrap gap-5 pt-1">
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input id="form-article-headline" type="checkbox" class="w-4 h-4 rounded text-brandTeal focus:ring-brandTeal" />
+            <span class="text-xs font-bold text-slate-700">Jadikan Headline Utama</span>
+          </label>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input id="form-article-trending" type="checkbox" class="w-4 h-4 rounded text-brandCoral focus:ring-brandCoral" />
+            <span class="text-xs font-bold text-slate-700">Tandai Viral / Paling Banyak Dicari</span>
+          </label>
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" onclick="window.closeArticleForm()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">
+            Batal
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-brandTeal hover:bg-brandTealDark text-white text-xs font-bold shadow-sm">
+            Terbitkan Kabar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[1000005] space-y-2 pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- SCRIPT UTAMA APLIKASI (ES MODULE)                                      -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // =========================================================================
+    // 1. SAKLAR PRODUKSI VS PREVIEW & KONFIGURASI SUPABASE
+    // =========================================================================
+    const IS_PREVIEW = false;
+    const SUPABASE_URL = "https://xfxpvlbeszszmtugssgz.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cv..."; // isi lengkap Publishable key Anda
+
+    const supabase = (!IS_PREVIEW && SUPABASE_URL !== "URL_SUPABASE_ANDA")
+      ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    // =========================================================================
+    // 2. KONFIGURASI PWA DINAMIS (MANIFEST DATA URI & SERVICE WORKER BLOB)
+    // =========================================================================
+    (function setupPWA() {
+      const manifestObj = {
+        name: "KabarRaya — Cepat, Jernih, Terpercaya",
+        short_name: "KabarRaya",
+        start_url: ".",
+        display: "standalone",
+        background_color: "#F8FAFC",
+        theme_color: "#0F766E",
+        icons: [
+          {
+            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230F766E'/%3E%3Cpath d='M25 68C25 46 43 28 65 28' stroke='white' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3Cpath d='M40 68C40 54 51 43 65 43' stroke='%23FBBF24' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='65' cy='66' r='8' fill='white'/%3E%3C/svg%3E",
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const manifestLink = document.getElementById('pwa-manifest');
+      if (manifestLink) {
+        manifestLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+      }
+
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(fetch(e.request).catch(() => new Response('Offline mode')));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+      }
+    })();
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwa-install-btn');
+      if (btn) {
+        btn.classList.remove('hidden');
+        btn.classList.add('flex');
+      }
+    });
+
+    window.installPWA = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      document.getElementById('pwa-install-btn')?.classList.add('hidden');
+    };
+
+    // =========================================================================
+    // 3. STATE & DATA DUMMY MINIMALIS (MAKSIMAL 2 BARIS PER TABEL)
+    // =========================================================================
+    const BOOKMARK_STORAGE_KEY = 'kr_public_bookmarks_v1';
+
+    const state = {
+      currentView: 'portal', // 'portal' | 'detail' | 'trending' | 'bookmarks' | 'admin'
+      selectedCategory: 'all',
+      searchQuery: '',
+      adminUser: null, // Hanya diisi saat Admin login via Akses Redaksi
+      activeArticleId: null,
+      heroSlideIndex: 0,
+      categories: [],
+      articles: [],
+      bookmarks: [] // Array of article IDs disimpan instan di localStorage pengunjung
+    };
+
+    const PREVIEW_SEED = {
+      categories: [
+        { id: 'cat-1', name: 'Nasional', slug: 'nasional' },
+        { id: 'cat-2', name: 'Teknologi', slug: 'teknologi' }
+      ],
+      articles: [
+        {
+          id: 'art-1',
+          title: 'Integrasi Transportasi Hijau Jakarta-IKN Catat Rekor Penumpang Tertinggi Pekan Ini',
+          slug: 'integrasi-transportasi-hijau-jakarta-ikn',
+          summary: 'Armada bus listrik dan kereta terpadu mencatat lonjakan penumpang harian tertinggi sepanjang tahun dan ramai diperbincangkan publik.',
+          content: 'Jakarta - Transformasi transportasi publik berbasis energi bersih di kawasan Jabodetabek dan Ibu Kota Nusantara (IKN) mencatat lonjakan pengguna signifikan dalam sepekan terakhir.\n\nBerdasarkan data operasional terbaru, integrasi rute pengumpan dan tarif terpadu membuat masyarakat beralih dari kendaraan pribadi ke moda transportasi massal. Topik terkait efisiensi waktu tempuh pun menduduki jajaran pencarian tertinggi di Indonesia.\n\nPengamat tata kota menilai langkah ini menjadi tonggak penting dalam menekan emisi perkotaan sekaligus meningkatkan produktivitas harian warga.',
+          image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1000&q=80',
+          category_id: 'cat-1',
+          author_name: 'Raka Pratama',
+          is_trending: true,
+          is_headline: true,
+          views_count: 18450,
+          search_keywords: 'Transportasi Hijau, Jakarta Terkini, IKN Nusantara',
+          created_at: new Date(Date.now() - 1000 * 60 * 14).toISOString()
+        },
+        {
+          id: 'art-2',
+          title: 'Developer Muda RI Rilis Model AI Bahasa Daerah Ringan untuk Ponsel Pintar',
+          slug: 'developer-muda-ri-rilis-model-ai-bahasa-daerah',
+          summary: 'Inovasi kecerdasan buatan lokal ini mampu menerjemahkan puluhan bahasa daerah secara real-time tanpa koneksi internet berat.',
+          content: 'Bandung - Ekosistem teknologi Indonesia kembali mencatatkan terobosan melalui peluncuran model kecerdasan buatan (AI) yang dilatih khusus untuk melestarikan dan memproses bahasa daerah Nusantara.\n\nModel ini dirancang ringan sehingga dapat dijalankan pada perangkat seluler spesifikasi menengah, membantu sektor pendidikan dan layanan publik di wilayah kepulauan.\n\nKomunitas pengembang nasional menyambut antusias inisiatif terbuka ini dan mulai mengintegrasikannya ke berbagai aplikasi edukasi.',
+          image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1000&q=80',
+          category_id: 'cat-2',
+          author_name: 'Nadia Kusuma',
+          is_trending: true,
+          is_headline: false,
+          views_count: 11290,
+          search_keywords: 'AI Indonesia, Teknologi Viral, Startup Lokal',
+          created_at: new Date(Date.now() - 1000 * 60 * 52).toISOString()
+        }
+      ],
+      bookmarks: ['art-1']
+    };
+
+    // =========================================================================
+    // 4. UTILITAS WAKTU, FORMAT ANGKA & NOTIFIKASI
+    // =========================================================================
+    function updateHeaderDate() {
+      const el = document.getElementById('header-current-date');
+      if (!el) return;
+      el.textContent = new Date().toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const styles = {
+        success: 'bg-brandTeal text-white border-teal-400',
+        error: 'bg-brandCoral text-white border-red-300',
+        info: 'bg-brandSlate text-white border-slate-700'
+      };
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-floating border text-xs font-bold transition-all duration-300 ${styles[type] || styles.info}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    }
+
+    function formatRelativeTime(iso) {
+      if (!iso) return 'Baru saja';
+      const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (diffSec < 60) return 'Baru saja';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin} menit lalu`;
+      const diffHour = Math.floor(diffMin / 60);
+      if (diffHour < 24) return `${diffHour} jam lalu`;
+      return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function formatFullWIB(iso) {
+      const d = iso ? new Date(iso) : new Date();
+      const datePart = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+      const timePart = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      return `${datePart} • ${timePart} WIB`;
+    }
+
+    function formatViews(num) {
+      const n = Number(num || 0);
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + ' rb';
+      return String(n);
+    }
+
+    function getCategoryName(catId) {
+      const found = state.categories.find(c => c.id === catId);
+      return found ? found.name : 'Nasional';
+    }
+
+    function loadPublicBookmarks() {
+      try {
+        const raw = localStorage.getItem(BOOKMARK_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          state.bookmarks = Array.isArray(parsed) ? parsed : [];
+        } else if (IS_PREVIEW) {
+          state.bookmarks = [...PREVIEW_SEED.bookmarks];
+          savePublicBookmarks();
+        } else {
+          state.bookmarks = [];
+        }
+      } catch {
+        state.bookmarks = [];
+      }
+    }
+
+    function savePublicBookmarks() {
+      try {
+        localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify(state.bookmarks));
+      } catch {}
+    }
+
+    function isBookmarked(articleId) {
+      return state.bookmarks.includes(articleId);
+    }
+
+    // =========================================================================
+    // 5. LOAD & SINKRONISASI DATA (IS_PREVIEW VS SUPABASE)
+    // =========================================================================
+    async function loadAllData() {
+      const icon = document.getElementById('refresh-icon');
+      if (icon) icon.classList.add('animate-spin');
+
+      loadPublicBookmarks();
+
+      try {
+        if (IS_PREVIEW) {
+          const saved = localStorage.getItem('kr_preview_db_v2');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            state.categories = parsed.categories || [];
+            state.articles = parsed.articles || [];
+          } else {
+            state.categories = structuredClone(PREVIEW_SEED.categories);
+            state.articles = structuredClone(PREVIEW_SEED.articles);
+            persistPreviewDB();
+          }
+        } else {
+          if (!supabase) {
+            showToast('SUPABASE_URL dan SUPABASE_ANON_KEY belum dikonfigurasi.', 'error');
+            return;
+          }
+
+          const [catRes, artRes] = await Promise.all([
+            supabase.from('categories').select('*').order('name', { ascending: true }),
+            supabase.from('articles').select('*').order('created_at', { ascending: false })
+          ]);
+
+          if (catRes.error) throw catRes.error;
+          if (artRes.error) throw artRes.error;
+
+          state.categories = catRes.data || [];
+          state.articles = artRes.data || [];
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat data: ' + (err.message || 'Kesalahan koneksi'), 'error');
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+        renderAll();
+      }
+    }
+
+    function persistPreviewDB() {
+      if (!IS_PREVIEW) return;
+      localStorage.setItem('kr_preview_db_v2', JSON.stringify({
+        categories: state.categories,
+        articles: state.articles
+      }));
+    }
+
+    window.refreshData = () => loadAllData();
+
+    // =========================================================================
+    // 6. PINTU MASUK TERSEMBUNYI REDAKSI / ADMIN (KLIK 3X LOGO / FOOTER)
+    // =========================================================================
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+
+    window.handleLogoClick = () => {
+      logoClickCount += 1;
+      clearTimeout(logoClickTimer);
+
+      if (logoClickCount >= 3) {
+        logoClickCount = 0;
+        window.openAdminGate();
+        return;
+      }
+
+      logoClickTimer = setTimeout(() => {
+        if (logoClickCount > 0) {
+          logoClickCount = 0;
+          window.navigate('home', 'all');
+        }
+      }, 360);
+    };
+
+    window.openAdminGate = () => {
+      if (state.adminUser) {
+        window.navigate('admin');
+        return;
+      }
+      document.getElementById('auth-modal')?.classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeAuthModal = () => {
+      document.getElementById('auth-modal')?.classList.add('hidden');
+    };
+
+    function syncAdminUI() {
+      const isAdmin = Boolean(state.adminUser);
+      const headerAdminBtn = document.getElementById('header-admin-btn');
+      const mobileAdminBtn = document.getElementById('mobile-admin-btn');
+      const desktopAdminNav = document.getElementById('desktop-admin-nav');
+      const bmBadge = document.getElementById('header-bookmark-badge');
+
+      headerAdminBtn?.classList.toggle('hidden', !isAdmin);
+      headerAdminBtn?.classList.toggle('flex', isAdmin);
+      mobileAdminBtn?.classList.toggle('hidden', !isAdmin);
+      mobileAdminBtn?.classList.toggle('flex', isAdmin);
+      desktopAdminNav?.classList.toggle('hidden', !isAdmin);
+      desktopAdminNav?.classList.toggle('flex', isAdmin);
+
+      if (bmBadge) {
+        const validSavedCount = state.bookmarks.filter(id => state.articles.some(a => a.id === id)).length;
+        bmBadge.textContent = validSavedCount;
+      }
+
+      renderSidebarAccountWidget();
+      lucide.createIcons();
+    }
+
+    window.quickLoginAdmin = () => {
+      if (!IS_PREVIEW) return;
+      state.adminUser = {
+        id: 'admin-preview',
+        name: 'Pemimpin Redaksi',
+        email: 'redaksi@kabarraya.id'
+      };
+      syncAdminUI();
+      showToast('Akses Dapur Redaksi aktif (Mode Preview)', 'success');
+      window.navigate('admin');
+    };
+
+    window.handleAdminLogin = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-admin-email').value.trim();
+      const password = document.getElementById('login-admin-password').value;
+
+      if (IS_PREVIEW) {
+        state.adminUser = { id: 'admin-preview', name: 'Redaksi KabarRaya', email };
+        window.closeAuthModal();
+        syncAdminUI();
+        showToast('Masuk ke Dapur Redaksi (Mode Preview)', 'success');
+        window.navigate('admin');
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        state.adminUser = {
+          id: data.user.id,
+          name: data.user.email.split('@')[0],
+          email: data.user.email
+        };
+        window.closeAuthModal();
+        syncAdminUI();
+        showToast('Login Redaksi berhasil!', 'success');
+        window.navigate('admin');
+      } catch (err) {
+        showToast('Login Redaksi gagal: ' + err.message, 'error');
+      }
+    };
+
+    window.logoutAdmin = async () => {
+      if (!IS_PREVIEW && state.adminUser && supabase) {
+        await supabase.auth.signOut();
+      }
+      state.adminUser = null;
+      syncAdminUI();
+      showToast('Keluar dari sesi Dapur Redaksi.', 'info');
+      if (state.currentView === 'admin') window.navigate('home', 'all');
+    };
+
+    // =========================================================================
+    // 7. NAVIGASI, FILTER KANAL & PENCARIAN
+    // =========================================================================
+    window.navigate = (target, categoryId = null) => {
+      if (target === 'admin' && !state.adminUser) {
+        window.openAdminGate();
+        return;
+      }
+
+      if (target === 'home') {
+        state.currentView = 'portal';
+        if (categoryId !== null) state.selectedCategory = categoryId;
+      } else {
+        state.currentView = target;
+      }
+
+      ['portal', 'detail', 'trending', 'bookmarks', 'admin'].forEach(v => {
+        document.getElementById(`view-${v}`)?.classList.toggle('hidden', v !== state.currentView);
+      });
+
+      // Sembunyikan stage hero besar saat membaca detail/admin agar fokus, tapi pertahankan topbar
+      const heroStage = document.getElementById('hero-editorial-stage');
+      const tickerWrap = document.getElementById('floating-bottom-ticker-wrap');
+      const belowHero = document.getElementById('below-hero-container');
+      const isPortal = state.currentView === 'portal';
+
+      heroStage?.classList.toggle('hidden', !isPortal);
+      tickerWrap?.classList.toggle('hidden', !isPortal);
+      if (belowHero) {
+        belowHero.className = isPortal
+          ? 'max-w-7xl mx-auto px-4 sm:px-8 pt-16 sm:pt-20'
+          : 'max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8';
+      }
+
+      // Update Mobile Bottom Nav Active State
+      document.querySelectorAll('.mnav-btn').forEach(btn => {
+        const isHidden = btn.id === 'mobile-admin-btn' && !state.adminUser;
+        const isActive = btn.dataset.mnav === state.currentView;
+        btn.className = `mnav-btn ${isHidden ? 'hidden' : 'flex'} flex-col items-center gap-0.5 px-4 py-1 rounded-xl text-[10px] ${isActive ? 'text-brandSky font-bold' : 'text-slate-500 font-semibold'}`;
+      });
+
+      document.getElementById('main-scroll-area')?.scrollTo({ top: 0, behavior: 'smooth' });
+      renderAll();
+    };
+
+    window.handleSearch = (val) => {
+      state.searchQuery = val.trim();
+      document.getElementById('clear-search-btn')?.classList.toggle('hidden', !state.searchQuery);
+      if (state.currentView !== 'portal') {
+        state.currentView = 'portal';
+        ['portal', 'detail', 'trending', 'bookmarks', 'admin'].forEach(v => {
+          document.getElementById(`view-${v}`)?.classList.toggle('hidden', v !== 'portal');
+        });
+      }
+      renderAll();
+    };
+
+    window.triggerSearchSubmit = () => {
+      const input = document.getElementById('global-search-input');
+      if (input) window.handleSearch(input.value);
+    };
+
+    window.clearSearch = () => {
+      const input = document.getElementById('global-search-input');
+      if (input) input.value = '';
+      state.searchQuery = '';
+      document.getElementById('clear-search-btn')?.classList.add('hidden');
+      renderAll();
+    };
+
+    window.filterByTag = (tag) => {
+      const input = document.getElementById('global-search-input');
+      if (input) input.value = tag;
+      state.searchQuery = tag;
+      document.getElementById('clear-search-btn')?.classList.remove('hidden');
+      window.navigate('home');
+    };
+
+    window.resetAllFilters = () => {
+      state.selectedCategory = 'all';
+      window.clearSearch();
+    };
+
+    // =========================================================================
+    // 8. RENDERING KOMPONEN ORIGINAL KABARRAYA
+    // =========================================================================
+    function renderAll() {
+      renderChannelNavbar();
+      renderCinematicHero();
+      renderPortalView();
+      renderSidebarWidgets();
+      renderTrendingFullView();
+      renderBookmarksView();
+      renderAdminPanel();
+      syncAdminUI();
+      lucide.createIcons();
+    }
+
+    function renderChannelNavbar() {
+      const bar = document.getElementById('kabar-channel-bar');
+      if (!bar) return;
+
+      const isHomeActive = state.currentView === 'portal' && state.selectedCategory === 'all' && !state.searchQuery;
+      let pillHtml = `
+        <button onclick="window.navigate('home', 'all')" class="shrink-0 py-1 border-b-2 transition ${isHomeActive ? 'border-sky-400 text-white' : 'border-transparent text-white/75 hover:text-white'}">
+          UTAMA
+        </button>
+      `;
+
+      state.categories.forEach(cat => {
+        const active = state.currentView === 'portal' && state.selectedCategory === cat.id;
+        pillHtml += `
+          <button onclick="window.navigate('home', '${cat.id}')" class="shrink-0 py-1 border-b-2 transition ${active ? 'border-sky-400 text-white' : 'border-transparent text-white/75 hover:text-white'}">
+            ${cat.name}
+          </button>
+        `;
+      });
+
+      bar.innerHTML = pillHtml;
+    }
+
+    window.selectHeroSlide = (idx) => {
+      state.heroSlideIndex = idx;
+      renderCinematicHero();
+      lucide.createIcons();
+    };
+
+    function renderCinematicHero() {
+      const heroBg = document.getElementById('hero-bg-image');
+      const leftStage = document.getElementById('hero-left-stage');
+      const rightCards = document.getElementById('hero-right-cards');
+      const slideDots = document.getElementById('hero-slide-dots');
+      const bottomTicker = document.getElementById('floating-4col-ticker');
+
+      if (!leftStage || !rightCards || !bottomTicker) return;
+
+      if (state.articles.length === 0) {
+        leftStage.innerHTML = `
+          <span class="inline-block px-2.5 py-1 rounded bg-sky-500 text-white text-[10px] font-extrabold uppercase tracking-wider">KabarRaya</span>
+          <h1 class="font-headline font-extrabold text-2xl sm:text-4xl text-white leading-tight">Belum Ada Kabar Diterbitkan</h1>
+        `;
+        rightCards.innerHTML = '';
+        bottomTicker.innerHTML = '';
+        return;
+      }
+
+      // Daftar slide hero (maks 3 berita utama/terbaru)
+      const heroPool = state.articles.slice(0, 3);
+      if (state.heroSlideIndex >= heroPool.length) state.heroSlideIndex = 0;
+      const activeHero = heroPool[state.heroSlideIndex];
+
+      if (heroBg && activeHero.image_url) {
+        heroBg.src = activeHero.image_url;
+      }
+
+      const miniLinks = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
+
+      leftStage.innerHTML = `
+        <div class="space-y-3.5">
+          <span class="inline-block px-2.5 py-1 rounded bg-sky-500 text-white text-[10px] font-extrabold uppercase tracking-wider shadow">
+            ${getCategoryName(activeHero.category_id)}
+          </span>
+          <h1 onclick="window.openArticleDetail('${activeHero.id}')" class="cursor-pointer font-headline font-extrabold text-2xl sm:text-4xl lg:text-[42px] text-white leading-[1.15] tracking-tight hover:text-sky-300 transition">
+            ${activeHero.title}
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-200/90 max-w-xl line-clamp-2">
+            ${activeHero.summary}
+          </p>
+          <div class="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-bold">
+            <button onclick="window.openArticleDetail('${activeHero.id}')" class="inline-flex items-center gap-1.5 text-white hover:text-sky-300 transition">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-sky-400"></i>
+              <span>Baca Selengkapnya</span>
+            </button>
+            ${miniLinks.map(m => `
+              <button onclick="window.openArticleDetail('${m.id}')" class="hidden sm:inline-flex items-center gap-2 text-white/85 hover:text-white transition max-w-[200px]">
+                <img src="${m.image_url || 'https://placehold.co/60x60/0F172A/FFFFFF?text=KR'}" class="w-6 h-6 rounded object-cover shrink-0 border border-white/25" onerror="this.src='https://placehold.co/60x60/0F172A/FFFFFF?text=KR'" />
+                <span class="truncate text-[11px] font-semibold">${m.title}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // 2 Kartu Vertikal di Kanan Atas Hero
+      const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
+      rightCards.innerHTML = sideCardsData.map(card => `
+        <article onclick="window.openArticleDetail('${card.id}')" class="relative h-44 sm:h-48 rounded-lg overflow-hidden bg-slate-900 border border-white/15 shadow-lg cursor-pointer group">
+          <img src="${card.image_url || 'https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x480/0F172A/FFFFFF?text=KabarRaya'" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent"></div>
+          <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-sky-500 text-white text-[9px] font-extrabold uppercase tracking-wider">
+            ${getCategoryName(card.category_id)}
+          </span>
+          <div class="absolute bottom-0 inset-x-0 p-3">
+            <h3 class="font-headline font-bold text-xs text-white leading-snug line-clamp-3 group-hover:text-sky-300 transition">
+              ${card.title}
+            </h3>
+          </div>
+        </article>
+      `).join('');
+
+      // Slide Dots Numerik (01 02 03)
+      if (slideDots) {
+        slideDots.innerHTML = heroPool.map((_, idx) => {
+          const active = idx === state.heroSlideIndex;
+          return `
+            <button onclick="window.selectHeroSlide(${idx})" class="w-7 h-7 rounded-full text-[10px] font-extrabold flex items-center justify-center transition ${active ? 'bg-sky-500 text-white shadow-md scale-110' : 'bg-white/15 text-white/70 hover:bg-white/25'}">
+              0${idx + 1}
+            </button>
+          `;
+        }).join('');
+      }
+
+      // Floating White 4-Column Ticker di Batas Bawah Hero
+      const tickerItems = state.articles.slice(0, 4);
+      bottomTicker.innerHTML = tickerItems.map(item => `
+        <div onclick="window.openArticleDetail('${item.id}')" class="p-3.5 sm:p-4 flex items-center gap-3 hover:bg-slate-50 transition cursor-pointer group">
+          <img src="${item.image_url || 'https://placehold.co/120x120/F1F5F9/0284C7?text=KR'}" alt="${item.title}" class="w-12 h-12 rounded-md object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/120x120/F1F5F9/0284C7?text=KR'" />
+          <div class="min-w-0 flex-1 space-y-1">
+            <h4 class="font-headline font-bold text-xs text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug">
+              ${item.title}
+            </h4>
+            <div class="text-[10px] text-slate-400 font-semibold">
+              ${getCategoryName(item.category_id)} • ${formatRelativeTime(item.created_at)}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderBookmarksView() {
+      const container = document.getElementById('bookmarks-list-container');
+      if (!container) return;
+
+      const savedList = state.bookmarks
+        .map(id => state.articles.find(a => a.id === id))
+        .filter(Boolean);
+
+      if (savedList.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-10 text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-sky-50 text-brandSky mx-auto flex items-center justify-center mb-1">
+              <i data-lucide="bookmark" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-headline font-extrabold text-sm text-brandSlate">Belum Ada Bacaan Tersimpan</h3>
+            <p class="text-xs text-slate-500">Klik tombol "Simpan" pada berita mana pun untuk menyimpannya langsung di perangkat ini.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card divide-y divide-slate-100 overflow-hidden">
+          ${savedList.map(art => `
+            <div onclick="window.openArticleDetail('${art.id}')" class="p-4 flex items-center justify-between gap-4 hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'}" class="w-20 h-14 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'" />
+                <div class="min-w-0">
+                  <div class="text-[10px] font-extrabold text-brandSky uppercase">${getCategoryName(art.category_id)} • ${formatRelativeTime(art.created_at)}</div>
+                  <h4 class="font-headline font-bold text-xs sm:text-sm text-brandSlate line-clamp-2 mt-0.5">${art.title}</h4>
+                </div>
+              </div>
+              <button onclick="event.stopPropagation(); window.toggleBookmark('${art.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-brandCoral text-xs font-bold shrink-0 transition">
+                Hapus
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function getFilteredArticles() {
+      return state.articles.filter(art => {
+        const matchCat = state.selectedCategory === 'all' || art.category_id === state.selectedCategory;
+        if (!matchCat) return false;
+        if (!state.searchQuery) return true;
+        const q = state.searchQuery.toLowerCase();
+        return (
+          (art.title || '').toLowerCase().includes(q) ||
+          (art.summary || '').toLowerCase().includes(q) ||
+          (art.search_keywords || '').toLowerCase().includes(q) ||
+          getCategoryName(art.category_id).toLowerCase().includes(q)
+        );
+      });
+    }
+
+    function renderPortalView() {
+      const filtered = getFilteredArticles();
+      const filterBar = document.getElementById('active-filter-bar');
+      const filterText = document.getElementById('active-filter-text');
+      const feedList = document.getElementById('newsfeed-list');
+      const feedHeading = document.getElementById('newsfeed-heading');
+      const feedCounter = document.getElementById('newsfeed-counter');
+
+      const hasFilter = state.selectedCategory !== 'all' || Boolean(state.searchQuery);
+      filterBar?.classList.toggle('hidden', !hasFilter);
+      if (hasFilter && filterText) {
+        const parts = [];
+        if (state.selectedCategory !== 'all') parts.push(`Kanal: ${getCategoryName(state.selectedCategory)}`);
+        if (state.searchQuery) parts.push(`Kata Kunci: "${state.searchQuery}"`);
+        filterText.textContent = parts.join(' • ');
+      }
+
+      if (feedHeading) {
+        feedHeading.textContent = state.searchQuery
+          ? `Hasil Pencarian "${state.searchQuery}"`
+          : state.selectedCategory !== 'all'
+            ? `Kabar Terbaru — ${getCategoryName(state.selectedCategory)}`
+            : 'Kabar Terbaru Hari Ini';
+      }
+      if (feedCounter) feedCounter.textContent = `${filtered.length} berita`;
+
+      if (filtered.length === 0) {
+        if (feedList) {
+          feedList.innerHTML = `
+            <div class="p-10 text-center space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+                <i data-lucide="newspaper" class="w-6 h-6"></i>
+              </div>
+              <h3 class="font-headline font-extrabold text-base text-brandSlate">Belum Ada Kabar Ditemukan</h3>
+              <p class="text-xs text-slate-500 max-w-md mx-auto">Tidak ada berita yang sesuai filter saat ini atau redaksi belum menerbitkan artikel.</p>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // Feed Artikel Terbaru dengan Thumbnail
+      if (feedList) {
+        feedList.innerHTML = filtered.map(art => {
+          const saved = isBookmarked(art.id);
+          return `
+            <article onclick="window.openArticleDetail('${art.id}')" class="p-4 flex items-start gap-4 hover:bg-slate-50/80 transition cursor-pointer group">
+              <div class="w-[120px] h-[84px] sm:w-[156px] sm:h-[102px] rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/70 relative">
+                <img src="${art.image_url || 'https://placehold.co/300x200/F1F5F9/0284C7?text=KabarRaya'}" alt="${art.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/300x200/F1F5F9/0284C7?text=KabarRaya'" />
+                ${art.is_trending ? `<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-brandCoral text-white text-[9px] font-extrabold uppercase">Viral</span>` : ''}
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col justify-between min-h-[84px] sm:min-h-[102px]">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[11px] font-extrabold text-brandSky uppercase">${getCategoryName(art.category_id)}</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-[11px] text-slate-400 font-medium">${formatRelativeTime(art.created_at)}</span>
+                  </div>
+                  <h3 class="font-headline font-bold text-sm sm:text-base text-brandSlate group-hover:text-brandSky transition line-clamp-2 leading-snug">
+                    ${art.title}
+                  </h3>
+                </div>
+                <div class="flex items-center justify-between pt-2">
+                  <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i> ${formatViews(art.views_count)} pembaca
+                  </span>
+                  <button onclick="event.stopPropagation(); window.toggleBookmark('${art.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition ${saved ? 'bg-sky-50 text-brandSky' : 'text-slate-400 hover:text-brandSky hover:bg-slate-100'}" title="Simpan Kabar">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5 ${saved ? 'fill-current' : ''}"></i>
+                    <span class="hidden sm:inline">${saved ? 'Tersimpan' : 'Simpan'}</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderSidebarWidgets() {
+      // 1. Paling Banyak Dicari & Viral (#1 - #5)
+      const popList = document.getElementById('sidebar-terpopuler-list');
+      if (popList) {
+        const sortedPopular = [...state.articles]
+          .sort((a, b) => (b.views_count || 0) - (a.views_count || 0))
+          .slice(0, 5);
+
+        if (sortedPopular.length === 0) {
+          popList.innerHTML = `<div class="p-5 text-center text-xs text-slate-400">Belum ada peringkat berita.</div>`;
+        } else {
+          popList.innerHTML = sortedPopular.map((art, idx) => `
+            <div onclick="window.openArticleDetail('${art.id}')" class="p-3.5 flex items-start gap-3 hover:bg-slate-50 transition cursor-pointer group">
+              <div class="font-headline font-extrabold text-xl leading-none w-7 shrink-0 ${idx < 3 ? 'text-brandSky' : 'text-slate-300'}">
+                #${idx + 1}
+              </div>
+              <div class="min-w-0 flex-1 space-y-1">
+                <h4 class="font-headline font-bold text-xs text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug">
+                  ${art.title}
+                </h4>
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 font-semibold">
+                  <span class="text-brandSky">${getCategoryName(art.category_id)}</span>
+                  <span>•</span>
+                  <span>${formatViews(art.views_count)} dibaca</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // 2. Topik Hangat
+      const tagsCloud = document.getElementById('sidebar-tags-cloud');
+      if (tagsCloud) {
+        const rawTags = [];
+        state.articles.forEach(a => {
+          if (a.search_keywords) {
+            a.search_keywords.split(',').forEach(t => {
+              const clean = t.trim();
+              if (clean && !rawTags.includes(clean)) rawTags.push(clean);
+            });
+          }
+        });
+
+        const tagsToShow = rawTags.length > 0 ? rawTags.slice(0, 10) : ['Nasional', 'Viral Hari Ini', 'Ekonomi RI', 'Teknologi'];
+        tagsCloud.innerHTML = tagsToShow.map(tag => `
+          <button onclick="window.filterByTag('${tag.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-brandSky border border-slate-200/80 text-[11px] font-bold text-slate-700 transition">
+            # ${tag}
+          </button>
+        `).join('');
+      }
+
+      renderSidebarAccountWidget();
+    }
+
+    function renderSidebarAccountWidget() {
+      const box = document.getElementById('sidebar-account-box');
+      if (!box) return;
+      const savedCount = state.bookmarks.filter(id => state.articles.some(a => a.id === id)).length;
+
+      box.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-sky-50 text-brandSky flex items-center justify-center">
+              <i data-lucide="bookmark-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-headline font-extrabold text-xs text-brandSlate">Daftar Bacaan Anda</div>
+              <div class="text-[11px] text-slate-500">${savedCount} kabar tersimpan di browser</div>
+            </div>
+          </div>
+          <button onclick="window.navigate('bookmarks')" class="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-brandSky text-xs font-bold transition">
+            Buka
+          </button>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 9. HALAMAN DETAIL BERITA & BOOKMARK
+    // =========================================================================
+    window.openArticleDetail = async (articleId) => {
+      const art = state.articles.find(a => a.id === articleId);
+      if (!art) return;
+
+      state.activeArticleId = articleId;
+      art.views_count = Number(art.views_count || 0) + 1;
+
+      if (IS_PREVIEW) {
+        persistPreviewDB();
+      } else if (supabase) {
+        supabase.from('articles').update({ views_count: art.views_count }).eq('id', art.id).then(() => {});
+      }
+
+      document.getElementById('detail-breadcrumb-cat').textContent = getCategoryName(art.category_id);
+      document.getElementById('detail-breadcrumb-cat').onclick = () => window.navigate('home', art.category_id);
+      document.getElementById('detail-category-badge').textContent = getCategoryName(art.category_id);
+      document.getElementById('detail-viral-badge').classList.toggle('hidden', !art.is_trending);
+      document.getElementById('detail-title').textContent = art.title;
+      document.getElementById('detail-author').textContent = art.author_name || 'Tim Redaksi';
+      document.getElementById('detail-timestamp').textContent = formatFullWIB(art.created_at);
+      document.getElementById('detail-views').textContent = formatViews(art.views_count);
+
+      const imgEl = document.getElementById('detail-image');
+      imgEl.src = art.image_url || 'https://placehold.co/900x506/F1F5F9/0284C7?text=KabarRaya';
+      document.getElementById('detail-caption').textContent = `Ilustrasi / Dokumentasi: ${art.title} (Foto: Redaksi KabarRaya)`;
+      document.getElementById('detail-summary').textContent = art.summary;
+
+      const paragraphs = (art.content || '').split(/\n+/).filter(p => p.trim());
+      document.getElementById('detail-content').innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+
+      const tagsEl = document.getElementById('detail-tags');
+      const kwList = (art.search_keywords || '').split(',').map(k => k.trim()).filter(Boolean);
+      tagsEl.innerHTML = kwList.length > 0
+        ? kwList.map(k => `<button onclick="window.filterByTag('${k.replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-brandSky text-xs font-bold text-slate-700 transition"># ${k}</button>`).join('')
+        : `<span class="text-xs text-slate-400">Berita Terkini Indonesia</span>`;
+
+      const relatedList = document.getElementById('detail-related-list');
+      const relatedItems = state.articles.filter(a => a.id !== art.id).slice(0, 4);
+      relatedList.innerHTML = relatedItems.length > 0
+        ? relatedItems.map(r => `
+            <div onclick="window.openArticleDetail('${r.id}')" class="p-3.5 flex items-start gap-3 hover:bg-slate-50 cursor-pointer transition group">
+              <img src="${r.image_url || 'https://placehold.co/120x90/F1F5F9/0284C7?text=KR'}" class="w-16 h-12 rounded-lg object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/120x90/F1F5F9/0284C7?text=KR'" />
+              <div class="min-w-0 flex-1">
+                <div class="text-[10px] font-bold text-brandSky uppercase">${getCategoryName(r.category_id)}</div>
+                <h4 class="font-headline font-bold text-xs text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug mt-0.5">${r.title}</h4>
+              </div>
+            </div>
+          `).join('')
+        : `<div class="p-4 text-xs text-slate-400 text-center">Belum ada rekomendasi lainnya.</div>`;
+
+      updateDetailBookmarkButton();
+      window.navigate('detail');
+    };
+
+    window.closeArticleDetail = () => {
+      state.activeArticleId = null;
+      window.navigate('home');
+    };
+
+    function updateDetailBookmarkButton() {
+      if (!state.activeArticleId) return;
+      const saved = isBookmarked(state.activeArticleId);
+      const btn = document.getElementById('detail-bookmark-btn');
+      const label = document.getElementById('detail-bookmark-label');
+      if (!btn || !label) return;
+      label.textContent = saved ? 'Tersimpan' : 'Simpan';
+      btn.className = saved
+        ? 'px-3 py-1.5 rounded-lg bg-sky-50 border border-brandSky text-brandSky font-bold flex items-center gap-1 transition'
+        : 'px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brandSky text-slate-700 font-bold flex items-center gap-1 transition';
+    }
+
+    window.toggleDetailBookmark = () => {
+      if (state.activeArticleId) {
+        window.toggleBookmark(state.activeArticleId);
+        updateDetailBookmarkButton();
+      }
+    };
+
+    window.toggleBookmark = (articleId) => {
+      const idx = state.bookmarks.indexOf(articleId);
+      if (idx > -1) {
+        state.bookmarks.splice(idx, 1);
+        showToast('Dihapus dari daftar tersimpan.', 'info');
+      } else {
+        state.bookmarks.unshift(articleId);
+        showToast('Kabar disimpan ke daftar bacaan!', 'success');
+      }
+      savePublicBookmarks();
+      renderAll();
+    };
+
+    window.shareDetailArticle = () => {
+      const url = window.location.href;
+      const temp = document.createElement('input');
+      temp.value = url;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      temp.remove();
+      showToast('Tautan berita berhasil disalin!', 'success');
+    };
+
+    // =========================================================================
+    // 10. VIEW VIRAL LENGKAP & DAPUR REDAKSI (ADMIN CRUD)
+    // =========================================================================
+    function renderTrendingFullView() {
+      const list = document.getElementById('trending-full-list');
+      const totalEl = document.getElementById('trending-total-views');
+      if (!list) return;
+
+      const sorted = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      const totalViews = sorted.reduce((acc, cur) => acc + Number(cur.views_count || 0), 0);
+      if (totalEl) totalEl.textContent = totalViews.toLocaleString('id-ID');
+
+      if (sorted.length === 0) {
+        list.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-200">Belum ada data berita viral.</div>`;
+        return;
+      }
+
+      list.innerHTML = sorted.map((art, idx) => `
+        <div onclick="window.openArticleDetail('${art.id}')" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 flex items-center gap-4 hover:border-brandSky transition cursor-pointer group">
+          <div class="w-10 h-10 rounded-xl ${idx < 3 ? 'bg-brandSky text-white' : 'bg-slate-100 text-slate-600'} font-headline font-extrabold text-base flex items-center justify-center shrink-0">
+            #${idx + 1}
+          </div>
+          <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KR'}" class="w-20 h-14 sm:w-28 sm:h-20 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KR'" />
+          <div class="min-w-0 flex-1 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-extrabold text-brandSky uppercase">${getCategoryName(art.category_id)}</span>
+              ${art.is_trending ? `<span class="px-1.5 py-0.5 rounded bg-red-50 text-brandCoral text-[9px] font-extrabold uppercase">Viral</span>` : ''}
+            </div>
+            <h3 class="font-headline font-bold text-sm sm:text-base text-brandSlate group-hover:text-brandSky line-clamp-2">${art.title}</h3>
+            <div class="text-[11px] text-slate-500 font-semibold">${formatViews(art.views_count)} kali dibaca • ${formatRelativeTime(art.created_at)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.switchAdminTab = (tab) => {
+      const isArticles = tab === 'articles';
+      document.getElementById('admin-panel-articles')?.classList.toggle('hidden', !isArticles);
+      document.getElementById('admin-panel-categories')?.classList.toggle('hidden', isArticles);
+
+      const btnArt = document.getElementById('admin-tab-articles');
+      const btnCat = document.getElementById('admin-tab-categories');
+      if (btnArt) btnArt.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${isArticles ? 'bg-brandSky text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`;
+      if (btnCat) btnCat.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${!isArticles ? 'bg-brandSky text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`;
+    };
+
+    function renderAdminPanel() {
+      const tbody = document.getElementById('admin-articles-tbody');
+      const catList = document.getElementById('admin-categories-list');
+
+      if (tbody) {
+        tbody.innerHTML = state.articles.length === 0
+          ? `<tr><td colspan="4" class="py-8 text-center text-slate-400">Belum ada berita yang diterbitkan.</td></tr>`
+          : state.articles.map(art => `
+              <tr class="hover:bg-slate-50/70">
+                <td class="py-3 px-4">
+                  <div class="font-bold text-brandSlate line-clamp-1">${art.title}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">${getCategoryName(art.category_id)} • ${art.author_name || 'Redaksi'}</div>
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex flex-wrap gap-1">
+                    ${art.is_headline ? `<span class="px-2 py-0.5 rounded bg-sky-50 text-brandSky font-bold text-[10px]">Headline</span>` : ''}
+                    ${art.is_trending ? `<span class="px-2 py-0.5 rounded bg-red-50 text-brandCoral font-bold text-[10px]">Viral</span>` : ''}
+                    ${!art.is_headline && !art.is_trending ? `<span class="text-slate-400 text-[11px]">Reguler</span>` : ''}
+                  </div>
+                </td>
+                <td class="py-3 px-4 font-bold text-slate-600">${formatViews(art.views_count)}</td>
+                <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+                  <button onclick="window.openArticleForm('${art.id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-brandSky font-bold">Edit</button>
+                  <button onclick="window.deleteArticle('${art.id}')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-brandCoral font-bold">Hapus</button>
+                </td>
+              </tr>
+            `).join('');
+      }
+
+      if (catList) {
+        catList.innerHTML = state.categories.map(cat => `
+          <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-xs text-brandSlate">${cat.name}</div>
+              <div class="text-[10px] text-slate-400">/${cat.slug}</div>
+            </div>
+            <button onclick="window.deleteCategory('${cat.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-brandCoral hover:bg-red-50 transition" title="Hapus Kanal">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `).join('');
+      }
+    }
+
+    window.openArticleForm = (articleId = null) => {
+      const catSelect = document.getElementById('form-article-category');
+      catSelect.innerHTML = state.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+      const titleEl = document.getElementById('article-form-modal-title');
+      if (articleId) {
+        const art = state.articles.find(a => a.id === articleId);
+        if (!art) return;
+        titleEl.textContent = 'Edit Kabar';
+        document.getElementById('form-article-id').value = art.id;
+        document.getElementById('form-article-title').value = art.title;
+        document.getElementById('form-article-category').value = art.category_id;
+        document.getElementById('form-article-author').value = art.author_name || '';
+        document.getElementById('form-article-image').value = art.image_url || '';
+        document.getElementById('form-article-summary').value = art.summary || '';
+        document.getElementById('form-article-content').value = art.content || '';
+        document.getElementById('form-article-keywords').value = art.search_keywords || '';
+        document.getElementById('form-article-headline').checked = !!art.is_headline;
+        document.getElementById('form-article-trending').checked = !!art.is_trending;
+      } else {
+        titleEl.textContent = 'Tulis Kabar Baru';
+        document.getElementById('form-article-id').value = '';
+        document.getElementById('form-article-title').value = '';
+        document.getElementById('form-article-author').value = state.adminUser?.name || 'Tim Redaksi';
+        document.getElementById('form-article-image').value = '';
+        document.getElementById('form-article-summary').value = '';
+        document.getElementById('form-article-content').value = '';
+        document.getElementById('form-article-keywords').value = '';
+        document.getElementById('form-article-headline').checked = false;
+        document.getElementById('form-article-trending').checked = true;
+      }
+      document.getElementById('article-form-modal')?.classList.remove('hidden');
+    };
+
+    window.closeArticleForm = () => {
+      document.getElementById('article-form-modal')?.classList.add('hidden');
+    };
+
+    window.handleSaveArticle = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('form-article-id').value;
+      const title = document.getElementById('form-article-title').value.trim();
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const payload = {
+        title,
+        slug,
+        category_id: document.getElementById('form-article-category').value,
+        author_name: document.getElementById('form-article-author').value.trim(),
+        image_url: document.getElementById('form-article-image').value.trim(),
+        summary: document.getElementById('form-article-summary').value.trim(),
+        content: document.getElementById('form-article-content').value.trim(),
+        search_keywords: document.getElementById('form-article-keywords').value.trim(),
+        is_headline: document.getElementById('form-article-headline').checked,
+        is_trending: document.getElementById('form-article-trending').checked
+      };
+
+      if (IS_PREVIEW) {
+        if (id) {
+          const idx = state.articles.findIndex(a => a.id === id);
+          if (idx > -1) state.articles[idx] = { ...state.articles[idx], ...payload };
+          showToast('Kabar diperbarui!', 'success');
+        } else {
+          state.articles.unshift({ id: 'art-' + Date.now(), ...payload, views_count: 1, created_at: new Date().toISOString() });
+          showToast('Kabar baru diterbitkan!', 'success');
+        }
+        persistPreviewDB();
+        window.closeArticleForm();
+        renderAll();
+        return;
+      }
+
+      try {
+        if (id) {
+          const { error } = await supabase.from('articles').update(payload).eq('id', id);
+          if (error) throw error;
+          showToast('Kabar berhasil diperbarui!', 'success');
+        } else {
+          const { error } = await supabase.from('articles').insert([{ ...payload, views_count: 0 }]);
+          if (error) throw error;
+          showToast('Kabar baru diterbitkan!', 'success');
+        }
+        window.closeArticleForm();
+        await loadAllData();
+      } catch (err) {
+        showToast('Gagal menyimpan kabar: ' + err.message, 'error');
+      }
+    };
+
+    window.deleteArticle = async (id) => {
+      if (IS_PREVIEW) {
+        state.articles = state.articles.filter(a => a.id !== id);
+        persistPreviewDB();
+        renderAll();
+        showToast('Berita dihapus.', 'info');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('articles').delete().eq('id', id);
+        if (error) throw error;
+        await loadAllData();
+        showToast('Berita dihapus dari database.', 'info');
+      } catch (err) {
+        showToast('Gagal menghapus: ' + err.message, 'error');
+      }
+    };
+
+    window.handleSaveCategory = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('cat-name-input');
+      const name = input.value.trim();
+      if (!name) return;
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+      if (IS_PREVIEW) {
+        state.categories.push({ id: 'cat-' + Date.now(), name, slug });
+        persistPreviewDB();
+        input.value = '';
+        renderAll();
+        showToast('Kanal baru ditambahkan!', 'success');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('categories').insert([{ name, slug }]);
+        if (error) throw error;
+        input.value = '';
+        await loadAllData();
+        showToast('Kanal disimpan!', 'success');
+      } catch (err) {
+        showToast('Gagal menyimpan kanal: ' + err.message, 'error');
+      }
+    };
+
+    window.deleteCategory = async (id) => {
+      if (IS_PREVIEW) {
+        state.categories = state.categories.filter(c => c.id !== id);
+        persistPreviewDB();
+        renderAll();
+        showToast('Kanal dihapus.', 'info');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('categories').delete().eq('id', id);
+        if (error) throw error;
+        await loadAllData();
+        showToast('Kanal dihapus.', 'info');
+      } catch (err) {
+        showToast('Gagal menghapus kanal: ' + err.message, 'error');
+      }
+    };
+
+    // =========================================================================
+    // 12. BOOTSTRAP SAAT HALAMAN SIAP
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', async () => {
+      updateHeaderDate();
+      document.getElementById('preview-banner')?.classList.toggle('hidden', !IS_PREVIEW);
+
+      if (!IS_PREVIEW && supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          state.adminUser = {
+            id: session.user.id,
+            name: session.user.email.split('@')[0],
+            email: session.user.email
+          };
+        }
+      }
+
+      syncAdminUI();
+      await loadAllData();
+      window.navigate('home', 'all');
+    });
+  </script>
+</body>
+</html>
