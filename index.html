@@ -432,10 +432,10 @@
             <!-- Lead / Ringkasan -->
             <div id="detail-summary" class="p-4 rounded-xl bg-sky-50/80 border-l-4 border-brandSky text-sm font-semibold text-slate-800 leading-relaxed"></div>
 
-            <!-- Slot Iklan In-Article (Siap Pasang Kode AdSense) -->
+            <!-- Slot Iklan In-Article (Otomatis Tampilkan Banner Sponsor jika Ada, atau Ruang AdSense) -->
             <div id="ad-slot-in-article" class="my-4 p-3 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
               <span class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Ruang Iklan • Advertisement</span>
-              <div class="h-16 sm:h-20 flex items-center justify-center text-[11px] text-slate-400 font-medium">
+              <div id="ad-slot-in-article-body" class="h-16 sm:h-20 flex items-center justify-center text-[11px] text-slate-400 font-medium">
                 Slot Iklan Responsif Dalam Artikel (728x90 / 320x100)
               </div>
             </div>
@@ -525,7 +525,7 @@
                 <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Sistem Manajemen Redaksi
               </div>
               <h1 class="font-headline font-extrabold text-xl sm:text-2xl text-brandSlate">Dapur Redaksi KabarRaya</h1>
-              <p class="text-xs text-slate-500 mt-0.5">Kelola publikasi berita, penentuan Sorotan Utama, status Viral, dan Kanal Berita.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Kelola publikasi berita, penentuan Sorotan Utama, status Viral, Kanal Berita, dan Iklan Sponsor.</p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
               <button onclick="window.openArticleForm()" class="px-4 py-2.5 rounded-xl bg-brandSky hover:bg-sky-700 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition">
@@ -539,11 +539,14 @@
 
           <!-- Sub-Navigasi Admin -->
           <div class="flex gap-2 overflow-x-auto no-scrollbar">
-            <button onclick="window.switchAdminTab('articles')" id="admin-tab-articles" class="px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition">
+            <button onclick="window.switchAdminTab('articles')" id="admin-tab-articles" class="px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition shrink-0">
               Daftar Berita
             </button>
-            <button onclick="window.switchAdminTab('categories')" id="admin-tab-categories" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">
+            <button onclick="window.switchAdminTab('categories')" id="admin-tab-categories" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0">
               Kanal / Kategori
+            </button>
+            <button onclick="window.switchAdminTab('ads')" id="admin-tab-ads" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0 flex items-center gap-1.5">
+              <i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Kelola Iklan Mandiri
             </button>
           </div>
 
@@ -583,12 +586,58 @@
               <div id="admin-categories-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
             </div>
           </div>
+
+          <!-- Panel 3: Manajemen Iklan Sponsor Mandiri (Tanpa Edit Kode) -->
+          <div id="admin-panel-ads" class="hidden grid grid-cols-1 md:grid-cols-12 gap-5">
+            <div class="md:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 h-fit space-y-3">
+              <div class="flex items-center gap-2 text-brandSky">
+                <i data-lucide="megaphone" class="w-4 h-4"></i>
+                <h3 class="font-headline font-extrabold text-sm text-brandSlate">Pasang Banner Iklan Sponsor</h3>
+              </div>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Upload gambar banner dari pengiklan/UMKM langsung dari HP atau PC Anda. Jika tidak ada iklan aktif, slot otomatis menampilkan Google AdSense.</p>
+              <form onsubmit="window.handleSaveAd(event)" class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pengiklan / Produk *</label>
+                  <input id="ad-sponsor-input" type="text" required placeholder="Contoh: Kopi Nusantara / Toko Maju" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandSky" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Posisi Tayang *</label>
+                  <select id="ad-position-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-brandSky">
+                    <option value="leaderboard">Banner Bawah Halaman Utama (Leaderboard)</option>
+                    <option value="in_article">Banner Dalam Halaman Baca Artikel</option>
+                  </select>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-slate-700">Gambar Banner Iklan *</label>
+                    <label for="ad-image-file" class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-brandSky border border-sky-200 text-[10px] font-bold">
+                      <i data-lucide="upload-cloud" class="w-3 h-3"></i>
+                      <span id="ad-upload-label">Upload Gambar</span>
+                    </label>
+                    <input id="ad-image-file" type="file" accept="image/*" onchange="window.handleAdImageUpload(event)" class="hidden" />
+                  </div>
+                  <input id="ad-image-url-input" type="url" required placeholder="https://... atau klik Upload Gambar" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandSky" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Link Tujuan Saat Diklik (WhatsApp / Website)</label>
+                  <input id="ad-target-url-input" type="url" placeholder="https://wa.me/62821..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-brandSky" />
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-brandTeal hover:bg-brandTealDark text-white text-xs font-bold transition shadow-xs">
+                  Tayangkan Banner Iklan
+                </button>
+              </form>
+            </div>
+            <div class="md:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
+              <h3 class="font-headline font-extrabold text-sm text-brandSlate">Daftar Iklan Mandiri Aktif</h3>
+              <div id="admin-ads-list" class="space-y-3"></div>
+            </div>
+          </div>
         </section>
 
-        <!-- SLOT RUANG IKLAN LEADERBOARD BAWAH (SIAP PASANG GOOGLE ADSENSE) -->
+        <!-- SLOT RUANG IKLAN LEADERBOARD BAWAH (OTOMATIS BANNER SPONSOR / GOOGLE ADSENSE) -->
         <div id="ad-slot-leaderboard" class="mt-10 p-3 rounded-2xl bg-white border border-dashed border-slate-300/90 text-center shadow-2xs">
           <span class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Ruang Iklan • Advertisement</span>
-          <div class="h-16 sm:h-24 flex items-center justify-center text-xs text-slate-400 font-medium">
+          <div id="ad-slot-leaderboard-body" class="h-16 sm:h-24 flex items-center justify-center text-xs text-slate-400 font-medium">
             Slot Banner Iklan Responsif KabarRaya (Siap Tempel Script Google AdSense)
           </div>
         </div>
@@ -861,6 +910,7 @@
       heroSlideIndex: 0,
       categories: [],
       articles: [],
+      ads: [],
       bookmarks: [] // Array of article IDs disimpan instan di localStorage pengunjung
     };
 
@@ -878,7 +928,7 @@
           content: 'Jakarta - Transformasi transportasi publik berbasis energi bersih di kawasan Jabodetabek dan Ibu Kota Nusantara (IKN) mencatat lonjakan pengguna signifikan dalam sepekan terakhir.\n\nBerdasarkan data operasional terbaru, integrasi rute pengumpan dan tarif terpadu membuat masyarakat beralih dari kendaraan pribadi ke moda transportasi massal. Topik terkait efisiensi waktu tempuh pun menduduki jajaran pencarian tertinggi di Indonesia.\n\nPengamat tata kota menilai langkah ini menjadi tonggak penting dalam menekan emisi perkotaan sekaligus meningkatkan produktivitas harian warga.',
           image_url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1000&q=80',
           category_id: 'cat-1',
-          author_name: 'Raka Pratama',
+          author_name: 'Tim Redaksi KabarRaya',
           is_trending: true,
           is_headline: true,
           views_count: 18450,
@@ -893,7 +943,7 @@
           content: 'Bandung - Ekosistem teknologi Indonesia kembali mencatatkan terobosan melalui peluncuran model kecerdasan buatan (AI) yang dilatih khusus untuk melestarikan dan memproses bahasa daerah Nusantara.\n\nModel ini dirancang ringan sehingga dapat dijalankan pada perangkat seluler spesifikasi menengah, membantu sektor pendidikan dan layanan publik di wilayah kepulauan.\n\nKomunitas pengembang nasional menyambut antusias inisiatif terbuka ini dan mulai mengintegrasikannya ke berbagai aplikasi edukasi.',
           image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1000&q=80',
           category_id: 'cat-2',
-          author_name: 'Nadia Kusuma',
+          author_name: 'Tim Redaksi KabarRaya',
           is_trending: true,
           is_headline: false,
           views_count: 11290,
@@ -1008,9 +1058,11 @@
             const parsed = JSON.parse(saved);
             state.categories = parsed.categories || [];
             state.articles = parsed.articles || [];
+            state.ads = parsed.ads || [];
           } else {
             state.categories = structuredClone(PREVIEW_SEED.categories);
             state.articles = structuredClone(PREVIEW_SEED.articles);
+            state.ads = [];
             persistPreviewDB();
           }
         } else {
@@ -1019,9 +1071,10 @@
             return;
           }
 
-          const [catRes, artRes] = await Promise.all([
+          const [catRes, artRes, adsRes] = await Promise.all([
             supabase.from('categories').select('*').order('name', { ascending: true }),
-            supabase.from('articles').select('*').order('created_at', { ascending: false })
+            supabase.from('articles').select('*').order('created_at', { ascending: false }),
+            supabase.from('ads').select('*').order('created_at', { ascending: false })
           ]);
 
           if (catRes.error) throw catRes.error;
@@ -1029,6 +1082,7 @@
 
           state.categories = catRes.data || [];
           state.articles = artRes.data || [];
+          state.ads = (!adsRes.error && adsRes.data) ? adsRes.data : [];
         }
       } catch (err) {
         console.error(err);
@@ -1043,7 +1097,8 @@
       if (!IS_PREVIEW) return;
       localStorage.setItem('kr_preview_db_v2', JSON.stringify({
         categories: state.categories,
-        articles: state.articles
+        articles: state.articles,
+        ads: state.ads
       }));
     }
 
@@ -1255,9 +1310,44 @@
       renderSidebarWidgets();
       renderTrendingFullView();
       renderBookmarksView();
+      renderActiveAdsSlots();
       renderAdminPanel();
       syncAdminUI();
       lucide.createIcons();
+    }
+
+    function renderActiveAdsSlots() {
+      const lbAd = state.ads.find(a => a.position === 'leaderboard' && a.is_active !== false);
+      const lbBody = document.getElementById('ad-slot-leaderboard-body');
+      if (lbBody) {
+        if (lbAd && lbAd.image_url) {
+          lbBody.className = 'flex items-center justify-center';
+          lbBody.innerHTML = `
+            <a href="${lbAd.target_url || '#'}" target="_blank" rel="noopener sponsored" class="block w-full max-w-4xl mx-auto overflow-hidden rounded-xl border border-slate-200 hover:opacity-95 transition">
+              <img src="${lbAd.image_url}" alt="${lbAd.sponsor_name || 'Iklan Sponsor'}" class="w-full max-h-28 sm:max-h-36 object-cover mx-auto" />
+            </a>
+          `;
+        } else {
+          lbBody.className = 'h-16 sm:h-24 flex items-center justify-center text-xs text-slate-400 font-medium';
+          lbBody.textContent = 'Slot Banner Iklan Responsif KabarRaya (Siap Tempel Script Google AdSense)';
+        }
+      }
+
+      const iaAd = state.ads.find(a => a.position === 'in_article' && a.is_active !== false);
+      const iaBody = document.getElementById('ad-slot-in-article-body');
+      if (iaBody) {
+        if (iaAd && iaAd.image_url) {
+          iaBody.className = 'flex items-center justify-center';
+          iaBody.innerHTML = `
+            <a href="${iaAd.target_url || '#'}" target="_blank" rel="noopener sponsored" class="block w-full overflow-hidden rounded-xl border border-slate-200 hover:opacity-95 transition">
+              <img src="${iaAd.image_url}" alt="${iaAd.sponsor_name || 'Iklan Sponsor'}" class="w-full max-h-28 sm:max-h-32 object-cover mx-auto" />
+            </a>
+          `;
+        } else {
+          iaBody.className = 'h-16 sm:h-20 flex items-center justify-center text-[11px] text-slate-400 font-medium';
+          iaBody.textContent = 'Slot Iklan Responsif Dalam Artikel (728x90 / 320x100)';
+        }
+      }
     }
 
     function renderChannelNavbar() {
@@ -1882,20 +1972,17 @@
     };
 
     window.switchAdminTab = (tab) => {
-      const isArticles = tab === 'articles';
-      document.getElementById('admin-panel-articles')?.classList.toggle('hidden', !isArticles);
-      document.getElementById('admin-panel-categories')?.classList.toggle('hidden', isArticles);
+      document.getElementById('admin-panel-articles')?.classList.toggle('hidden', tab !== 'articles');
+      document.getElementById('admin-panel-categories')?.classList.toggle('hidden', tab !== 'categories');
+      document.getElementById('admin-panel-ads')?.classList.toggle('hidden', tab !== 'ads');
 
-      const tabArt = document.getElementById('admin-tab-articles');
-      const tabCat = document.getElementById('admin-tab-categories');
-      if (tabArt && tabCat) {
-        tabArt.className = isArticles
-          ? 'px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition'
-          : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition';
-        tabCat.className = !isArticles
-          ? 'px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition'
-          : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition';
-      }
+      ['articles', 'categories', 'ads'].forEach(k => {
+        const btn = document.getElementById(`admin-tab-${k}`);
+        if (!btn) return;
+        btn.className = k === tab
+          ? 'px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition shrink-0 flex items-center gap-1.5'
+          : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition shrink-0 flex items-center gap-1.5';
+      });
     };
 
     function renderAdminPanel() {
@@ -1940,7 +2027,102 @@
           </div>
         `).join('');
       }
+
+      const adsList = document.getElementById('admin-ads-list');
+      if (adsList) {
+        adsList.innerHTML = state.ads.length === 0
+          ? `<div class="p-6 rounded-xl border border-dashed border-slate-200 text-center text-xs text-slate-400">Belum ada banner iklan sponsor mandiri. Saat kosong, slot otomatis siap menayangkan Google AdSense.</div>`
+          : state.ads.map(ad => `
+              <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <img src="${ad.image_url}" alt="${ad.sponsor_name}" class="w-20 h-12 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200" />
+                  <div class="min-w-0">
+                    <div class="font-bold text-xs text-brandSlate truncate">${ad.sponsor_name}</div>
+                    <div class="text-[10px] text-brandSky font-semibold">${ad.position === 'in_article' ? 'Dalam Artikel' : 'Leaderboard Bawah'}</div>
+                  </div>
+                </div>
+                <button onclick="window.deleteAd('${ad.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-brandCoral text-xs font-bold shrink-0">
+                  Hapus
+                </button>
+              </div>
+            `).join('');
+      }
     }
+
+    window.handleAdImageUpload = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const labelEl = document.getElementById('ad-upload-label');
+      if (labelEl) labelEl.textContent = 'Mengunggah...';
+      try {
+        if (IS_PREVIEW || !supabase) {
+          document.getElementById('ad-image-url-input').value = URL.createObjectURL(file);
+          showToast('Banner iklan siap (Mode Preview).', 'success');
+          return;
+        }
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const filePath = `ads/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const { error } = await supabase.storage.from('news-images').upload(filePath, file);
+        if (error) throw error;
+        const { data } = supabase.storage.from('news-images').getPublicUrl(filePath);
+        if (data?.publicUrl) {
+          document.getElementById('ad-image-url-input').value = data.publicUrl;
+          showToast('Gambar banner iklan berhasil diunggah!', 'success');
+        }
+      } catch (err) {
+        showToast('Gagal upload banner: ' + err.message, 'error');
+      } finally {
+        if (labelEl) labelEl.textContent = 'Upload Gambar';
+      }
+    };
+
+    window.handleSaveAd = async (e) => {
+      e.preventDefault();
+      const payload = {
+        sponsor_name: document.getElementById('ad-sponsor-input').value.trim(),
+        position: document.getElementById('ad-position-input').value,
+        image_url: document.getElementById('ad-image-url-input').value.trim(),
+        target_url: document.getElementById('ad-target-url-input').value.trim() || 'https://wa.me/6282118062433',
+        is_active: true
+      };
+
+      if (IS_PREVIEW) {
+        state.ads.unshift({ id: 'ad-' + Date.now(), ...payload });
+        persistPreviewDB();
+        e.target.reset();
+        renderAll();
+        showToast('Banner iklan sponsor berhasil ditayangkan!', 'success');
+        return;
+      }
+
+      try {
+        const { error } = await supabase.from('ads').insert([payload]);
+        if (error) throw error;
+        e.target.reset();
+        await loadAllData();
+        showToast('Banner iklan sponsor berhasil ditayangkan!', 'success');
+      } catch (err) {
+        showToast('Gagal menyimpan iklan (Pastikan tabel ads sudah dibuat di Supabase): ' + err.message, 'error');
+      }
+    };
+
+    window.deleteAd = async (id) => {
+      if (IS_PREVIEW) {
+        state.ads = state.ads.filter(a => a.id !== id);
+        persistPreviewDB();
+        renderAll();
+        showToast('Banner iklan dihapus.', 'info');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('ads').delete().eq('id', id);
+        if (error) throw error;
+        await loadAllData();
+        showToast('Banner iklan dihapus.', 'info');
+      } catch (err) {
+        showToast('Gagal menghapus iklan: ' + err.message, 'error');
+      }
+    };
 
     window.openArticleForm = (articleId = null) => {
       const catSelect = document.getElementById('form-article-category');
