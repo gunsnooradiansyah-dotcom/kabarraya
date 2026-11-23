@@ -432,8 +432,31 @@
             <!-- Lead / Ringkasan -->
             <div id="detail-summary" class="p-4 rounded-xl bg-sky-50/80 border-l-4 border-brandSky text-sm font-semibold text-slate-800 leading-relaxed"></div>
 
+            <!-- Slot Iklan In-Article (Siap Pasang Kode AdSense) -->
+            <div id="ad-slot-in-article" class="my-4 p-3 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+              <span class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Ruang Iklan • Advertisement</span>
+              <div class="h-16 sm:h-20 flex items-center justify-center text-[11px] text-slate-400 font-medium">
+                Slot Iklan Responsif Dalam Artikel (728x90 / 320x100)
+              </div>
+            </div>
+
             <!-- Isi Artikel Multi-Paragraf -->
             <div id="detail-content" class="text-[15px] text-slate-800 leading-relaxed space-y-4"></div>
+
+            <!-- Bar Bagikan Cepat ke WhatsApp & Media Sosial -->
+            <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+              <span class="text-xs font-extrabold text-slate-600">Bagikan Kabar Ini:</span>
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="window.shareToWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  <span>Kirim ke WhatsApp</span>
+                </button>
+                <button onclick="window.shareDetailArticle()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Salin Tautan</span>
+                </button>
+              </div>
+            </div>
 
             <!-- Topik Hangat Terkait -->
             <div class="pt-5 border-t border-slate-200">
@@ -562,17 +585,28 @@
           </div>
         </section>
 
-        <!-- FOOTER EDITORIAL BERSIH DENGAN PINTU MASUK HALUS AKSES REDAKSI -->
-        <footer class="mt-12 pt-6 pb-4 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-          <div class="flex items-center gap-2">
-            <span class="font-headline font-extrabold text-brandSlate uppercase">KABAR<span class="text-brandSky">RAYA</span></span>
-            <span>— Cepat, Jernih, Terpercaya • © 2026 Hak Cipta Dilindungi.</span>
+        <!-- SLOT RUANG IKLAN LEADERBOARD BAWAH (SIAP PASANG GOOGLE ADSENSE) -->
+        <div id="ad-slot-leaderboard" class="mt-10 p-3 rounded-2xl bg-white border border-dashed border-slate-300/90 text-center shadow-2xs">
+          <span class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Ruang Iklan • Advertisement</span>
+          <div class="h-16 sm:h-24 flex items-center justify-center text-xs text-slate-400 font-medium">
+            Slot Banner Iklan Responsif KabarRaya (Siap Tempel Script Google AdSense)
           </div>
-          <div class="flex items-center gap-4">
-            <button onclick="window.navigate('home', 'all')" class="hover:text-brandSky transition">Beranda</button>
-            <button onclick="window.navigate('trending')" class="hover:text-brandSky transition">Sedang Viral</button>
-            <button onclick="window.navigate('bookmarks')" class="hover:text-brandSky transition">Tersimpan</button>
-            <button onclick="window.openAdminGate()" class="text-slate-400 hover:text-brandSky transition">Akses Redaksi</button>
+        </div>
+
+        <!-- FOOTER EDITORIAL LENGKAP DENGAN 4 HALAMAN WAJIB MONETISASI ADSENSE -->
+        <footer class="mt-8 pt-6 pb-4 border-t border-slate-200/80 flex flex-col gap-4 text-[11px] text-slate-500">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="font-headline font-extrabold text-brandSlate uppercase">KABAR<span class="text-brandSky">RAYA</span></span>
+              <span>— Cepat, Jernih, Terpercaya • © 2026 Hak Cipta Dilindungi.</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 font-semibold">
+              <button onclick="window.openLegalModal('about')" class="hover:text-brandSky transition">Tentang Redaksi</button>
+              <button onclick="window.openLegalModal('guidelines')" class="hover:text-brandSky transition">Pedoman Media Siber</button>
+              <button onclick="window.openLegalModal('privacy')" class="hover:text-brandSky transition">Kebijakan Privasi</button>
+              <button onclick="window.openLegalModal('contact')" class="hover:text-brandSky transition">Kontak & Iklan</button>
+              <button onclick="window.openAdminGate()" class="text-slate-400 hover:text-brandSky transition">Akses Redaksi</button>
+            </div>
           </div>
         </footer>
 
@@ -708,6 +742,32 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL HALAMAN TRANSPARANSI REDAKSI & SYARAT ADSENSE                   -->
+  <!-- ===================================================================== -->
+  <div id="legal-modal" class="hidden fixed inset-0 z-[1000003] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="px-5 py-3.5 bg-brandSlate text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+          <h3 id="legal-modal-title" class="font-headline font-extrabold text-sm sm:text-base">Informasi Redaksi</h3>
+        </div>
+        <button onclick="window.closeLegalModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="px-5 pt-3 pb-2 bg-slate-50 border-b border-slate-200 flex gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold">
+        <button onclick="window.openLegalModal('about')" id="legal-tab-about" class="px-3 py-1.5 rounded-lg bg-brandSky text-white shrink-0">Tentang Redaksi</button>
+        <button onclick="window.openLegalModal('guidelines')" id="legal-tab-guidelines" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 shrink-0">Pedoman Media Siber</button>
+        <button onclick="window.openLegalModal('privacy')" id="legal-tab-privacy" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 shrink-0">Kebijakan Privasi</button>
+        <button onclick="window.openLegalModal('contact')" id="legal-tab-contact" class="px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 shrink-0">Kontak & Iklan</button>
+      </div>
+      <div id="legal-modal-body" class="flex-1 overflow-y-auto custom-scroll p-5 sm:p-6 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
+        <!-- Diisi dinamis via JS -->
+      </div>
     </div>
   </div>
 
@@ -1367,6 +1427,44 @@
       bottomTicker.innerHTML = filledTickerHtml + emptyTickerHtml;
     }
 
+    function renderTrendingFullView() {
+      const container = document.getElementById('trending-full-list');
+      const totalViewsEl = document.getElementById('trending-total-views');
+      if (!container) return;
+
+      const sorted = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      const totalViews = sorted.reduce((acc, item) => acc + Number(item.views_count || 0), 0);
+      if (totalViewsEl) totalViewsEl.textContent = formatViews(totalViews);
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-10 text-center text-xs text-slate-500">
+            Belum ada data berita viral hari ini.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sorted.map((art, idx) => `
+        <div onclick="window.openArticleDetail('${art.id}')" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 flex items-center gap-4 hover:border-brandSky transition cursor-pointer group">
+          <div class="font-headline font-extrabold text-2xl w-9 text-center shrink-0 ${idx < 3 ? 'text-brandCoral' : 'text-slate-300'}">
+            #${idx + 1}
+          </div>
+          <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'}" alt="${art.title}" class="w-20 h-14 sm:w-28 sm:h-20 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'" />
+          <div class="min-w-0 flex-1 space-y-1">
+            <div class="flex items-center gap-2 text-[11px] font-bold">
+              <span class="text-brandSky uppercase">${getCategoryName(art.category_id)}</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-slate-500">${formatViews(art.views_count)} pembaca</span>
+            </div>
+            <h3 class="font-headline font-bold text-sm sm:text-base text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug">
+              ${art.title}
+            </h3>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function renderBookmarksView() {
       const container = document.getElementById('bookmarks-list-container');
       if (!container) return;
@@ -1633,11 +1731,13 @@
         : `<div class="p-4 text-xs text-slate-400 text-center">Belum ada rekomendasi lainnya.</div>`;
 
       updateDetailBookmarkButton();
+      document.title = `${art.title} — KabarRaya`;
       window.navigate('detail');
     };
 
     window.closeArticleDetail = () => {
       state.activeArticleId = null;
+      document.title = 'KabarRaya — Berita Terkini, Viral & Paling Banyak Dicari';
       window.navigate('home');
     };
 
@@ -1684,50 +1784,118 @@
       showToast('Tautan berita berhasil disalin!', 'success');
     };
 
-    // =========================================================================
-    // 10. VIEW VIRAL LENGKAP & DAPUR REDAKSI (ADMIN CRUD)
-    // =========================================================================
-    function renderTrendingFullView() {
-      const list = document.getElementById('trending-full-list');
-      const totalEl = document.getElementById('trending-total-views');
-      if (!list) return;
+    window.shareToWhatsApp = () => {
+      const art = state.articles.find(a => a.id === state.activeArticleId);
+      const title = art ? art.title : 'KabarRaya — Berita Terkini';
+      const shareText = `${title}\n\nBaca selengkapnya di KabarRaya:\n${window.location.href}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener');
+    };
 
-      const sorted = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
-      const totalViews = sorted.reduce((acc, cur) => acc + Number(cur.views_count || 0), 0);
-      if (totalEl) totalEl.textContent = totalViews.toLocaleString('id-ID');
-
-      if (sorted.length === 0) {
-        list.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-xs text-slate-400 border border-slate-200">Belum ada data berita viral.</div>`;
-        return;
-      }
-
-      list.innerHTML = sorted.map((art, idx) => `
-        <div onclick="window.openArticleDetail('${art.id}')" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 flex items-center gap-4 hover:border-brandSky transition cursor-pointer group">
-          <div class="w-10 h-10 rounded-xl ${idx < 3 ? 'bg-brandSky text-white' : 'bg-slate-100 text-slate-600'} font-headline font-extrabold text-base flex items-center justify-center shrink-0">
-            #${idx + 1}
+    const LEGAL_PAGES = {
+      about: {
+        title: 'Tentang Redaksi KabarRaya',
+        html: `
+          <p><strong>KabarRaya</strong> adalah portal berita digital independen di Indonesia yang menyajikan informasi terkini, terverifikasi, dan berimbang di berbagai kanal utama mulai dari Nasional, Ekonomi, Teknologi, Olahraga, hingga Hiburan.</p>
+          <p><strong>Visi & Misi Redaksi:</strong> Menghadirkan jurnalisme berkualitas tinggi yang cepat, jernih, dan akurat sebagai rujukan informasi terpercaya bagi masyarakat Indonesia.</p>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+            <div><strong>Pengelola & Penanggung Jawab:</strong> Tim Redaksi KabarRaya</div>
+            <div><strong>Domisili Redaksi:</strong> Jakarta, Indonesia</div>
+            <div><strong>Email Resmi:</strong> guns.nooradiansyah@gmail.com</div>
+            <div><strong>WhatsApp Redaksi:</strong> 0821-1806-2433</div>
           </div>
-          <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KR'}" class="w-20 h-14 sm:w-28 sm:h-20 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KR'" />
-          <div class="min-w-0 flex-1 space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-extrabold text-brandSky uppercase">${getCategoryName(art.category_id)}</span>
-              ${art.is_trending ? `<span class="px-1.5 py-0.5 rounded bg-red-50 text-brandCoral text-[9px] font-extrabold uppercase">Viral</span>` : ''}
+        `
+      },
+      guidelines: {
+        title: 'Pedoman Media Siber',
+        html: `
+          <p>Kemerdekaan berpendapat, kemerdekaan berekspresi, dan kemerdekaan pers adalah hak asasi manusia yang dilindungi Pancasila, Undang-Undang Dasar 1945, dan Deklarasi Universal Hak Asasi Manusia PBB.</p>
+          <p><strong>1. Verifikasi dan Keberimbangan Berita:</strong> Pada prinsipnya setiap berita harus melalui proses verifikasi sebelum dipublikasikan. Berita yang dapat merugikan pihak lain memerlukan verifikasi pada berita yang sama untuk memenuhi prinsip akurasi dan keberimbangan.</p>
+          <p><strong>2. Ralat, Koreksi, dan Hak Jawab:</strong> Ralat, koreksi, dan hak jawab mengacu pada Undang-Undang Pers, Kode Etik Jurnalistik, dan Pedoman Hak Jawab yang ditetapkan Dewan Pers.</p>
+          <p><strong>3. Pencabutan Berita:</strong> Berita yang sudah dipublikasikan tidak dapat dicabut karena alasan penyensoran dari pihak luar redaksi, kecuali terkait masalah SARA, kesusilaan, masa depan anak, pengalaman traumatik korban, atau berdasarkan pertimbangan khusus lain yang ditetapkan Dewan Pers.</p>
+        `
+      },
+      privacy: {
+        title: 'Kebijakan Privasi (Privacy Policy)',
+        html: `
+          <p>Privasi pengunjung adalah prioritas utama bagi <strong>KabarRaya</strong>. Dokumen Kebijakan Privasi ini menjelaskan jenis informasi yang dikumpulkan dan dicatat oleh KabarRaya serta bagaimana kami menggunakannya.</p>
+          <p><strong>1. File Log & Analitik:</strong> Seperti situs web berita pada umumnya, KabarRaya menggunakan file log standar untuk menganalisis tren pembacaan artikel, mengelola situs, dan mengumpulkan informasi demografis secara agregat tanpa mengidentifikasi identitas pribadi.</p>
+          <p><strong>2. Cookie dan Web Beacon:</strong> KabarRaya menggunakan penyimpanan lokal browser untuk menyimpan daftar bacaan favorit Anda. Selain itu, mitra periklanan pihak ketiga (seperti Google AdSense) dapat menggunakan cookie (termasuk cookie DART) untuk menayangkan iklan yang relevan berdasarkan kunjungan pengguna ke situs ini maupun situs lain di internet.</p>
+          <p><strong>3. Persetujuan:</strong> Dengan menggunakan situs web KabarRaya, Anda menyetujui Kebijakan Privasi kami beserta syarat dan ketentuannya.</p>
+        `
+      },
+      contact: {
+        title: 'Kontak Redaksi, Hak Jawab & Kerja Sama Iklan',
+        html: `
+          <p>Redaksi <strong>KabarRaya</strong> terbuka terhadap masukan pembaca, pengiriman rilis berita, permohonan hak jawab/koreksi pemberitaan, maupun kerja sama pemasangan iklan dan media partner.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center p-4 rounded-xl bg-sky-50/80 border border-sky-200">
+            <div class="sm:col-span-5 flex flex-col items-center text-center bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fwa.me%2F6282118062433%3Ftext%3DHalo%2520Redaksi%2520KabarRaya"
+                alt="Barcode WhatsApp Redaksi KabarRaya"
+                class="w-32 h-32 sm:w-36 sm:h-36 object-contain rounded-lg"
+                onerror="this.src='https://placehold.co/160x160/FFFFFF/0F766E?text=WA+082118062433'"
+              />
+              <span class="mt-2 text-[10px] font-extrabold text-brandSlate uppercase tracking-wider">Scan Barcode WhatsApp</span>
+              <span class="text-[11px] font-bold text-emerald-700">0821-1806-2433</span>
             </div>
-            <h3 class="font-headline font-bold text-sm sm:text-base text-brandSlate group-hover:text-brandSky line-clamp-2">${art.title}</h3>
-            <div class="text-[11px] text-slate-500 font-semibold">${formatViews(art.views_count)} kali dibaca • ${formatRelativeTime(art.created_at)}</div>
+            <div class="sm:col-span-7 space-y-2.5 text-xs text-slate-800">
+              <div>
+                <div class="text-[10px] font-extrabold uppercase text-slate-400">Email Redaksi & Rilis Berita</div>
+                <a href="mailto:guns.nooradiansyah@gmail.com" class="font-bold text-brandSky hover:underline break-all">guns.nooradiansyah@gmail.com</a>
+              </div>
+              <div>
+                <div class="text-[10px] font-extrabold uppercase text-slate-400">Layanan Cepat WhatsApp (HP/PC)</div>
+                <a href="https://wa.me/6282118062433?text=Halo%20Redaksi%20KabarRaya" target="_blank" rel="noopener" class="mt-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition shadow-2xs">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  <span>Chat WhatsApp Sekarang</span>
+                </a>
+              </div>
+              <div class="text-[11px] text-slate-500 pt-1">
+                <strong>Jam Operasional:</strong> Senin – Minggu, 07.00 – 23.00 WIB
+              </div>
+            </div>
           </div>
-        </div>
-      `).join('');
-    }
+          <p class="text-xs text-slate-500">Pengunjung dari laptop dapat langsung memindai Barcode WhatsApp di atas menggunakan kamera HP, sedangkan pengguna ponsel dapat langsung menekan tombol <strong>Chat WhatsApp Sekarang</strong>.</p>
+        `
+      }
+    };
+
+    window.openLegalModal = (pageKey = 'about') => {
+      const page = LEGAL_PAGES[pageKey] || LEGAL_PAGES.about;
+      document.getElementById('legal-modal-title').textContent = page.title;
+      document.getElementById('legal-modal-body').innerHTML = page.html;
+
+      ['about', 'guidelines', 'privacy', 'contact'].forEach(k => {
+        const tab = document.getElementById(`legal-tab-${k}`);
+        if (!tab) return;
+        tab.className = k === pageKey
+          ? 'px-3 py-1.5 rounded-lg bg-brandSky text-white shrink-0'
+          : 'px-3 py-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 shrink-0';
+      });
+
+      document.getElementById('legal-modal')?.classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeLegalModal = () => {
+      document.getElementById('legal-modal')?.classList.add('hidden');
+    };
 
     window.switchAdminTab = (tab) => {
       const isArticles = tab === 'articles';
       document.getElementById('admin-panel-articles')?.classList.toggle('hidden', !isArticles);
       document.getElementById('admin-panel-categories')?.classList.toggle('hidden', isArticles);
 
-      const btnArt = document.getElementById('admin-tab-articles');
-      const btnCat = document.getElementById('admin-tab-categories');
-      if (btnArt) btnArt.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${isArticles ? 'bg-brandSky text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`;
-      if (btnCat) btnCat.className = `px-4 py-2 rounded-xl text-xs font-bold transition ${!isArticles ? 'bg-brandSky text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`;
+      const tabArt = document.getElementById('admin-tab-articles');
+      const tabCat = document.getElementById('admin-tab-categories');
+      if (tabArt && tabCat) {
+        tabArt.className = isArticles
+          ? 'px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition'
+          : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition';
+        tabCat.className = !isArticles
+          ? 'px-4 py-2 rounded-xl text-xs font-bold bg-brandSky text-white transition'
+          : 'px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition';
+      }
     };
 
     function renderAdminPanel() {
@@ -1798,7 +1966,7 @@
         titleEl.textContent = 'Tulis Kabar Baru';
         document.getElementById('form-article-id').value = '';
         document.getElementById('form-article-title').value = '';
-        document.getElementById('form-article-author').value = state.adminUser?.name || 'Tim Redaksi';
+        document.getElementById('form-article-author').value = 'Tim Redaksi KabarRaya';
         document.getElementById('form-article-image').value = '';
         window.updateImagePreview('');
         document.getElementById('form-article-summary').value = '';
