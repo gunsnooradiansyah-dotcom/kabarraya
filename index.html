@@ -69,6 +69,13 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94A3B8;
     }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white flex flex-col min-h-screen">
@@ -96,7 +103,7 @@
 
     <!-- CINEMATIC FULL-BLEED EDITORIAL HERO -->
     <section id="hero-section" class="relative w-full bg-slate-950 text-white overflow-visible">
-      <!-- Latar Belakang Foto Hero (Tanpa foto bus placeholder saat loading) -->
+      <!-- Latar Belakang Foto Hero -->
       <div class="relative w-full min-h-[340px] sm:min-h-[470px] lg:min-h-[560px] flex flex-col justify-between overflow-hidden bg-slate-950">
         <!-- Gambar Hero dari Database -->
         <img
@@ -106,7 +113,7 @@
           class="hidden absolute inset-0 w-full h-full object-cover object-center sm:object-top opacity-100 transition-all duration-700"
         />
 
-        <!-- Gradasi halus hanya di tepi atas dan sudut kiri bawah agar wajah tokoh di tengah-kanan tetap terang & jernih -->
+        <!-- Gradasi halus hanya di tepi atas dan sudut kiri bawah agar wajah tokoh tetap terang & jernih -->
         <div class="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-transparent to-slate-950/85 pointer-events-none"></div>
         <div class="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-slate-950/75 via-slate-950/25 to-transparent pointer-events-none"></div>
 
@@ -162,7 +169,7 @@
               </div>
             </div>
 
-            <!-- Kanan: Tombol Search Mobile, Viral, Tersimpan & Badge Admin jika sudah login -->
+            <!-- Kanan: Tombol Search Mobile, Viral, Tersimpan & Badge Admin -->
             <div class="flex items-center gap-1.5 sm:gap-2">
               <button
                 onclick="window.toggleMobileSearch()"
@@ -219,7 +226,7 @@
           <nav class="w-full bg-slate-950/45 border-t border-white/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between overflow-x-auto no-scrollbar">
               <div id="channel-nav-list" class="flex items-center gap-1 sm:gap-2 py-2 text-[11px] font-extrabold tracking-wider uppercase whitespace-nowrap">
-                <!-- Diisi dinamis oleh JS (Ikon Home + Kategori) -->
+                <!-- Diisi dinamis oleh JS -->
               </div>
               <div id="live-date-badge" class="hidden lg:flex items-center gap-1.5 text-[11px] font-medium text-slate-300 shrink-0 pl-4">
                 <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-400"></i>
@@ -235,7 +242,6 @@
 
             <!-- SISI KIRI: Badge Kanal, Judul Utama Besar di Bagian Bawah, Baca Selengkapnya & 2 Thumbnail Terkait -->
             <div id="hero-left-stage" class="col-span-7 sm:col-span-8 lg:col-span-8 lg:pl-6 xl:pl-12 flex flex-col justify-end space-y-3 sm:space-y-4">
-              <!-- Loading skeleton bersih (tanpa foto bus) -->
               <div class="space-y-3 max-w-xl animate-pulse">
                 <div class="h-5 w-24 rounded-full bg-white/15"></div>
                 <div class="h-8 sm:h-11 w-full rounded-xl bg-white/15"></div>
@@ -245,12 +251,10 @@
 
             <!-- SISI KANAN: 4 Kartu Sorotan Vertikal Sejajar ke Bawah di Tepi Paling Kanan + Kutipan + Indikator Slide -->
             <div class="col-span-5 sm:col-span-4 lg:col-span-4 flex flex-col items-end justify-between space-y-3 sm:space-y-4">
-              <!-- 4 Kartu Sorotan Vertikal Sejajar ke Bawah (grid-cols-1 ml-auto) -->
               <div id="hero-right-cards" class="w-full max-w-[165px] sm:max-w-[205px] lg:max-w-[235px] ml-auto grid grid-cols-1 gap-2">
                 <!-- Diisi dinamis 4 kartu sorotan vertikal -->
               </div>
 
-              <!-- Kutipan Editorial Tanpa Kotak + Indikator Slide Numerik (01 02 03) -->
               <div class="w-full max-w-[210px] sm:max-w-[250px] ml-auto flex flex-col items-end space-y-2.5 pt-1">
                 <p id="hero-editorial-quote" class="hidden sm:block text-[11px] leading-relaxed text-slate-100/95 border-l-2 border-sky-400 pl-2.5 italic hero-text-shadow text-left">
                   "Menyajikan fakta jernih dan berimbang dari seluruh penjuru Nusantara."
@@ -285,82 +289,153 @@
     <!-- =================================================================== -->
     <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9 flex-1">
 
-      <!-- 1. SUB-VIEW: FEED BERITA TERKINI + SIDEBAR STICKY -->
-      <div id="subview-feed" class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-        <!-- Kolom Kiri (~67% / 8 kolom): Filter Aktif + Daftar Berita Utama -->
-        <div class="lg:col-span-8 space-y-5">
-          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-6 rounded-full bg-sky-600"></span>
-              <h2 id="feed-section-title" class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">
-                Kabar Terbaru & Pilihan
-              </h2>
+      <!-- 1. SUB-VIEW: FEED BERITA TERKINI + SIDEBAR STICKY + SOROTAN PILIHAN KANAL -->
+      <div id="subview-feed" class="space-y-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+          <!-- Kolom Kiri (~67% / 8 kolom): Header + Pill Filter (Terbaru / Terpopuler / Viral) + Daftar Berita Utama -->
+          <div class="lg:col-span-8 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-6 rounded-full bg-sky-600"></span>
+                <div>
+                  <h2 id="feed-section-title" class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate leading-tight">
+                    Kabar Terbaru & Pilihan
+                  </h2>
+                  <span id="feed-count-label" class="text-[11px] font-semibold text-slate-500">Memuat berita...</span>
+                </div>
+              </div>
+
+              <!-- FITUR 1: PILL TABS FILTER FEED (Terbaru / Terpopuler / Viral) -->
+              <div class="flex flex-wrap items-center gap-2 ml-auto">
+                <div class="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-xs" role="tablist" aria-label="Urutkan Berita">
+                  <button
+                    type="button"
+                    id="feed-pill-terbaru"
+                    onclick="window.setFeedSortMode('terbaru')"
+                    class="px-3.5 py-1.5 rounded-full text-xs font-extrabold transition bg-sky-600 text-white shadow-xs"
+                  >
+                    Terbaru
+                  </button>
+                  <button
+                    type="button"
+                    id="feed-pill-terpopuler"
+                    onclick="window.setFeedSortMode('terpopuler')"
+                    class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 transition"
+                  >
+                    Terpopuler
+                  </button>
+                  <button
+                    type="button"
+                    id="feed-pill-viral"
+                    onclick="window.setFeedSortMode('viral')"
+                    class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 transition"
+                  >
+                    Viral
+                  </button>
+                </div>
+
+                <button
+                  id="reset-filter-btn"
+                  onclick="window.resetAllFilters()"
+                  class="hidden px-2.5 py-1.5 rounded-full bg-slate-200/80 hover:bg-slate-300 text-slate-700 text-xs font-bold transition"
+                >
+                  Reset
+                </button>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <span id="feed-count-label" class="text-xs font-semibold text-slate-500">Memuat berita...</span>
+
+            <!-- Daftar Artikel -->
+            <div id="articles-feed-list" class="space-y-4">
+              <!-- Diisi dinamis oleh JS -->
+            </div>
+
+            <!-- Tombol Muat Berita Lainnya -->
+            <div id="load-more-wrapper" class="pt-2 flex justify-center">
               <button
-                id="reset-filter-btn"
-                onclick="window.resetAllFilters()"
-                class="hidden px-2.5 py-1 rounded-lg bg-slate-200/80 hover:bg-slate-300 text-slate-700 text-xs font-bold transition"
+                type="button"
+                id="btn-load-more-feed"
+                onclick="window.handleLoadMoreFeed()"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-xs text-xs font-extrabold text-sky-700 transition active:scale-95"
               >
-                Reset Filter
+                <i data-lucide="chevrons-down" class="w-4 h-4"></i>
+                <span>Muat Berita Lainnya</span>
               </button>
             </div>
           </div>
 
-          <!-- Daftar Artikel -->
-          <div id="articles-feed-list" class="space-y-4">
-            <!-- Diisi dinamis oleh JS -->
-          </div>
+          <!-- Kolom Kanan Sticky (~33% / 4 kolom): Top 5 Viral + Iklan Mandiri + Topik Hangat -->
+          <aside class="lg:col-span-4 lg:sticky lg:top-6 space-y-6">
+            <!-- Widget: Paling Banyak Dicari & Viral (#1 - #5) -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+              <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                  </div>
+                  <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">
+                    Paling Banyak Dicari & Viral
+                  </h3>
+                </div>
+                <button onclick="window.switchMainTab('viral')" class="text-[11px] font-bold text-sky-600 hover:underline">
+                  Semua
+                </button>
+              </div>
+              <div id="sidebar-trending-list" class="space-y-3.5">
+                <!-- Diisi dinamis peringkat #1 - #5 -->
+              </div>
+            </div>
+
+            <!-- Widget: Slot Iklan Mandiri / Sponsor Sidebar -->
+            <div id="sidebar-ad-slot" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3.5">
+              <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <span>Ruang Sponsor & Mitra</span>
+                <button onclick="window.openLegalModal('contact')" class="text-sky-600 hover:underline">Pasang Iklan</button>
+              </div>
+              <div id="sidebar-ad-content">
+                <!-- Diisi otomatis jika ada iklan aktif, atau banner ajakan kerjasama -->
+              </div>
+            </div>
+
+            <!-- Widget: Topik Hangat / Kata Kunci Populer -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+              <div class="flex items-center gap-2 pb-3 mb-3 border-b border-slate-100">
+                <i data-lucide="hash" class="w-4 h-4 text-amber-600"></i>
+                <h3 class="font-headline font-extrabold text-sm text-brandSlate">Topik Hangat Hari Ini</h3>
+              </div>
+              <div id="sidebar-tags-list" class="flex flex-wrap gap-2">
+                <!-- Diisi dinamis tag populer -->
+              </div>
+            </div>
+          </aside>
         </div>
 
-        <!-- Kolom Kanan Sticky (~33% / 4 kolom): Top 5 Viral + Iklan Mandiri + Topik Hangat -->
-        <aside class="lg:col-span-4 lg:sticky lg:top-6 space-y-6">
-          <!-- Widget: Paling Banyak Dicari & Viral (#1 - #5) -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
-            <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-100">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-                  <i data-lucide="trending-up" class="w-4 h-4"></i>
-                </div>
-                <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">
-                  Paling Banyak Dicari & Viral
-                </h3>
-              </div>
-              <button onclick="window.switchMainTab('viral')" class="text-[11px] font-bold text-sky-600 hover:underline">
-                Semua
-              </button>
+        <!-- FITUR 2: BAGIAN "SOROTAN PILIHAN KANAL" DI BERANDA -->
+        <section id="channel-highlights-section" class="pt-6 border-t border-slate-200/90 space-y-5">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-1.5 h-6 rounded-full bg-teal-600"></span>
+              <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">
+                Sorotan Pilihan Kanal
+              </h2>
             </div>
-            <div id="sidebar-trending-list" class="space-y-3.5">
-              <!-- Diisi dinamis peringkat #1 - #5 -->
-            </div>
+            <button
+              type="button"
+              onclick="window.switchMainTab('viral')"
+              class="inline-flex items-center gap-1 text-xs font-extrabold text-sky-600 hover:text-sky-700 transition"
+            >
+              <span>Semua Viral</span>
+              <span aria-hidden="true">→</span>
+            </button>
           </div>
 
-          <!-- Widget: Slot Iklan Mandiri / Sponsor Sidebar -->
-          <div id="sidebar-ad-slot" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3.5">
-            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-              <span>Ruang Sponsor & Mitra</span>
-              <button onclick="window.openLegalModal('contact')" class="text-sky-600 hover:underline">Pasang Iklan</button>
-            </div>
-            <div id="sidebar-ad-content">
-              <!-- Diisi otomatis jika ada iklan aktif, atau banner ajakan kerjasama -->
-            </div>
+          <!-- Grid Kartu per Kanal (EKONOMI, HIBURAN, NASIONAL, OLAHRAGA, TEKNOLOGI, dll.) -->
+          <div id="channel-highlights-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Diisi dinamis per kanal oleh JS -->
           </div>
-
-          <!-- Widget: Topik Hangat / Kata Kunci Populer -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
-            <div class="flex items-center gap-2 pb-3 mb-3 border-b border-slate-100">
-              <i data-lucide="hash" class="w-4 h-4 text-amber-600"></i>
-              <h3 class="font-headline font-extrabold text-sm text-brandSlate">Topik Hangat Hari Ini</h3>
-            </div>
-            <div id="sidebar-tags-list" class="flex flex-wrap gap-2">
-              <!-- Diisi dinamis tag populer -->
-            </div>
-          </div>
-        </aside>
+        </section>
       </div>
 
-      <!-- 2. SUB-VIEW: HALAMAN BACA DETAIL ARTIKEL -->
+      <!-- 2. SUB-VIEW: HALAMAN BACA DETAIL ARTIKEL (DENGAN ACTION BAR, TAG TERPOPULER, KOMENTAR & REKOMENDASI) -->
       <div id="subview-detail" class="hidden">
         <!-- Diisi dinamis saat artikel dibuka -->
       </div>
@@ -423,7 +498,6 @@
     <!-- =================================================================== -->
     <footer class="bg-slate-950 text-slate-300 border-t border-slate-800 mt-auto">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <!-- Kartu Identitas & Grid 2 Kolom Rapi di Mobile, 4 Kolom di Desktop -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-8 border-b border-slate-800/80">
           <!-- Identitas KabarRaya -->
           <div class="lg:col-span-5 bg-slate-900/70 lg:bg-transparent p-5 lg:p-0 rounded-2xl border border-slate-800 lg:border-none space-y-3">
@@ -456,7 +530,6 @@
 
           <!-- Grid 2 Kolom di Mobile untuk Kanal & Transparansi AdSense -->
           <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-2 gap-6">
-            <!-- Kolom Kanal Berita -->
             <div class="bg-slate-900/50 lg:bg-transparent p-4 lg:p-0 rounded-2xl border border-slate-800/80 lg:border-none">
               <h4 class="font-headline font-extrabold text-xs uppercase tracking-wider text-white mb-3">
                 Kanal Utama
@@ -466,7 +539,6 @@
               </ul>
             </div>
 
-            <!-- Kolom 4 Halaman Wajib Google AdSense -->
             <div class="bg-slate-900/50 lg:bg-transparent p-4 lg:p-0 rounded-2xl border border-slate-800/80 lg:border-none">
               <h4 class="font-headline font-extrabold text-xs uppercase tracking-wider text-white mb-3">
                 Informasi & Kebijakan
@@ -511,7 +583,6 @@
   <!-- ===================================================================== -->
   <div id="mobile-drawer-overlay" onclick="window.toggleMobileDrawer(false)" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden lg:hidden"></div>
   <aside id="mobile-drawer-panel" class="fixed inset-y-0 left-0 w-[285px] max-w-[85vw] bg-white z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl lg:hidden">
-    <!-- Header Drawer -->
     <div class="p-4 bg-slate-950 text-white flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center text-white">
@@ -524,9 +595,7 @@
       </button>
     </div>
 
-    <!-- Isi Drawer -->
     <div class="flex-1 overflow-y-auto p-4 space-y-5">
-      <!-- Pencarian Cepat di Drawer -->
       <div class="relative">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
         <input
@@ -537,7 +606,6 @@
         />
       </div>
 
-      <!-- Menu Utama -->
       <div class="space-y-1">
         <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pb-1">Menu Utama</div>
         <button onclick="window.switchMainTab('home'); window.toggleMobileDrawer(false);" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
@@ -551,7 +619,6 @@
         </button>
       </div>
 
-      <!-- Daftar Kanal Berita -->
       <div class="space-y-1 pt-2 border-t border-slate-100">
         <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pb-1">Kanal Berita</div>
         <div id="drawer-categories-list" class="space-y-1">
@@ -559,7 +626,6 @@
         </div>
       </div>
 
-      <!-- Redaksi & Kebijakan -->
       <div class="space-y-1 pt-2 border-t border-slate-100">
         <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pb-1">Redaksi & Layanan</div>
         <button onclick="window.toggleMobileDrawer(false); window.openLegalModal('about');" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Tentang Redaksi</button>
@@ -569,7 +635,6 @@
       </div>
     </div>
 
-    <!-- Footer Drawer -->
     <div class="p-4 border-t border-slate-100 bg-slate-50">
       <button
         onclick="window.toggleMobileDrawer(false); window.openAdminLoginModal();"
@@ -584,7 +649,6 @@
   <!-- VIEW 2: DAPUR REDAKSI (ADMIN WORKSPACE - MOBILE GRID 2X2 & CHARTS)    -->
   <!-- ===================================================================== -->
   <div id="view-admin" class="hidden min-h-screen bg-slate-100 flex-col">
-    <!-- Topbar Admin -->
     <header class="bg-slate-950 text-white border-b border-slate-800 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -616,7 +680,7 @@
     </header>
 
     <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
-      <!-- KPI Ringkas (2 kolom di HP, 4 kolom di Desktop) -->
+      <!-- KPI Ringkas -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
           <div class="text-[11px] font-bold text-slate-500 uppercase">Total Berita</div>
@@ -636,7 +700,7 @@
         </div>
       </div>
 
-      <!-- SUB-NAVIGASI ADMIN: GRID 2x2 RAPI DI HP (grid-cols-2 sm:flex) TANPA TERPOTONG -->
+      <!-- SUB-NAVIGASI ADMIN: GRID 2x2 RAPI DI HP -->
       <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
         <button
           onclick="window.switchAdminTab('articles')"
@@ -687,12 +751,10 @@
           </button>
         </div>
 
-        <!-- Daftar Berita Versi Mobile (Kartu Rapi dengan 4 Tombol Aksi Sejajar Tanpa Overflow) -->
         <div id="admin-articles-mobile-list" class="grid grid-cols-1 gap-3 md:hidden">
           <!-- Diisi dinamis -->
         </div>
 
-        <!-- Tabel Berita Versi Desktop -->
         <div class="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -788,7 +850,6 @@
 
       <!-- PANEL 4: STATISTIK PENGUNJUNG & ASAL NEGARA/WILAYAH + 4 GRAFIK MULTI-WARNA -->
       <div id="admin-panel-stats" class="hidden space-y-5">
-        <!-- 4 Kartu Ringkasan Statistik -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4">
             <div class="text-[11px] font-bold text-slate-500 uppercase">Total Kunjungan</div>
@@ -808,9 +869,7 @@
           </div>
         </div>
 
-        <!-- 4 GRAFIK INTERAKTIF MULTI-WARNA -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <!-- Grafik 1: Tren Kunjungan Harian (7 Hari Terakhir) -->
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
@@ -823,7 +882,6 @@
             </div>
           </div>
 
-          <!-- Grafik 2: Distribusi Sumber Platform & Trafik (Multi-Warna) -->
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3.5">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
@@ -831,12 +889,9 @@
               </h3>
               <span class="text-[10px] font-semibold text-slate-400">UTM & Referrer</span>
             </div>
-            <div id="chart-traffic-sources" class="space-y-2.5 text-xs">
-              <!-- Bar multi-warna: WA hijau, Google biru, IG rose, FB royal blue, TikTok slate, X indigo, Direct amber, Rujukan ungu -->
-            </div>
+            <div id="chart-traffic-sources" class="space-y-2.5 text-xs"></div>
           </div>
 
-          <!-- Grafik 3: Distribusi Negara & Wilayah Pengunjung -->
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3.5">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
@@ -844,12 +899,9 @@
               </h3>
               <span class="text-[10px] font-semibold text-slate-400">WIB / WITA / WIT & Global</span>
             </div>
-            <div id="chart-country-regions" class="space-y-2.5 text-xs">
-              <!-- Diisi dinamis -->
-            </div>
+            <div id="chart-country-regions" class="space-y-2.5 text-xs"></div>
           </div>
 
-          <!-- Grafik 4: Perbandingan Perangkat Pembaca -->
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3.5">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
@@ -857,13 +909,10 @@
               </h3>
               <span class="text-[10px] font-semibold text-slate-400">Mobile vs Desktop</span>
             </div>
-            <div id="chart-devices-breakdown" class="space-y-3 text-xs">
-              <!-- Android, iPhone iOS, Tablet, Desktop -->
-            </div>
+            <div id="chart-devices-breakdown" class="space-y-3 text-xs"></div>
           </div>
         </div>
 
-        <!-- Tabel Riwayat Kunjungan Terbaru -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
           <div class="px-5 py-3.5 border-b border-slate-200/80 flex items-center justify-between">
             <h3 class="font-headline font-extrabold text-sm text-brandSlate">Riwayat Kunjungan Terbaru</h3>
@@ -882,9 +931,7 @@
                   <th class="py-3 px-4 text-right">Waktu</th>
                 </tr>
               </thead>
-              <tbody id="stat-recent-tbody" class="divide-y divide-slate-100 text-xs">
-                <!-- Diisi dinamis -->
-              </tbody>
+              <tbody id="stat-recent-tbody" class="divide-y divide-slate-100 text-xs"></tbody>
             </table>
           </div>
         </div>
@@ -1036,7 +1083,7 @@
   <div id="toast-container" class="fixed top-4 right-4 z-[60] flex flex-col gap-2 pointer-events-none max-w-[90vw] sm:max-w-sm"></div>
 
   <!-- ===================================================================== -->
-  <!-- LOGIKA UTAMA KABARRAYA (SUPABASE DINAMIS + SANDBOX SAFE + STATISTIK)    -->
+  <!-- LOGIKA UTAMA KABARRAYA (SUPABASE DINAMIS + SANDBOX SAFE + INTERAKTIF)   -->
   <!-- ===================================================================== -->
   <script type="module">
     // =========================================================================
@@ -1067,7 +1114,7 @@
     }
 
     // =========================================================================
-    // 2. DATA CADANGAN LOKAL (UNTUK MODE PREVIEW / SANDBOX)
+    // 2. DATA CADANGAN LOKAL (UNTUK MODE PREVIEW / SANDBOX & INTERAKSI PEMBACA)
     // =========================================================================
     const LOCAL_KEYS = {
       CATEGORIES: 'kr_local_categories_v3',
@@ -1075,7 +1122,9 @@
       ADS: 'kr_local_ads_v3',
       BOOKMARKS: 'kr_local_bookmarks_v3',
       VISITS: 'kr_local_visits_v3',
-      ADMIN_SESSION: 'kr_local_admin_v3'
+      ADMIN_SESSION: 'kr_local_admin_v3',
+      ARTICLE_LIKES: 'kr_article_likes_v1',
+      COMMENTS: 'kr_article_comments_v1'
     };
 
     const SEED_CATEGORIES = [
@@ -1089,7 +1138,7 @@
     const SEED_ARTICLES = [
       {
         id: 'art-1',
-        title: 'MPR Bahas Kriteria Strategis Calon Wakil Presiden Pendamping Pemerintahan',
+        title: 'MPR Gelar Rapat Pleno Verifikasi Usai Prabowo Serahkan Rekomendasi Kandidat Strategis',
         slug: 'mpr-bahas-kriteria-strategis-cawapres',
         summary: 'Pimpinan Majelis Permusyawaratan Rakyat menggelar rapat konsultasi lintas fraksi guna mematangkan mekanisme konstitusional pengisian posisi strategis nasional.',
         content: 'JAKARTA — Pimpinan Majelis Permusyawaratan Rakyat (MPR) bersama seluruh pimpinan fraksi menggelar rapat konsultasi tertutup di Kompleks Parlemen Senayan untuk membahas mekanisme konstitusional serta kriteria figur pendamping kepemimpinan nasional.\n\nDalam keterangan pers usai rapat, pimpinan MPR menegaskan bahwa setiap tahapan proses tetap berlandaskan pada ketentuan Undang-Undang Dasar 1945 dan tata tertib lembaga negara.\n\nSejumlah tokoh nasional yang memiliki rekam jejak kuat di bidang ketahanan pangan, diplomasi luar negeri, dan tata kelola pemerintahan turut menjadi sorotan publik dalam beberapa hari terakhir.',
@@ -1099,68 +1148,110 @@
         is_headline: true,
         is_trending: true,
         views_count: 14820,
-        search_keywords: 'MPR, Nasional, Politik, Senayan',
+        search_keywords: 'prabowo subianto, andi amran sulaiman, mpr ri, politik nasional, senayan',
         created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString()
       },
       {
         id: 'art-2',
-        title: 'Bank Indonesia Proyeksi Pertumbuhan Ekonomi Digital Tembus 18 Persen Tahun Ini',
-        slug: 'bi-proyeksi-ekonomi-digital-tumbuh',
-        summary: 'Adopsi pembayaran QRIS lintas negara dan ekspansi pembiayaan UMKM digital menjadi motor penggerak utama konsumsi domestik.',
-        content: 'JAKARTA — Akselerasi transaksi keuangan digital nasional mencatatkan rekor baru sepanjang kuartal berjalan. Bank Indonesia memperkirakan nilai transaksi ekonomi digital tumbuh hingga 18 persen secara tahunan.\n\nPeningkatan ini didorong oleh perluasan akseptasi QRIS di pasar tradisional hingga konektivitas pembayaran lintas negara di kawasan ASEAN.',
+        title: 'BKN Perkirakan 3 Juta Pelamar Daftar Seleksi CPNS 2026, Ini Jadwal dan Formasi Prioritas',
+        slug: 'bkn-perkirakan-3-juta-pelamar-cpns-2026',
+        summary: 'Badan Kepegawaian Negara menyiapkan infrastruktur portal SSCASN berkapasitas tinggi untuk mengantisipasi lonjakan pendaftar aparatur sipil negara tahun ini.',
+        content: 'JAKARTA — Badan Kepegawaian Negara (BKN) memproyeksikan jumlah pelamar seleksi Calon Pegawai Negeri Sipil (CPNS) tahun 2026 menembus angka 3 juta peserta dari seluruh provinsi.\n\nFormasi tenaga teknis digital, kesehatan, serta pelayanan publik daerah menjadi sektor dengan alokasi kebutuhan paling besar pada tahun anggaran berjalan.',
         image_url: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=85',
         category_id: 'cat-ekonomi',
         author_name: 'Tim Redaksi KabarRaya',
         is_headline: false,
         is_trending: true,
         views_count: 9340,
-        search_keywords: 'Ekonomi Digital, QRIS, Bank Indonesia, UMKM',
+        search_keywords: 'seleksi cpns 2026, ekonomi digital, bkn, lowongan asn',
         created_at: new Date(Date.now() - 1000 * 60 * 110).toISOString()
       },
       {
         id: 'art-3',
-        title: 'Pusat Data Kecerdasan Buatan Mulai Dibangun di Batam untuk Kebutuhan Asia Tenggara',
-        slug: 'pusat-data-ai-batam-asia-tenggara',
-        summary: 'Infrastruktur komputasi berkapasitas tinggi berbasis energi hijau diproyeksikan memperkuat kedaulatan data nasional.',
-        content: 'BATAM — Kawasan ekonomi khusus di Batam kembali menarik investasi infrastruktur teknologi berskala regional melalui pembangunan pusat data kecerdasan buatan (AI Data Center).\n\nFasilitas ini dirancang menggunakan sistem pendingin hemat energi serta pasokan listrik terbarukan untuk melayani kebutuhan komputasi awan perusahaan rintisan dan perbankan.',
+        title: 'Riset Terbaru Ungkap Lonjakan Penggunaan Asisten AI Lokal di Sektor UMKM Indonesia',
+        slug: 'riset-terbaru-lonjakan-asisten-ai-umkm',
+        summary: 'Pemanfaatan kecerdasan buatan berbahasa Indonesia terbukti memangkas biaya pemasaran dan mempercepat layanan pelanggan pelaku usaha kecil.',
+        content: 'BATAM — Laporan riset ekosistem digital nasional menunjukkan peningkatan adopsi perangkat asisten berbasis kecerdasan buatan (AI) di kalangan pelaku Usaha Mikro, Kecil, dan Menengah (UMKM).\n\nPelaku usaha memanfaatkan teknologi ini untuk membuat katalog produk, membalas pesan pelanggan secara otomatis, hingga menganalisis tren penjualan harian.',
         image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=85',
         category_id: 'cat-teknologi',
         author_name: 'Tim Redaksi KabarRaya',
         is_headline: false,
         is_trending: true,
         views_count: 7890,
-        search_keywords: 'Teknologi, Kecerdasan Buatan, Data Center, Batam',
+        search_keywords: 'kecerdasan buatan, teknologi umkm, keamanan siber, ai indonesia',
         created_at: new Date(Date.now() - 1000 * 60 * 220).toISOString()
       },
       {
         id: 'art-4',
-        title: 'Timnas Indonesia Matangkan Taktik Transisi Cepat Jelang Laga Kualifikasi',
-        slug: 'timnas-indonesia-matangkan-taktik-transisi',
-        summary: 'Pelatih kepala memfokuskan sesi latihan tertutup pada penyelesaian akhir dan koordinasi lini tengah.',
-        content: 'JAKARTA — Skuad Garuda menjalani sesi pemusatan latihan intensif guna mematangkan skema transisi cepat dari bertahan ke menyerang jelang pertandingan krusial mendatang.\n\nSeluruh pemain dilaporkan berada dalam kondisi bugar dan siap tampil penuh di hadapan puluhan ribu pendukung.',
+        title: 'Timnas Indonesia Gelar Pemusatan Latihan Intensif Jelang Laga Krusial di GBK',
+        slug: 'timnas-indonesia-gelar-pemusatan-latihan-gbk',
+        summary: 'Pelatih kepala memfokuskan sesi latihan tertutup pada penyelesaian akhir dan transisi cepat jelang pertandingan kandang di Stadion Utama Gelora Bung Karno.',
+        content: 'JAKARTA — Skuad Garuda menjalani sesi pemusatan latihan intensif di Jakarta guna mematangkan skema transisi cepat dari bertahan ke menyerang jelang pertandingan krusial di Stadion Utama Gelora Bung Karno (GBK).\n\nSeluruh pemain dilaporkan berada dalam kondisi bugar dan siap tampil penuh di hadapan puluhan ribu pendukung.',
         image_url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=85',
         category_id: 'cat-olahraga',
         author_name: 'Tim Redaksi KabarRaya',
         is_headline: false,
         is_trending: true,
         views_count: 11250,
-        search_keywords: 'Timnas Indonesia, Sepak Bola, Olahraga',
+        search_keywords: 'timnas indonesia, stadion gbk, sepak bola nasional, olahraga',
         created_at: new Date(Date.now() - 1000 * 60 * 340).toISOString()
       },
       {
         id: 'art-5',
-        title: 'Festival Film Nusantara Hadirkan 45 Karya Sineas Muda dari 18 Provinsi',
-        slug: 'festival-film-nusantara-sineas-muda',
-        summary: 'Ajang apresiasi sinema tahunan ini membuka ruang distribusi layar lebar bagi dokumenter dan drama lokal.',
-        content: 'YOGYAKARTA — Gelaran Festival Film Nusantara resmi dibuka dengan menayangkan 45 film terpilih karya sineas muda dari 18 provinsi di Indonesia.\n\nSelain pemutaran film, festival ini juga mempertemukan para sutradara independen dengan rumah produksi dan platform streaming nasional.',
+        title: 'Film Drama Keluarga Indonesia Tembus 2,5 Juta Penonton dalam Sepekan di Bioskop',
+        slug: 'film-drama-keluarga-tembus-2-5-juta-penonton',
+        summary: 'Antusiasme penonton layar lebar di berbagai kota besar mengantarkan film drama lokal ini memecahkan rekor okupansi studio akhir pekan.',
+        content: 'YOGYAKARTA — Geliat perfilman nasional kembali mencatatkan capaian gemilang setelah salah satu film drama keluarga terbaru sukses meraih lebih dari 2,5 juta penonton hanya dalam tujuh hari penayangan.\n\nPenambahan layar di jaringan bioskop berbagai daerah terus dilakukan menyusul tingginya permintaan tiket.',
         image_url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=85',
         category_id: 'cat-hiburan',
         author_name: 'Tim Redaksi KabarRaya',
         is_headline: false,
         is_trending: false,
         views_count: 5410,
-        search_keywords: 'Film Indonesia, Hiburan, Budaya, Yogyakarta',
+        search_keywords: 'film indonesia, bioskop nasional, hiburan, box office',
         created_at: new Date(Date.now() - 1000 * 60 * 480).toISOString()
+      },
+      {
+        id: 'art-6',
+        title: 'Tim SAR Sisir Reruntuhan Kebakaran Besar Pabrik di Cikande Serang, Warga Dievakuasi',
+        slug: 'tim-sar-sisir-reruntuhan-kebakaran-cikande-serang',
+        summary: 'Petugas gabungan pemadam kebakaran dan tim SAR terus melakukan pendinginan serta penyisiran area terdampak guna memastikan keselamatan seluruh pekerja.',
+        content: 'SERANG — Tim gabungan dari Badan Penanggulangan Bencana Daerah (BPBD) dan petugas pemadam kebakaran berhasil mengendalikan titik api utama di kawasan industri Cikande, Kabupaten Serang.\n\nPosko darurat telah didirikan di sekitar lokasi untuk memberikan layanan kesehatan serta pendataan warga dan pekerja yang terdampak.',
+        image_url: 'https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1200&q=85',
+        category_id: 'cat-nasional',
+        author_name: 'Tim Redaksi KabarRaya',
+        is_headline: false,
+        is_trending: true,
+        views_count: 8920,
+        search_keywords: 'cikande serang, tim sar, berita nasional, peristiwa',
+        created_at: new Date(Date.now() - 1000 * 60 * 520).toISOString()
+      }
+    ];
+
+    const DEFAULT_SEED_COMMENTS = [
+      {
+        id: 'cmt-seed-1',
+        article_id: 'global',
+        author: 'Cah Lanang',
+        text: 'Semoga setiap kebijakan yang diambil benar-benar berpihak kepada kepentingan masyarakat luas dan menjaga stabilitas nasional.',
+        likes: 12,
+        dislikes: 1,
+        pinned: true,
+        featured: true,
+        created_at: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
+        replies: []
+      },
+      {
+        id: 'cmt-seed-2',
+        article_id: 'global',
+        author: 'fatiya zee',
+        text: 'Semoga kepercayaan masyarakat bisa terus diiringi dengan kebijakan yang tepat dan manfaat yang dirasakan langsung sampai ke daerah.',
+        likes: 8,
+        dislikes: 0,
+        pinned: false,
+        featured: true,
+        created_at: new Date(Date.now() - 1000 * 60 * 75).toISOString(),
+        replies: []
       }
     ];
 
@@ -1173,6 +1264,12 @@
       ads: [],
       bookmarks: [],
       visitorLogs: [],
+      articleLikes: {}, // { [articleId]: { count: number, liked: boolean } }
+      commentsMap: {},  // { [articleId]: Array<CommentObj> }
+      commentFilter: 'terbaru', // 'terbaru' | 'terpilih' | 'terpopuler' | 'teramai' | 'disematkan'
+      replyingToCommentId: null,
+      feedSortMode: 'terbaru', // 'terbaru' | 'terpopuler' | 'viral'
+      feedVisibleLimit: 6,
       selectedCategoryId: 'all',
       searchQuery: '',
       activeTab: 'home', // 'home' | 'detail' | 'viral' | 'bookmarks'
@@ -1246,7 +1343,6 @@
     }
 
     function getPrioritizedArticles() {
-      // Prioritaskan artikel bercentang is_headline di posisi terdepan, lalu urut terbaru
       return [...state.articles].sort((a, b) => {
         if (Boolean(a.is_headline) !== Boolean(b.is_headline)) {
           return a.is_headline ? -1 : 1;
@@ -1256,13 +1352,40 @@
     }
 
     function getViralArticles() {
-      // Prioritaskan artikel bercentang is_trending, lalu urut berdasarkan views_count tertinggi
       return [...state.articles].sort((a, b) => {
         if (Boolean(a.is_trending) !== Boolean(b.is_trending)) {
           return a.is_trending ? -1 : 1;
         }
         return (b.views_count || 0) - (a.views_count || 0);
       });
+    }
+
+    function getPopularArticles() {
+      return [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+    }
+
+    function getArticleComments(articleId) {
+      if (!state.commentsMap[articleId]) {
+        state.commentsMap[articleId] = DEFAULT_SEED_COMMENTS.map((c, idx) => ({
+          ...c,
+          id: `${articleId}-seed-${idx + 1}`,
+          article_id: articleId,
+          replies: [...(c.replies || [])]
+        }));
+      }
+      return state.commentsMap[articleId];
+    }
+
+    function getTotalCommentsCount(articleId) {
+      const list = getArticleComments(articleId);
+      return list.reduce((acc, item) => acc + 1 + (item.replies ? item.replies.length : 0), 0);
+    }
+
+    function saveInteractionStateToLocal() {
+      try {
+        localStorage.setItem(LOCAL_KEYS.ARTICLE_LIKES, JSON.stringify(state.articleLikes));
+        localStorage.setItem(LOCAL_KEYS.COMMENTS, JSON.stringify(state.commentsMap));
+      } catch (e) {}
     }
 
     // =========================================================================
@@ -1368,11 +1491,14 @@
     // 6. PEMUATAN DATA (SUPABASE / LOKAL)
     // =========================================================================
     async function loadAllData() {
-      // Muat bookmark lokal
       try {
         state.bookmarks = JSON.parse(localStorage.getItem(LOCAL_KEYS.BOOKMARKS) || '[]');
+        state.articleLikes = JSON.parse(localStorage.getItem(LOCAL_KEYS.ARTICLE_LIKES) || '{}');
+        state.commentsMap = JSON.parse(localStorage.getItem(LOCAL_KEYS.COMMENTS) || '{}');
       } catch (e) {
         state.bookmarks = [];
+        state.articleLikes = {};
+        state.commentsMap = {};
       }
 
       if (USE_LOCAL_MODE || !supabase) {
@@ -1419,13 +1545,14 @@
     }
 
     // =========================================================================
-    // 7. RENDER PORTAL UTAMA (HERO, 4 SOROTAN VERTIKAL, TICKER, FEED, SIDEBAR)
+    // 7. RENDER PORTAL UTAMA (HERO, 4 SOROTAN VERTIKAL, TICKER, FEED, SOROTAN KANAL)
     // =========================================================================
     function renderAllViews() {
       renderChannelNav();
       renderBookmarkBadge();
       renderCinematicHero();
       renderFeedArticles();
+      renderChannelHighlights();
       renderSidebarWidgets();
       renderAdsSlots();
       if (state.activeTab === 'viral') renderViralFullView();
@@ -1537,12 +1664,10 @@
         return;
       }
 
-      // Slide utama (maksimal 3 slide utama: index 0, 1, 2)
       const slidePool = prioritized.slice(0, Math.min(3, prioritized.length));
       if (state.heroSlideIndex >= slidePool.length) state.heroSlideIndex = 0;
       const mainStory = slidePool[state.heroSlideIndex];
 
-      // Pasang foto hero jika tersedia (tanpa gambar bus fallback)
       if (heroImg) {
         if (mainStory.image_url) {
           heroImg.src = mainStory.image_url;
@@ -1555,7 +1680,6 @@
         }
       }
 
-      // 2 thumbnail berita terkait di bawah tombol Baca Selengkapnya
       const relatedThumbs = prioritized.filter(a => a.id !== mainStory.id).slice(0, 2);
 
       if (leftStage) {
@@ -1591,7 +1715,6 @@
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
               </button>
 
-              <!-- 2 Thumbnail Berita Terkait Mini -->
               <div class="hidden sm:flex items-center gap-2.5 pl-1">
                 ${relatedThumbs
                   .map(
@@ -1617,7 +1740,6 @@
         `;
       }
 
-      // 4 Kartu Sorotan Vertikal Sejajar ke Bawah di Sisi Paling Kanan (grid-cols-1)
       const sidePool = prioritized.filter(a => a.id !== mainStory.id).slice(0, 4);
       if (rightCards) {
         let cardsHtml = '';
@@ -1656,7 +1778,6 @@
         rightCards.innerHTML = cardsHtml;
       }
 
-      // Indikator Slide Numerik (01, 02, 03)
       if (slideDots) {
         slideDots.innerHTML = slidePool
           .map((_, idx) => {
@@ -1678,7 +1799,6 @@
           .join('');
       }
 
-      // Floating 4-Column White Ticker Bar di Batas Bawah Hero
       if (bottomTicker) {
         const tickerItems = prioritized.slice(0, 4);
         let tickerHtml = '';
@@ -1714,8 +1834,43 @@
       }
     }
 
+    // =========================================================================
+    // FITUR 1: FILTER & PILL TABS FEED BERANDA (TERBARU / TERPOPULER / VIRAL)
+    // =========================================================================
+    window.setFeedSortMode = mode => {
+      state.feedSortMode = mode;
+      state.feedVisibleLimit = 6;
+      ['terbaru', 'terpopuler', 'viral'].forEach(m => {
+        const btn = document.getElementById(`feed-pill-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-extrabold transition bg-sky-600 text-white shadow-xs';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 transition';
+        }
+      });
+      renderFeedArticles();
+      renderIcons();
+    };
+
+    window.handleLoadMoreFeed = () => {
+      state.feedVisibleLimit += 5;
+      renderFeedArticles();
+      renderIcons();
+    };
+
     function getFilteredArticles() {
-      let list = getPrioritizedArticles();
+      let list = [...state.articles];
+
+      // Urutkan sesuai pill aktif
+      if (state.feedSortMode === 'terpopuler') {
+        list.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      } else if (state.feedSortMode === 'viral') {
+        list = getViralArticles();
+      } else {
+        list = getPrioritizedArticles();
+      }
+
       if (state.selectedCategoryId !== 'all') {
         list = list.filter(a => a.category_id === state.selectedCategoryId);
       }
@@ -1736,6 +1891,7 @@
       const titleEl = document.getElementById('feed-section-title');
       const countEl = document.getElementById('feed-count-label');
       const resetBtn = document.getElementById('reset-filter-btn');
+      const loadMoreWrap = document.getElementById('load-more-wrapper');
       if (!container) return;
 
       const filtered = getFilteredArticles();
@@ -1746,6 +1902,10 @@
           titleEl.textContent = `Hasil Pencarian: "${state.searchQuery}"`;
         } else if (state.selectedCategoryId !== 'all') {
           titleEl.textContent = `Kanal ${getCategoryName(state.selectedCategoryId)}`;
+        } else if (state.feedSortMode === 'terpopuler') {
+          titleEl.textContent = 'Berita Terpopuler Hari Ini';
+        } else if (state.feedSortMode === 'viral') {
+          titleEl.textContent = 'Sedang Viral & Ramai Dibahas';
         } else {
           titleEl.textContent = 'Kabar Terbaru & Pilihan';
         }
@@ -1754,6 +1914,7 @@
       if (resetBtn) resetBtn.classList.toggle('hidden', !hasFilter);
 
       if (!filtered.length) {
+        if (loadMoreWrap) loadMoreWrap.classList.add('hidden');
         container.innerHTML = `
           <div class="bg-white rounded-2xl border border-slate-200/80 p-10 text-center space-y-2">
             <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto"></i>
@@ -1764,9 +1925,15 @@
         return;
       }
 
-      container.innerHTML = filtered
+      const visibleArticles = filtered.slice(0, state.feedVisibleLimit);
+      if (loadMoreWrap) {
+        loadMoreWrap.classList.toggle('hidden', filtered.length <= state.feedVisibleLimit);
+      }
+
+      container.innerHTML = visibleArticles
         .map(article => {
           const isSaved = state.bookmarks.includes(article.id);
+          const commentCount = getTotalCommentsCount(article.id);
           return `
             <article class="group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md p-3.5 sm:p-4 transition flex flex-col sm:flex-row gap-4">
               <!-- Thumbnail -->
@@ -1815,6 +1982,10 @@
                       <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i>
                       ${(article.views_count || 0).toLocaleString('id-ID')}
                     </span>
+                    <span class="inline-flex items-center gap-1">
+                      <i data-lucide="message-square" class="w-3.5 h-3.5 text-slate-400"></i>
+                      ${commentCount}
+                    </span>
                     <span class="hidden sm:inline text-slate-400">Oleh ${escapeHtml(article.author_name || 'Tim Redaksi KabarRaya')}</span>
                   </div>
                   <div class="flex items-center gap-1.5">
@@ -1844,11 +2015,104 @@
         .join('');
     }
 
+    // =========================================================================
+    // FITUR 2: BAGIAN "SOROTAN PILIHAN KANAL" DI BERANDA (Gambar 5)
+    // =========================================================================
+    function renderChannelHighlights() {
+      const grid = document.getElementById('channel-highlights-grid');
+      if (!grid) return;
+
+      if (!state.categories.length || !state.articles.length) {
+        grid.innerHTML = '';
+        return;
+      }
+
+      const cardsHtml = state.categories
+        .map(cat => {
+          // Ambil artikel di kanal ini; jika belum ada di kanal tersebut, tampilkan artikel pilihan umum sebagai pelengkap agar kartu tetap utuh
+          const catArticles = state.articles.filter(a => a.category_id === cat.id);
+          const pool = catArticles.length ? catArticles : state.articles;
+          const mainArt = pool[0];
+          if (!mainArt) return '';
+
+          const bulletArticles = pool.slice(1, 3);
+
+          return `
+            <div class="bg-white rounded-2xl border border-slate-200/85 shadow-card hover:shadow-md transition overflow-hidden flex flex-col">
+              <!-- Header Kanal + Indeks -> -->
+              <div class="px-4 py-3 flex items-center justify-between border-b border-slate-100">
+                <span class="font-headline font-extrabold text-xs uppercase tracking-wider text-sky-600">
+                  ${escapeHtml(cat.name)}
+                </span>
+                <button
+                  type="button"
+                  onclick="window.selectCategory('${escapeHtml(cat.id)}'); window.scrollTo({top: 380, behavior: 'smooth'});"
+                  class="text-[11px] font-bold text-slate-500 hover:text-sky-600 transition inline-flex items-center gap-1"
+                >
+                  <span>Indeks</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+
+              <!-- Gambar Thumbnail 16:9 -->
+              <div
+                onclick="window.openArticleDetail('${escapeHtml(mainArt.id)}')"
+                class="relative aspect-video bg-slate-100 overflow-hidden cursor-pointer group"
+              >
+                ${
+                  mainArt.image_url
+                    ? `<img src="${escapeHtml(mainArt.image_url)}" alt="${escapeHtml(mainArt.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-slate-400\\'><i data-lucide=\\'newspaper\\' class=\\'w-8 h-8\\'></i></div>'" />`
+                    : `<div class="w-full h-full flex items-center justify-center text-slate-400"><i data-lucide="newspaper" class="w-8 h-8"></i></div>`
+                }
+              </div>
+
+              <!-- Judul Utama 2 Baris + Waktu + Bullet Berita Terkait -->
+              <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                <div class="space-y-1.5">
+                  <h3
+                    onclick="window.openArticleDetail('${escapeHtml(mainArt.id)}')"
+                    class="font-headline font-extrabold text-sm text-brandSlate hover:text-sky-600 line-clamp-2 leading-snug cursor-pointer transition"
+                  >
+                    ${escapeHtml(mainArt.title)}
+                  </h3>
+                  <div class="text-[11px] text-slate-400">
+                    ${formatRelativeTime(mainArt.created_at)}
+                  </div>
+                </div>
+
+                ${
+                  bulletArticles.length
+                    ? `<ul class="pt-2.5 border-t border-slate-100 space-y-2">
+                        ${bulletArticles
+                          .map(
+                            b => `
+                            <li
+                              onclick="window.openArticleDetail('${escapeHtml(b.id)}')"
+                              class="group flex items-start gap-2 cursor-pointer"
+                            >
+                              <span class="w-1.5 h-1.5 rounded-full bg-sky-500 mt-1.5 shrink-0"></span>
+                              <span class="text-xs font-semibold text-slate-700 group-hover:text-sky-600 line-clamp-1 leading-snug transition">
+                                ${escapeHtml(b.title)}
+                              </span>
+                            </li>`
+                          )
+                          .join('')}
+                      </ul>`
+                    : ''
+                }
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      grid.innerHTML = cardsHtml;
+    }
+
     function renderSidebarWidgets() {
       const trendingContainer = document.getElementById('sidebar-trending-list');
       const tagsContainer = document.getElementById('sidebar-tags-list');
 
-      // Top 5 Viral & Paling Banyak Dicari
       const top5 = getViralArticles().slice(0, 5);
       if (trendingContainer) {
         if (!top5.length) {
@@ -1886,7 +2150,6 @@
         }
       }
 
-      // Topik Hangat dari search_keywords artikel
       if (tagsContainer) {
         const tagSet = new Set(['Berita Terkini', 'Nasional', 'Viral Hari Ini', 'Ekonomi Indonesia', 'Teknologi AI']);
         state.articles.forEach(a => {
@@ -1967,24 +2230,598 @@
     }
 
     // =========================================================================
-    // 8. HALAMAN DETAIL ARTIKEL + SHARE WHATSAPP / X / SALIN TAUTAN
+    // 8. HALAMAN DETAIL ARTIKEL LENGKAP + 4 FITUR BARU (ACTION BAR, TAG TERPOPULER, KOMENTAR, REKOMENDASI)
     // =========================================================================
+    function getPopularTagsList(article) {
+      const tags = [];
+      if (article && article.search_keywords) {
+        article.search_keywords
+          .split(',')
+          .map(t => t.trim().toLowerCase())
+          .filter(Boolean)
+          .forEach(t => {
+            if (!tags.includes(t)) tags.push(t);
+          });
+      }
+      state.articles.forEach(a => {
+        if (a.search_keywords) {
+          a.search_keywords
+            .split(',')
+            .map(t => t.trim().toLowerCase())
+            .filter(Boolean)
+            .forEach(t => {
+              if (!tags.includes(t) && tags.length < 7) tags.push(t);
+            });
+        }
+      });
+      const defaults = ['prabowo subianto', 'nasional terkini', 'ekonomi digital', 'timnas indonesia', 'kebijakan publik'];
+      defaults.forEach(d => {
+        if (!tags.includes(d) && tags.length < 6) tags.push(d);
+      });
+      return tags.slice(0, 5);
+    }
+
+    function getFilteredCommentsForRender(articleId) {
+      const raw = [...getArticleComments(articleId)];
+      if (state.commentFilter === 'terpopuler') {
+        return raw.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
+      if (state.commentFilter === 'teramai') {
+        return raw.sort((a, b) => (b.replies?.length || 0) - (a.replies?.length || 0));
+      }
+      if (state.commentFilter === 'terpilih') {
+        const chosen = raw.filter(c => c.featured || (c.likes || 0) >= 5);
+        return chosen.length ? chosen : raw;
+      }
+      if (state.commentFilter === 'disematkan') {
+        return raw.filter(c => c.pinned);
+      }
+      // 'terbaru'
+      return raw.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+
+    function getAvatarBadgeColor(name) {
+      const palette = ['bg-blue-900', 'bg-sky-700', 'bg-teal-700', 'bg-indigo-800', 'bg-amber-700', 'bg-rose-700'];
+      let hash = 0;
+      const str = String(name || 'KR');
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return palette[Math.abs(hash) % palette.length];
+    }
+
+    function getInitials(name) {
+      const parts = String(name || 'KR').trim().split(/\s+/);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    function buildCommentsSectionHtml(articleId) {
+      const totalComments = getTotalCommentsCount(articleId);
+      const displayedComments = getFilteredCommentsForRender(articleId);
+      const activeAd = state.ads.find(a => a.is_active);
+
+      const filterTabs = [
+        { id: 'terbaru', label: 'Terbaru' },
+        { id: 'terpilih', label: 'Terpilih' },
+        { id: 'terpopuler', label: 'Terpopuler' },
+        { id: 'teramai', label: 'Teramai' },
+        { id: 'disematkan', label: 'Komentar yang disematkan' }
+      ];
+
+      const nativePromoCommentHtml = activeAd
+        ? `
+          <div class="py-4 flex items-start gap-3">
+            <img src="${escapeHtml(activeAd.image_url)}" alt="${escapeHtml(activeAd.sponsor_name)}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0" />
+            <div class="flex-1 min-w-0">
+              <a href="${escapeHtml(activeAd.target_url || '#')}" target="_blank" rel="noopener noreferrer" class="font-headline font-extrabold text-xs sm:text-sm text-slate-900 hover:text-sky-600 transition block">
+                ${escapeHtml(activeAd.sponsor_name)} — Penawaran Spesial Mitra KabarRaya!
+              </a>
+              <div class="text-[11px] font-semibold text-slate-400 mt-0.5">Promoted</div>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Temukan informasi produk dan layanan pilihan mitra resmi KabarRaya untuk mendukung kebutuhan harian Anda.
+              </p>
+            </div>
+          </div>
+        `
+        : `
+          <div onclick="window.openLegalModal('contact')" class="py-4 flex items-start gap-3 cursor-pointer group">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-sky-600 to-teal-500 text-white font-headline font-extrabold text-xs flex items-center justify-center shrink-0 shadow-xs">
+              KR
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-headline font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-sky-600 transition">
+                Promosikan Bisnis & UMKM Anda Langsung di Kolom Pembaca KabarRaya!
+              </div>
+              <div class="text-[11px] font-semibold text-slate-400 mt-0.5">Promoted</div>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                Jangkau ribuan pembaca aktif setiap hari dengan penempatan native sponsor yang rapi dan terpercaya.
+              </p>
+            </div>
+          </div>
+        `;
+
+      return `
+        <section id="article-comments-section" class="pt-6 space-y-5">
+          <!-- Kotak Form Tulis Komentar (Gambar 2) -->
+          <div class="bg-slate-50/90 rounded-2xl border border-slate-200/90 p-4 sm:p-5 space-y-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-headline font-extrabold text-base sm:text-lg text-slate-900">
+                Komentar <span class="font-semibold text-slate-600">(${totalComments})</span>
+              </h3>
+              <input
+                type="text"
+                id="comment-author-input"
+                placeholder="Nama Anda (Opsional)"
+                maxlength="40"
+                class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-blue-700 w-full sm:w-52"
+              />
+            </div>
+
+            <form onsubmit="window.handleSubmitComment(event, '${escapeHtml(articleId)}')" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden focus-within:border-blue-700 transition">
+              <textarea
+                id="comment-textarea-input"
+                rows="3"
+                maxlength="1000"
+                oninput="window.updateCommentCharCounter(this.value)"
+                placeholder="Tulis Komentar"
+                required
+                class="w-full p-3.5 sm:p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none resize-none"
+              ></textarea>
+              <div class="px-3.5 sm:px-4 py-2.5 bg-white border-t border-slate-100 flex items-center justify-between gap-3">
+                <span class="text-[11px] text-slate-500">
+                  <strong id="comment-char-remaining" class="font-extrabold text-slate-800">1000</strong> Karakter tersisa
+                </span>
+                <button
+                  type="submit"
+                  class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-800 hover:bg-blue-700 text-white text-xs font-extrabold shadow-xs transition active:scale-95"
+                >
+                  <span>Kirim</span>
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Pill Filter Komentar (Gambar 2) -->
+          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            ${filterTabs
+              .map(tab => {
+                const isActive = state.commentFilter === tab.id;
+                return `
+                  <button
+                    type="button"
+                    onclick="window.setCommentFilter('${escapeHtml(articleId)}', '${tab.id}')"
+                    class="px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition ${
+                      isActive
+                        ? 'bg-blue-800 border-blue-800 text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                    }"
+                  >
+                    ${tab.label}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+
+          <!-- Daftar Komentar Pembaca -->
+          <div class="divide-y divide-slate-200/80 border-t border-slate-200/80">
+            ${
+              displayedComments.length === 0
+                ? `<div class="py-8 text-center text-xs text-slate-400">Belum ada komentar pada kategori filter ini. Jadilah yang pertama berkomentar!</div>`
+                : displayedComments
+                    .map((cmt, idx) => {
+                      const avatarBg = getAvatarBadgeColor(cmt.author);
+                      const initials = getInitials(cmt.author);
+                      const isReplying = state.replyingToCommentId === cmt.id;
+                      const repliesHtml =
+                        cmt.replies && cmt.replies.length
+                          ? `<div class="mt-3 pl-3.5 border-l-2 border-slate-200 space-y-2.5">
+                              ${cmt.replies
+                                .map(
+                                  rep => `
+                                  <div class="bg-slate-50 rounded-xl p-2.5 text-xs">
+                                    <div class="flex items-center gap-2">
+                                      <span class="font-bold text-slate-900">${escapeHtml(rep.author)}</span>
+                                      <span class="text-[10px] text-slate-400">${formatRelativeTime(rep.created_at)}</span>
+                                    </div>
+                                    <p class="text-slate-700 mt-1 leading-relaxed">${escapeHtml(rep.text)}</p>
+                                  </div>`
+                                )
+                                .join('')}
+                            </div>`
+                          : '';
+
+                      const replyFormHtml = isReplying
+                        ? `<form onsubmit="window.handleSubmitReply(event, '${escapeHtml(articleId)}', '${escapeHtml(cmt.id)}')" class="mt-3 flex flex-col sm:flex-row gap-2">
+                            <input
+                              type="text"
+                              id="reply-input-${escapeHtml(cmt.id)}"
+                              required
+                              maxlength="500"
+                              placeholder="Tulis balasan untuk ${escapeHtml(cmt.author)}..."
+                              class="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-blue-700"
+                            />
+                            <div class="flex items-center gap-1.5">
+                              <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-800 text-white text-xs font-bold">Balas</button>
+                              <button type="button" onclick="window.toggleReplyForm('${escapeHtml(articleId)}', null)" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">Batal</button>
+                            </div>
+                          </form>`
+                        : '';
+
+                      return `
+                        <div class="py-4 flex items-start gap-3">
+                          <div class="w-10 h-10 rounded-full ${avatarBg} text-white font-headline font-extrabold text-xs flex items-center justify-center shrink-0">
+                            ${escapeHtml(initials)}
+                          </div>
+                          <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2">
+                              <div>
+                                <div class="flex items-center gap-2">
+                                  <span class="font-headline font-extrabold text-xs sm:text-sm text-slate-900">${escapeHtml(cmt.author)}</span>
+                                  ${
+                                    cmt.pinned
+                                      ? `<span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold">Disematkan</span>`
+                                      : ''
+                                  }
+                                </div>
+                                <div class="text-[11px] text-slate-400">${formatRelativeTime(cmt.created_at)}</div>
+                              </div>
+                            </div>
+
+                            <p class="text-xs sm:text-sm text-slate-800 mt-1.5 leading-relaxed break-words">
+                              ${escapeHtml(cmt.text)}
+                            </p>
+
+                            <div class="flex items-center gap-4 mt-2.5 text-xs text-slate-500">
+                              <button
+                                type="button"
+                                onclick="window.handleCommentVote('${escapeHtml(articleId)}', '${escapeHtml(cmt.id)}', 'like')"
+                                class="inline-flex items-center gap-1 hover:text-blue-700 transition font-semibold"
+                              >
+                                <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+                                <span>${cmt.likes || 0}</span>
+                              </button>
+                              <button
+                                type="button"
+                                onclick="window.handleCommentVote('${escapeHtml(articleId)}', '${escapeHtml(cmt.id)}', 'dislike')"
+                                class="inline-flex items-center gap-1 hover:text-rose-600 transition font-semibold"
+                              >
+                                <i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i>
+                                <span>${cmt.dislikes || 0}</span>
+                              </button>
+                              <button
+                                type="button"
+                                onclick="window.toggleReplyForm('${escapeHtml(articleId)}', '${escapeHtml(cmt.id)}')"
+                                class="font-bold text-slate-500 hover:text-blue-800 transition"
+                              >
+                                Balas
+                              </button>
+                            </div>
+
+                            ${replyFormHtml}
+                            ${repliesHtml}
+                          </div>
+                        </div>
+                        ${idx === 1 ? nativePromoCommentHtml : ''}
+                      `;
+                    })
+                    .join('')
+            }
+            ${displayedComments.length === 1 ? nativePromoCommentHtml : ''}
+          </div>
+        </section>
+      `;
+    }
+
+    function buildRecommendationsGridHtml(currentArticleId) {
+      const candidates = state.articles.filter(a => a.id !== currentArticleId);
+      const activeAd = state.ads.find(a => a.is_active);
+
+      // Susun 6 kartu (2 kolom x 3 baris) dengan slot native Promoted seperti Gambar 1
+      const slots = [];
+      if (candidates[0]) slots.push({ type: 'article', data: candidates[0] });
+      if (candidates[1]) slots.push({ type: 'article', data: candidates[1] });
+      if (candidates[2]) slots.push({ type: 'article', data: candidates[2] });
+
+      // Sisipkan 1 kartu Promoted native
+      slots.push({
+        type: 'promoted',
+        title: activeAd
+          ? `${activeAd.sponsor_name} — Solusi Pilihan Pembaca KabarRaya!`
+          : 'Tingkatkan Jangkauan Usaha Anda Bersama Jaringan Iklan KabarRaya!',
+        image:
+          activeAd?.image_url ||
+          'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80',
+        url: activeAd?.target_url || null
+      });
+
+      if (candidates[3]) slots.push({ type: 'article', data: candidates[3] });
+      if (candidates[4]) slots.push({ type: 'article', data: candidates[4] });
+
+      const finalCards = slots.slice(0, 6);
+
+      return `
+        <section class="pt-7 mt-6 border-t border-slate-200 space-y-5">
+          <h3 class="font-headline font-extrabold text-base sm:text-lg text-blue-800">
+            Rekomendasi Untuk Anda
+          </h3>
+
+          <div class="grid grid-cols-2 gap-4 sm:gap-5">
+            ${finalCards
+              .map(slot => {
+                if (slot.type === 'promoted') {
+                  const clickAttr = slot.url
+                    ? `onclick="window.open('${escapeHtml(slot.url)}', '_blank', 'noopener,noreferrer')"`
+                    : `onclick="window.openLegalModal('contact')"`;
+                  return `
+                    <div ${clickAttr} class="group cursor-pointer space-y-2">
+                      <div class="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/70">
+                        <img src="${escapeHtml(slot.image)}" alt="Promoted" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                      </div>
+                      <div class="space-y-0.5">
+                        <div class="text-[11px] font-bold text-slate-400">Promoted</div>
+                        <h4 class="font-headline font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-800 line-clamp-3 leading-snug transition">
+                          ${escapeHtml(slot.title)}
+                        </h4>
+                      </div>
+                    </div>
+                  `;
+                }
+
+                const art = slot.data;
+                return `
+                  <div onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="group cursor-pointer space-y-2">
+                    <div class="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/70">
+                      ${
+                        art.image_url
+                          ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-slate-400\\'><i data-lucide=\\'newspaper\\' class=\\'w-7 h-7\\'></i></div>'" />`
+                          : `<div class="w-full h-full flex items-center justify-center text-slate-400"><i data-lucide="newspaper" class="w-7 h-7"></i></div>`
+                      }
+                    </div>
+                    <div class="space-y-0.5">
+                      <div class="text-[11px] font-extrabold text-orange-600">
+                        kabar${escapeHtml(getCategoryName(art.category_id))}
+                      </div>
+                      <h4 class="font-headline font-extrabold text-xs sm:text-sm text-slate-900 group-hover:text-blue-800 line-clamp-3 leading-snug transition">
+                        ${escapeHtml(art.title)}
+                      </h4>
+                    </div>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+
+          <div class="pt-3 flex justify-center">
+            <button
+              type="button"
+              onclick="window.switchMainTab('home'); window.scrollTo({top: 380, behavior: 'smooth'});"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-orange-600 text-xs font-extrabold transition active:scale-95"
+            >
+              <span>Lihat Selengkapnya</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderArticleDetailBody(article) {
+      const detailEl = document.getElementById('subview-detail');
+      if (!detailEl || !article) return;
+
+      const isSaved = state.bookmarks.includes(article.id);
+      const likeObj = state.articleLikes[article.id] || { count: Math.max(1, Math.floor((article.views_count || 10) / 180)), liked: false };
+      const totalComments = getTotalCommentsCount(article.id);
+      const popularTags = getPopularTagsList(article);
+
+      const paragraphs = (article.content || '')
+        .split(/\n+/)
+        .map(p => p.trim())
+        .filter(Boolean)
+        .map(p => `<p class="mb-4 text-slate-700 leading-relaxed text-sm sm:text-base">${escapeHtml(p)}</p>`)
+        .join('');
+
+      const relatedArticles = state.articles.filter(a => a.id !== article.id).slice(0, 4);
+
+      detailEl.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Kolom Kiri: Konten Artikel + Action Bar + Tag Terpopuler + Komentar + Rekomendasi -->
+          <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 sm:p-8 space-y-5">
+            <!-- Breadcrumb & Tombol Kembali -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 text-xs">
+              <div class="flex items-center gap-1.5 text-slate-500">
+                <button onclick="window.switchMainTab('home')" class="hover:text-sky-600 font-bold">Beranda</button>
+                <span>/</span>
+                <span class="font-extrabold text-sky-600">${escapeHtml(getCategoryName(article.category_id))}</span>
+              </div>
+              <button onclick="window.switchMainTab('home')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">
+                ← Kembali
+              </button>
+            </div>
+
+            <!-- Judul & Meta -->
+            <div class="space-y-3">
+              <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-brandSlate leading-tight">
+                ${escapeHtml(article.title)}
+              </h1>
+              <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span class="font-bold text-slate-700">${escapeHtml(article.author_name || 'Tim Redaksi KabarRaya')}</span>
+                <span>•</span>
+                <span>${new Date(article.created_at).toLocaleDateString('id-ID', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}</span>
+                <span>•</span>
+                <span class="inline-flex items-center gap-1 font-semibold text-sky-700">
+                  <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${(article.views_count || 0).toLocaleString('id-ID')} kali dibaca
+                </span>
+              </div>
+            </div>
+
+            <!-- Gambar Utama -->
+            ${
+              article.image_url
+                ? `<div class="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
+                    <img src="${escapeHtml(article.image_url)}" alt="${escapeHtml(article.title)}" class="w-full max-h-[460px] object-cover" />
+                  </div>`
+                : ''
+            }
+
+            <!-- Teras Berita -->
+            <div class="p-4 rounded-xl bg-sky-50/70 border-l-4 border-sky-600 text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">
+              ${escapeHtml(article.summary)}
+            </div>
+
+            <!-- Isi Paragraf Lengkap -->
+            <div class="pt-1">
+              ${paragraphs}
+            </div>
+
+            <!-- FITUR 3A: ACTION BAR REAKSI & SIMPAN DI BAWAH ARTIKEL (Gambar 3) -->
+            <div class="py-3.5 px-2 sm:px-6 border-y border-slate-200 flex items-center justify-between">
+              <!-- Jempol Suka -->
+              <button
+                type="button"
+                onclick="window.toggleArticleLike('${escapeHtml(article.id)}')"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-xl transition ${
+                  likeObj.liked ? 'text-blue-700 bg-blue-50 font-extrabold' : 'text-slate-700 hover:bg-slate-100 font-bold'
+                }"
+                title="Sukai Artikel Ini"
+              >
+                <i data-lucide="thumbs-up" class="w-5 h-5 ${likeObj.liked ? 'fill-blue-700 text-blue-700' : ''}"></i>
+                <span class="text-xs sm:text-sm">${likeObj.count}</span>
+              </button>
+
+              <!-- Ikon Komentar + Counter (Scroll ke Komentar) -->
+              <button
+                type="button"
+                onclick="window.scrollToCommentsSection()"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 font-bold transition"
+                title="Lihat & Tulis Komentar"
+              >
+                <i data-lucide="message-square-text" class="w-5 h-5"></i>
+                <span class="text-xs sm:text-sm">${totalComments}</span>
+              </button>
+
+              <!-- Ikon Share (WhatsApp & Salin Tautan) -->
+              <div class="relative inline-flex items-center gap-1">
+                <button
+                  type="button"
+                  onclick="window.shareArticleWhatsApp('${escapeHtml(article.id)}')"
+                  class="p-2 rounded-xl text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                  title="Bagikan ke WhatsApp"
+                >
+                  <i data-lucide="share" class="w-5 h-5"></i>
+                </button>
+                <button
+                  type="button"
+                  onclick="window.copyArticleLink('${escapeHtml(article.id)}')"
+                  class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition"
+                  title="Salin Tautan Berita"
+                >
+                  <i data-lucide="link" class="w-3.5 h-3.5"></i> Salin
+                </button>
+              </div>
+
+              <!-- Ikon Bookmark Simpan -->
+              <button
+                type="button"
+                onclick="window.toggleBookmarkFromDetail('${escapeHtml(article.id)}')"
+                class="p-2 rounded-xl transition ${
+                  isSaved ? 'text-amber-600 bg-amber-50' : 'text-slate-700 hover:bg-slate-100'
+                }"
+                title="${isSaved ? 'Tersimpan' : 'Simpan Berita'}"
+              >
+                <i data-lucide="bookmark" class="w-5 h-5 ${isSaved ? 'fill-amber-500 text-amber-600' : ''}"></i>
+              </button>
+            </div>
+
+            <!-- FITUR 3B: WIDGET "TAG TERPOPULER" DAFTAR VERTIKAL (Gambar 4) -->
+            <div class="pt-2 space-y-3">
+              <h3 class="font-headline font-extrabold text-base text-blue-800">
+                Tag Terpopuler
+              </h3>
+              <ul class="space-y-2.5">
+                ${popularTags
+                  .map(
+                    tag => `
+                    <li>
+                      <button
+                        type="button"
+                        onclick="window.handleTagClick('${escapeHtml(tag)}')"
+                        class="group inline-flex items-center gap-3 text-left"
+                      >
+                        <span class="font-headline font-extrabold text-base text-slate-400 group-hover:text-blue-700 transition">#</span>
+                        <span class="font-headline font-extrabold text-sm text-slate-900 group-hover:text-blue-800 transition">
+                          ${escapeHtml(tag)}
+                        </span>
+                      </button>
+                    </li>`
+                  )
+                  .join('')}
+              </ul>
+            </div>
+
+            <!-- FITUR 3C: KOLOM KOMENTAR (N) INTERAKTIF (Gambar 2) -->
+            ${buildCommentsSectionHtml(article.id)}
+
+            <!-- FITUR 3D: GRID "REKOMENDASI UNTUK ANDA" (Gambar 1) -->
+            ${buildRecommendationsGridHtml(article.id)}
+          </div>
+
+          <!-- Kolom Kanan: Jangan Lewatkan & Top 5 Viral -->
+          <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-4">
+              <h3 class="font-headline font-extrabold text-base text-brandSlate border-b border-slate-100 pb-2.5">
+                Jangan Lewatkan
+              </h3>
+              <div class="space-y-3.5">
+                ${relatedArticles
+                  .map(
+                    rel => `
+                    <div onclick="window.openArticleDetail('${escapeHtml(rel.id)}')" class="group flex items-start gap-3 cursor-pointer">
+                      ${
+                        rel.image_url
+                          ? `<img src="${escapeHtml(rel.image_url)}" alt="" class="w-20 h-16 rounded-xl object-cover shrink-0" />`
+                          : `<div class="w-20 h-16 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-5 h-5 text-slate-400"></i></div>`
+                      }
+                      <div class="min-w-0">
+                        <div class="text-[10px] font-extrabold uppercase text-sky-600">${escapeHtml(getCategoryName(rel.category_id))}</div>
+                        <h4 class="font-headline font-bold text-xs text-slate-800 group-hover:text-sky-600 line-clamp-2 leading-snug mt-0.5 transition">
+                          ${escapeHtml(rel.title)}
+                        </h4>
+                      </div>
+                    </div>`
+                  )
+                  .join('')}
+              </div>
+            </div>
+          </aside>
+        </div>
+      `;
+      renderIcons();
+    }
+
     window.openArticleDetail = async id => {
       const article = state.articles.find(a => a.id === id);
       if (!article) return;
 
       state.activeTab = 'detail';
       state.activeArticleId = id;
+      state.replyingToCommentId = null;
       document.title = `${article.title} — KabarRaya`;
 
-      // Sembunyikan subview lain
       document.getElementById('subview-feed')?.classList.add('hidden');
       document.getElementById('subview-viral')?.classList.add('hidden');
       document.getElementById('subview-bookmarks')?.classList.add('hidden');
       const detailEl = document.getElementById('subview-detail');
       if (detailEl) detailEl.classList.remove('hidden');
 
-      // Tambah jumlah views (+1)
       article.views_count = (article.views_count || 0) + 1;
       if (USE_LOCAL_MODE || !supabase) {
         try {
@@ -1998,162 +2835,151 @@
           .then(() => {});
       }
 
-      // Catat statistik kunjungan artikel
       trackPageVisit(article.title);
+      renderArticleDetailBody(article);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-      const isSaved = state.bookmarks.includes(article.id);
-      const paragraphs = (article.content || '')
-        .split(/\n+/)
-        .map(p => p.trim())
-        .filter(Boolean)
-        .map(p => `<p class="mb-4 text-slate-700 leading-relaxed text-sm sm:text-base">${escapeHtml(p)}</p>`)
-        .join('');
+    // Handler Interaksi Detail Artikel (Like, Scroll Komentar, Kirim Komentar, Filter, Vote, Balas, Bookmark)
+    window.toggleArticleLike = articleId => {
+      const article = state.articles.find(a => a.id === articleId);
+      if (!article) return;
+      const current = state.articleLikes[articleId] || {
+        count: Math.max(1, Math.floor((article.views_count || 10) / 180)),
+        liked: false
+      };
+      if (current.liked) {
+        current.liked = false;
+        current.count = Math.max(0, current.count - 1);
+      } else {
+        current.liked = true;
+        current.count += 1;
+        showToast('Anda menyukai artikel ini.', 'success');
+      }
+      state.articleLikes[articleId] = current;
+      saveInteractionStateToLocal();
+      renderArticleDetailBody(article);
+    };
 
-      const relatedArticles = state.articles.filter(a => a.id !== article.id).slice(0, 4);
+    window.scrollToCommentsSection = () => {
+      const sec = document.getElementById('article-comments-section');
+      if (sec) {
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+          document.getElementById('comment-textarea-input')?.focus();
+        }, 450);
+      }
+    };
 
-      if (detailEl) {
-        detailEl.innerHTML = `
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <!-- Konten Artikel Utama -->
-            <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 sm:p-8 space-y-5">
-              <!-- Breadcrumb & Tombol Kembali -->
-              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 text-xs">
-                <div class="flex items-center gap-1.5 text-slate-500">
-                  <button onclick="window.switchMainTab('home')" class="hover:text-sky-600 font-bold">Beranda</button>
-                  <span>/</span>
-                  <span class="font-extrabold text-sky-600">${escapeHtml(getCategoryName(article.category_id))}</span>
-                </div>
-                <button onclick="window.switchMainTab('home')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">
-                  ← Kembali
-                </button>
-              </div>
+    window.toggleBookmarkFromDetail = articleId => {
+      window.toggleBookmark(articleId);
+      const article = state.articles.find(a => a.id === articleId);
+      if (article) renderArticleDetailBody(article);
+    };
 
-              <!-- Judul & Meta -->
-              <div class="space-y-3">
-                <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-brandSlate leading-tight">
-                  ${escapeHtml(article.title)}
-                </h1>
-                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                  <span class="font-bold text-slate-700">${escapeHtml(article.author_name || 'Tim Redaksi KabarRaya')}</span>
-                  <span>•</span>
-                  <span>${new Date(article.created_at).toLocaleDateString('id-ID', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}</span>
-                  <span>•</span>
-                  <span class="inline-flex items-center gap-1 font-semibold text-sky-700">
-                    <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${(article.views_count || 0).toLocaleString('id-ID')} kali dibaca
-                  </span>
-                </div>
-              </div>
+    window.updateCommentCharCounter = val => {
+      const rem = Math.max(0, 1000 - (val || '').length);
+      const el = document.getElementById('comment-char-remaining');
+      if (el) el.textContent = rem;
+    };
 
-              <!-- Tombol Bagikan WhatsApp, X/Twitter, Salin Tautan & Simpan -->
-              <div class="flex flex-wrap items-center gap-2 py-2.5 px-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span class="text-[11px] font-extrabold text-slate-500 uppercase mr-1">Bagikan:</span>
-                <button
-                  onclick="window.shareArticleWhatsApp('${escapeHtml(article.id)}')"
-                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-sm transition"
-                >
-                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WhatsApp
-                </button>
-                <button
-                  onclick="window.shareArticleTwitter('${escapeHtml(article.id)}')"
-                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition"
-                >
-                  <i data-lucide="share-2" class="w-3.5 h-3.5"></i> X / Twitter
-                </button>
-                <button
-                  onclick="window.copyArticleLink('${escapeHtml(article.id)}')"
-                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition"
-                >
-                  <i data-lucide="link" class="w-3.5 h-3.5"></i> Salin Tautan
-                </button>
-                <button
-                  onclick="window.toggleBookmark('${escapeHtml(article.id)}'); window.openArticleDetail('${escapeHtml(article.id)}');"
-                  class="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition ${
-                    isSaved
-                      ? 'bg-amber-500 border-amber-500 text-white'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-amber-50'
-                  }"
-                >
-                  <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-                  <span>${isSaved ? 'Tersimpan' : 'Simpan'}</span>
-                </button>
-              </div>
+    window.setCommentFilter = (articleId, filterId) => {
+      state.commentFilter = filterId;
+      const article = state.articles.find(a => a.id === articleId);
+      if (article) renderArticleDetailBody(article);
+    };
 
-              <!-- Gambar Utama -->
-              ${
-                article.image_url
-                  ? `<div class="rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
-                      <img src="${escapeHtml(article.image_url)}" alt="${escapeHtml(article.title)}" class="w-full max-h-[460px] object-cover" />
-                    </div>`
-                  : ''
-              }
+    window.handleSubmitComment = async (e, articleId) => {
+      e.preventDefault();
+      const article = state.articles.find(a => a.id === articleId);
+      const textEl = document.getElementById('comment-textarea-input');
+      const authorEl = document.getElementById('comment-author-input');
+      const text = textEl?.value.trim();
+      if (!article || !text) return;
 
-              <!-- Teras Berita -->
-              <div class="p-4 rounded-xl bg-sky-50/70 border-l-4 border-sky-600 text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">
-                ${escapeHtml(article.summary)}
-              </div>
+      const author = authorEl?.value.trim() || 'Pembaca KabarRaya';
+      const list = getArticleComments(articleId);
+      const newComment = {
+        id: `cmt-${Date.now()}`,
+        article_id: articleId,
+        author,
+        text,
+        likes: 0,
+        dislikes: 0,
+        pinned: false,
+        featured: false,
+        created_at: new Date().toISOString(),
+        replies: []
+      };
 
-              <!-- Isi Paragraf Lengkap -->
-              <div class="pt-1">
-                ${paragraphs}
-              </div>
+      list.unshift(newComment);
+      state.commentsMap[articleId] = list;
+      state.commentFilter = 'terbaru';
+      saveInteractionStateToLocal();
 
-              <!-- Tag Kata Kunci -->
-              ${
-                article.search_keywords
-                  ? `<div class="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                      <span class="text-xs font-bold text-slate-500">Topik Terkait:</span>
-                      ${article.search_keywords
-                        .split(',')
-                        .map(k => k.trim())
-                        .filter(Boolean)
-                        .map(
-                          k => `<button onclick="window.handleTagClick('${escapeHtml(k)}')" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-sky-600 text-slate-700 hover:text-white text-xs font-bold transition">#${escapeHtml(k)}</button>`
-                        )
-                        .join('')}
-                    </div>`
-                  : ''
-              }
-            </div>
-
-            <!-- Kolom Kanan: Baca Juga -->
-            <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
-              <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-4">
-                <h3 class="font-headline font-extrabold text-base text-brandSlate border-b border-slate-100 pb-2.5">
-                  Jangan Lewatkan
-                </h3>
-                <div class="space-y-3.5">
-                  ${relatedArticles
-                    .map(
-                      rel => `
-                      <div onclick="window.openArticleDetail('${escapeHtml(rel.id)}')" class="group flex items-start gap-3 cursor-pointer">
-                        ${
-                          rel.image_url
-                            ? `<img src="${escapeHtml(rel.image_url)}" alt="" class="w-20 h-16 rounded-xl object-cover shrink-0" />`
-                            : `<div class="w-20 h-16 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-5 h-5 text-slate-400"></i></div>`
-                        }
-                        <div class="min-w-0">
-                          <div class="text-[10px] font-extrabold uppercase text-sky-600">${escapeHtml(getCategoryName(rel.category_id))}</div>
-                          <h4 class="font-headline font-bold text-xs text-slate-800 group-hover:text-sky-600 line-clamp-2 leading-snug mt-0.5 transition">
-                            ${escapeHtml(rel.title)}
-                          </h4>
-                        </div>
-                      </div>`
-                    )
-                    .join('')}
-                </div>
-              </div>
-            </aside>
-          </div>
-        `;
+      // Opsional sinkronisasi ke Supabase jika tabel comments tersedia
+      if (!USE_LOCAL_MODE && supabase && isValidUuid(articleId)) {
+        supabase
+          .from('comments')
+          .insert([{ article_id: articleId, author_name: author, content: text }])
+          .then(() => {})
+          .catch(() => {});
       }
 
-      renderIcons();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Komentar Anda berhasil dikirim!', 'success');
+      renderArticleDetailBody(article);
+      renderFeedArticles();
+    };
+
+    window.handleCommentVote = (articleId, commentId, type) => {
+      const article = state.articles.find(a => a.id === articleId);
+      if (!article) return;
+      const list = getArticleComments(articleId);
+      const cmt = list.find(c => c.id === commentId);
+      if (!cmt) return;
+
+      if (type === 'like') cmt.likes = (cmt.likes || 0) + 1;
+      if (type === 'dislike') cmt.dislikes = (cmt.dislikes || 0) + 1;
+
+      saveInteractionStateToLocal();
+      renderArticleDetailBody(article);
+    };
+
+    window.toggleReplyForm = (articleId, commentId) => {
+      state.replyingToCommentId = commentId;
+      const article = state.articles.find(a => a.id === articleId);
+      if (article) {
+        renderArticleDetailBody(article);
+        if (commentId) {
+          setTimeout(() => document.getElementById(`reply-input-${commentId}`)?.focus(), 60);
+        }
+      }
+    };
+
+    window.handleSubmitReply = (e, articleId, commentId) => {
+      e.preventDefault();
+      const article = state.articles.find(a => a.id === articleId);
+      const input = document.getElementById(`reply-input-${commentId}`);
+      const text = input?.value.trim();
+      if (!article || !text) return;
+
+      const list = getArticleComments(articleId);
+      const cmt = list.find(c => c.id === commentId);
+      if (!cmt) return;
+
+      cmt.replies = cmt.replies || [];
+      cmt.replies.push({
+        id: `rep-${Date.now()}`,
+        author: 'Pembaca KabarRaya',
+        text,
+        created_at: new Date().toISOString()
+      });
+
+      state.replyingToCommentId = null;
+      saveInteractionStateToLocal();
+      showToast('Balasan komentar terkirim!', 'success');
+      renderArticleDetailBody(article);
+      renderFeedArticles();
     };
 
     window.shareArticleWhatsApp = id => {
@@ -2297,6 +3123,7 @@
 
     window.selectCategory = catId => {
       state.selectedCategoryId = catId;
+      state.feedVisibleLimit = 6;
       window.switchMainTab('home');
       renderFeedArticles();
       renderIcons();
@@ -2304,6 +3131,7 @@
 
     window.handleSearchInput = val => {
       state.searchQuery = val || '';
+      state.feedVisibleLimit = 6;
       if (state.activeTab !== 'home') {
         window.switchMainTab('home');
       }
@@ -2313,6 +3141,7 @@
 
     window.handleTagClick = tag => {
       state.searchQuery = tag;
+      state.feedVisibleLimit = 6;
       const dInput = document.getElementById('desktop-search-input');
       const mInput = document.getElementById('mobile-search-input');
       if (dInput) dInput.value = tag;
@@ -2326,10 +3155,13 @@
     window.resetAllFilters = () => {
       state.selectedCategoryId = 'all';
       state.searchQuery = '';
+      state.feedSortMode = 'terbaru';
+      state.feedVisibleLimit = 6;
       const dInput = document.getElementById('desktop-search-input');
       const mInput = document.getElementById('mobile-search-input');
       if (dInput) dInput.value = '';
       if (mInput) mInput.value = '';
+      window.setFeedSortMode('terbaru');
       renderChannelNav();
       renderFeedArticles();
       renderIcons();
@@ -2381,7 +3213,6 @@
       }
     };
 
-    // Klik 3x pada Logo KABARRAYA untuk membuka pintu masuk Dapur Redaksi
     window.handleLogoSecretTap = () => {
       state.logoTapCount += 1;
       clearTimeout(state.logoTapTimer);
@@ -2400,7 +3231,6 @@
       }, 450);
     };
 
-    // Modal 4 Halaman Wajib AdSense + Barcode WhatsApp
     window.openLegalModal = type => {
       const modal = document.getElementById('modal-legal');
       const title = document.getElementById('legal-modal-title');
@@ -2641,7 +3471,6 @@
 
       const prioritized = getPrioritizedArticles();
 
-      // 1. Daftar Berita Versi Mobile (Kartu Rapi dengan 4 Tombol Aksi Sejajar Tanpa Overflow)
       const mobileList = document.getElementById('admin-articles-mobile-list');
       if (mobileList) {
         if (!prioritized.length) {
@@ -2669,7 +3498,6 @@
                   </div>
                 </div>
 
-                <!-- 4 Tombol Aksi Sejajar (grid-cols-4) Tanpa Horizontal Overflow -->
                 <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-100">
                   <button
                     onclick="window.toggleArticleFlag('${escapeHtml(art.id)}', 'is_headline')"
@@ -2710,7 +3538,6 @@
         }
       }
 
-      // 2. Tabel Berita Versi Desktop
       const tbody = document.getElementById('admin-articles-tbody');
       if (tbody) {
         if (!prioritized.length) {
@@ -2769,7 +3596,6 @@
         }
       }
 
-      // 3. Daftar Kanal
       const catList = document.getElementById('admin-categories-list');
       if (catList) {
         catList.innerHTML = state.categories
@@ -2788,7 +3614,6 @@
           .join('');
       }
 
-      // 4. Daftar Iklan Mandiri
       const adsList = document.getElementById('admin-ads-list');
       if (adsList) {
         if (!state.ads.length) {
@@ -2815,7 +3640,6 @@
       }
     }
 
-    // Editor Berita
     window.openArticleEditor = (articleId = null) => {
       const modal = document.getElementById('modal-article-editor');
       const modalTitle = document.getElementById('editor-modal-title');
@@ -2885,7 +3709,6 @@
             }
           }
         }
-        // Fallback kompresi lokal WebP
         const reader = new FileReader();
         reader.onload = ev => {
           document.getElementById('edit-article-image').value = ev.target.result;
@@ -3056,7 +3879,6 @@
       showToast('Berita berhasil dihapus.', 'info');
     };
 
-    // Kanal / Kategori CRUD
     window.handleAddCategory = async e => {
       e.preventDefault();
       const input = document.getElementById('new-category-name');
@@ -3107,7 +3929,6 @@
       showToast('Kanal dihapus.', 'info');
     };
 
-    // Iklan Mandiri CRUD
     window.handleAdFileUpload = e => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -3263,7 +4084,6 @@
       setTxt('stat-top-region', topRegion);
       setTxt('stat-top-source', topSource);
 
-      // Grafik 1: Tren Kunjungan Harian (7 Hari Terakhir)
       const trendEl = document.getElementById('chart-daily-trend');
       if (trendEl) {
         const days = [];
@@ -3296,7 +4116,6 @@
           .join('');
       }
 
-      // Grafik 2: Distribusi Sumber Platform & Trafik (Multi-Warna)
       const srcEl = document.getElementById('chart-traffic-sources');
       if (srcEl) {
         const entries = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]);
@@ -3325,7 +4144,6 @@
         }
       }
 
-      // Grafik 3: Distribusi Negara & Wilayah Pengunjung
       const geoEl = document.getElementById('chart-country-regions');
       if (geoEl) {
         const entries = Object.entries(regionCounts).sort((a, b) => b[1] - a[1]);
@@ -3352,7 +4170,6 @@
         }
       }
 
-      // Grafik 4: Perbandingan Perangkat Pembaca
       const devEl = document.getElementById('chart-devices-breakdown');
       if (devEl) {
         const entries = Object.entries(deviceCounts).sort((a, b) => b[1] - a[1]);
@@ -3384,7 +4201,6 @@
         }
       }
 
-      // Tabel Riwayat Kunjungan Terbaru
       const tbody = document.getElementById('stat-recent-tbody');
       if (tbody) {
         if (!logs.length) {
@@ -3413,12 +4229,10 @@
     // 12. INISIALISASI PORTAL ANTI-GAGAL (initPortal)
     // =========================================================================
     async function initPortal() {
-      // Tampilkan banner preview HANYA jika USE_LOCAL_MODE aktif
       if (USE_LOCAL_MODE) {
         document.getElementById('preview-banner')?.classList.remove('hidden');
       }
 
-      // Set tanggal hari ini di header & tahun di footer
       const dateBadge = document.getElementById('live-date-badge');
       if (dateBadge) {
         const span = dateBadge.querySelector('span');
@@ -3434,7 +4248,6 @@
       const yearEl = document.getElementById('footer-year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-      // Cek sesi login admin yang tersimpan
       if (USE_LOCAL_MODE || !supabase) {
         try {
           const savedAdmin = localStorage.getItem(LOCAL_KEYS.ADMIN_SESSION);
@@ -3455,10 +4268,8 @@
         } catch (e) {}
       }
 
-      // Muat data kanal, artikel, dan iklan
       await loadAllData();
 
-      // Cek parameter ?article=ID pada URL (misalnya dari share WhatsApp)
       const params = new URLSearchParams(window.location.search);
       const sharedArticleId = params.get('article');
       if (sharedArticleId && state.articles.some(a => a.id === sharedArticleId)) {
