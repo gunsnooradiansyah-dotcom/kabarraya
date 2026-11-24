@@ -58,14 +58,50 @@
     .text-shadow-hero {
       text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
     }
+
+    /* Animasi Kabar Kilat Marquee Halus */
+    @keyframes kabarTickerScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-kabar-ticker {
+      display: inline-flex;
+      width: max-content;
+      animation: kabarTickerScroll 34s linear infinite;
+    }
+    .kabar-ticker-wrapper:hover .animate-kabar-ticker {
+      animation-play-state: paused;
+    }
+
+    /* Transisi Zoom Halus Hero */
+    .hero-zoom-active {
+      transform: scale(1);
+    }
+    .hero-zoom-entering {
+      transform: scale(1.06);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-sky-600 selection:text-white">
 
   <!-- ===================================================================== -->
+  <!-- TOP READING PROGRESS BAR (AKTIF SAAT MEMBACA ARTIKEL)                 -->
+  <!-- ===================================================================== -->
+  <div id="reading-progress-container" class="fixed top-0 left-0 right-0 h-1 bg-transparent z-[110] pointer-events-none hidden">
+    <div id="reading-progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-teal-400 transition-all duration-150" style="width: 0%"></div>
+  </div>
+
+  <!-- ===================================================================== -->
   <!-- TOAST NOTIFICATION                                                    -->
   <!-- ===================================================================== -->
   <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 max-w-[92vw] sm:max-w-sm pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- FLOATING SCROLL TO TOP BUTTON                                         -->
+  <!-- ===================================================================== -->
+  <button id="scroll-to-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="fixed bottom-5 right-5 z-[60] w-10 h-10 rounded-full bg-slate-900/90 hover:bg-sky-600 text-white shadow-lg border border-white/15 hidden items-center justify-center transition-all duration-300" aria-label="Kembali ke Atas" title="Kembali ke Atas">
+    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+  </button>
 
   <!-- ===================================================================== -->
   <!-- MOBILE HAMBURGER DRAWER MENU (< lg)                                   -->
@@ -213,10 +249,10 @@
   <!-- ===================================================================== -->
   <main id="view-portal" class="pb-12">
     <!-- FULL-BLEED CINEMATIC HERO -->
-    <section id="hero-section" class="relative bg-slate-950 text-white overflow-hidden">
-      <!-- Background Hero Image (Warna asli jernih, tanpa placeholder bus) -->
-      <div class="absolute inset-0 bg-slate-950">
-        <img id="hero-bg-image" src="" alt="" class="hidden w-full h-full object-cover object-top opacity-100 transition-opacity duration-500" />
+    <section id="hero-section" onmouseenter="window.pauseHeroAutoSlide(true)" onmouseleave="window.pauseHeroAutoSlide(false)" class="relative bg-slate-950 text-white overflow-hidden">
+      <!-- Background Hero Image (Warna asli jernih, dengan transisi zoom & fade halus) -->
+      <div class="absolute inset-0 bg-slate-950 overflow-hidden">
+        <img id="hero-bg-image" src="" alt="" class="hidden w-full h-full object-cover object-top opacity-100 hero-zoom-active transition-all duration-700 ease-out" />
         <!-- Gradasi halus hanya di tepi bawah & kiri agar foto tetap terang alami -->
         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-slate-950/20"></div>
         <div class="hidden lg:block absolute inset-0 bg-gradient-to-r from-slate-950/75 via-transparent to-slate-950/45"></div>
@@ -226,7 +262,7 @@
       <div id="hero-editorial-stage" class="relative z-10 w-full px-3 sm:px-8 lg:px-10 pt-6 sm:pt-10 pb-14 sm:pb-20 min-h-[340px] sm:min-h-[430px] lg:min-h-[500px] flex flex-col justify-between">
         <!-- Top Row: 4 Kartu Sorotan Vertikal Sejajar ke Bawah di Pojok Kanan -->
         <div class="w-full flex justify-end">
-          <div id="hero-right-cards" class="grid grid-cols-1 gap-1.5 sm:gap-2 w-[155px] sm:w-[205px] lg:w-[235px] ml-auto">
+          <div id="hero-right-cards" class="grid grid-cols-1 gap-1.5 sm:gap-2 w-[165px] sm:w-[215px] lg:w-[245px] ml-auto">
             <!-- Diisi dinamis oleh renderCinematicHero() -->
           </div>
         </div>
@@ -235,25 +271,37 @@
         <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-end mt-6 lg:mt-4">
           <!-- Left: Main Headline -->
           <div class="lg:col-span-8 lg:pl-4 xl:pl-10 space-y-2.5">
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <span id="hero-category-badge" class="px-2.5 py-0.5 rounded-md bg-sky-600 text-white text-[10px] sm:text-xs font-extrabold uppercase tracking-wider shadow">
                 SOROTAN UTAMA
               </span>
               <span id="hero-time-badge" class="text-[11px] text-slate-200 font-medium text-shadow-hero">Terbaru</span>
+              <span class="text-slate-400 text-[11px]">•</span>
+              <span id="hero-readtime-badge" class="inline-flex items-center gap-1 text-[11px] text-sky-300 font-semibold text-shadow-hero">
+                <i data-lucide="clock" class="w-3 h-3"></i> 2 mnt baca
+              </span>
             </div>
 
             <h1 id="hero-main-title" onclick="window.openHeroMainArticle()" class="font-headline font-black text-xl sm:text-3xl lg:text-4xl text-white leading-tight max-w-[540px] cursor-pointer hover:text-sky-300 transition text-shadow-hero">
               Memuat kabar utama KabarRaya...
             </h1>
 
-            <div class="flex flex-wrap items-center gap-3 pt-1">
+            <div class="flex flex-wrap items-center gap-2.5 pt-1">
               <button onclick="window.openHeroMainArticle()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-extrabold shadow-lg transition">
                 <span>Baca Selengkapnya</span>
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
               </button>
 
-              <!-- Indikator Slide Numerik 01 02 03 -->
-              <div id="hero-slide-dots" class="flex items-center gap-1.5"></div>
+              <!-- Kontrol Slide Prev/Next + Indikator Numerik 01 02 03 -->
+              <div class="flex items-center gap-1.5 bg-slate-950/55 backdrop-blur-md p-1 rounded-xl border border-white/15">
+                <button onclick="window.stepHeroSlide(-1)" class="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition" title="Slide Sebelumnya" aria-label="Slide Sebelumnya">
+                  <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                </button>
+                <div id="hero-slide-dots" class="flex items-center gap-1"></div>
+                <button onclick="window.stepHeroSlide(1)" class="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition" title="Slide Berikutnya" aria-label="Slide Berikutnya">
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -285,8 +333,23 @@
       </div>
     </section>
 
+    <!-- KABAR KILAT / BREAKING NEWS MARQUEE STRIP -->
+    <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-5">
+      <div class="bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-card overflow-hidden flex items-center">
+        <div class="px-3.5 sm:px-4 py-2.5 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-headline font-black text-[11px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+          <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+          <span>Kabar Kilat</span>
+        </div>
+        <div class="kabar-ticker-wrapper flex-1 overflow-hidden py-2.5 px-3 relative">
+          <div id="kabar-kilat-marquee" class="animate-kabar-ticker flex items-center gap-8 text-xs font-semibold text-slate-200">
+            <!-- Diisi dinamis berita terkini -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- LEADERBOARD AD SLOT (SPONSOR MANDIRI / ADSENSE) -->
-    <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-6">
+    <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-5">
       <div id="ad-slot-leaderboard" class="w-full rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-card p-3 text-center">
         <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Ruang Iklan • Advertisement</div>
         <div id="ad-leaderboard-content" class="min-h-[70px] sm:min-h-[90px] rounded-xl bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center p-3 text-xs text-slate-400">
@@ -301,16 +364,26 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
         <!-- Kolom Kiri (8 Kolom): Kabar Terbaru -->
         <div class="lg:col-span-8 space-y-5">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div class="flex items-center gap-2.5">
               <span class="w-1.5 h-6 rounded-full bg-sky-600"></span>
               <h2 id="feed-section-title" class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">
                 Kabar Terbaru Hari Ini
               </h2>
             </div>
-            <div id="active-filter-indicator" class="hidden items-center gap-2">
-              <span id="active-filter-label" class="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 text-xs font-bold"></span>
-              <button onclick="window.resetFilters()" class="text-xs font-bold text-rose-600 hover:underline">Reset</button>
+
+            <!-- Filter Urutan (Terbaru / Terpopuler / Viral) + Reset -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <div class="inline-flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
+                <button onclick="window.setFeedSort('latest')" id="sort-pill-latest" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-sky-600 text-white transition">Terbaru</button>
+                <button onclick="window.setFeedSort('popular')" id="sort-pill-popular" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-sky-600 transition">Terpopuler</button>
+                <button onclick="window.setFeedSort('viral')" id="sort-pill-viral" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-amber-600 transition">Viral</button>
+              </div>
+
+              <div id="active-filter-indicator" class="hidden items-center gap-1.5 ml-1">
+                <span id="active-filter-label" class="px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 text-[11px] font-bold"></span>
+                <button onclick="window.resetFilters()" class="text-[11px] font-bold text-rose-600 hover:underline">Reset</button>
+              </div>
             </div>
           </div>
 
@@ -318,9 +391,17 @@
           <div id="articles-feed-list" class="space-y-4">
             <!-- Diisi dinamis -->
           </div>
+
+          <!-- Tombol Muat Lebih Banyak (Pagination) -->
+          <div id="feed-load-more-wrap" class="hidden pt-2 text-center">
+            <button onclick="window.loadMoreFeedArticles()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-300 text-xs font-extrabold shadow-2xs transition">
+              <i data-lucide="chevrons-down" class="w-4 h-4 text-sky-600"></i>
+              <span>Muat Berita Lainnya</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Kolom Kanan Sticky (4 Kolom): Top 5 Viral & Topik Hangat -->
+        <!-- Kolom Kanan Sticky (4 Kolom): Top 5 Viral, Topik Hangat & Info Harian Pembaca -->
         <aside class="lg:col-span-4 space-y-6">
           <div class="lg:sticky lg:top-28 space-y-6">
             <!-- Widget Top 5 Paling Banyak Dicari & Viral -->
@@ -347,8 +428,60 @@
                 <!-- Diisi dinamis -->
               </div>
             </div>
+
+            <!-- Widget Info Harian Pembaca (Jam WIB, Cuaca Jakarta & Kurs Rupiah) -->
+            <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950 text-white rounded-2xl border border-slate-800 shadow-card p-5 space-y-3.5">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="compass" class="w-4 h-4 text-sky-400"></i>
+                  <h3 class="font-headline font-extrabold text-sm text-white">Info Harian Pembaca</h3>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">LIVE WIB</span>
+              </div>
+
+              <div class="flex items-center justify-between bg-white/5 rounded-xl p-3 border border-white/10">
+                <div>
+                  <div id="widget-live-date" class="text-[11px] text-slate-300 font-medium">Memuat tanggal...</div>
+                  <div id="widget-live-clock" class="font-headline font-black text-xl text-white tracking-tight mt-0.5">--:--:-- WIB</div>
+                </div>
+                <div class="text-right">
+                  <div class="inline-flex items-center gap-1 text-amber-300 text-xs font-extrabold">
+                    <i data-lucide="sun" class="w-4 h-4"></i> 31°C
+                  </div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">DKI Jakarta • Cerah Berawan</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-[11px]">
+                <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
+                  <div class="text-slate-400 font-semibold">USD / IDR</div>
+                  <div class="font-headline font-extrabold text-white mt-0.5">Rp 15.840</div>
+                </div>
+                <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
+                  <div class="text-slate-400 font-semibold">Emas Antam</div>
+                  <div class="font-headline font-extrabold text-amber-300 mt-0.5">Rp 1.545.000/gr</div>
+                </div>
+              </div>
+            </div>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <!-- SOROTAN PILIHAN KANAL (SHOWCASE PER KATEGORI) -->
+    <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-10">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-5">
+        <div class="flex items-center gap-2.5">
+          <span class="w-1.5 h-6 rounded-full bg-teal-600"></span>
+          <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">Sorotan Pilihan Kanal</h2>
+        </div>
+        <button onclick="window.navigateTo('trending')" class="text-xs font-extrabold text-sky-600 hover:text-sky-700 flex items-center gap-1">
+          <span>Semua Viral</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+      <div id="category-showcase-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Diisi dinamis per kanal aktif -->
       </div>
     </section>
   </main>
@@ -385,12 +518,26 @@
               <i data-lucide="eye" class="w-3.5 h-3.5 text-sky-600"></i>
               <span id="detail-views">0</span> dibaca
             </span>
+            <span>•</span>
+            <span id="detail-read-time" class="inline-flex items-center gap-1 text-teal-700 font-semibold">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i> 2 mnt baca
+            </span>
           </div>
 
-          <!-- Tombol Share WhatsApp & Bookmark -->
-          <div class="flex items-center gap-2">
+          <!-- Tombol Ukuran Huruf + Share WhatsApp, Salin Link & Bookmark -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Pengatur Ukuran Huruf (A- / A / A+) -->
+            <div class="inline-flex items-center bg-slate-100 rounded-xl p-0.5 border border-slate-200/80" title="Atur Ukuran Huruf">
+              <button onclick="window.setArticleFontSize('sm')" id="font-btn-sm" class="px-2 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 hover:bg-white transition">A-</button>
+              <button onclick="window.setArticleFontSize('base')" id="font-btn-base" class="px-2 py-1 rounded-lg text-[11px] font-extrabold bg-white text-sky-600 shadow-2xs transition">A</button>
+              <button onclick="window.setArticleFontSize('lg')" id="font-btn-lg" class="px-2 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 hover:bg-white transition">A+</button>
+            </div>
+
             <button onclick="window.shareToWhatsApp()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition">
               <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Kirim ke WhatsApp
+            </button>
+            <button onclick="window.copyArticleLink()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition" title="Salin Tautan Berita">
+              <i data-lucide="link" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Salin Link</span>
             </button>
             <button id="detail-bookmark-btn" onclick="window.toggleActiveArticleBookmark()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
               <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> Simpan
@@ -415,10 +562,29 @@
         </div>
 
         <!-- Isi Berita Lengkap -->
-        <div id="detail-content" class="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed space-y-4"></div>
+        <div id="detail-content" class="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed space-y-4 transition-all"></div>
+
+        <!-- Bar Bagikan Artikel -->
+        <div class="mt-8 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
+          <span class="text-xs font-extrabold text-slate-700">Bagikan kabar ini ke kerabat Anda:</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="window.shareToWhatsApp()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold inline-flex items-center gap-1.5 transition">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WhatsApp
+            </button>
+            <button onclick="window.shareToSocial('x')" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold inline-flex items-center gap-1.5 transition">
+              <span>𝕏</span> Post
+            </button>
+            <button onclick="window.shareToSocial('facebook')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold inline-flex items-center gap-1.5 transition">
+              <i data-lucide="share" class="w-3.5 h-3.5"></i> Facebook
+            </button>
+            <button onclick="window.copyArticleLink()" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin URL
+            </button>
+          </div>
+        </div>
 
         <!-- Kata Kunci / Tags -->
-        <div id="detail-tags" class="mt-8 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2"></div>
+        <div id="detail-tags" class="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2"></div>
       </article>
 
       <!-- Sidebar Berita Terkait -->
@@ -965,9 +1131,14 @@
       bookmarks: [],
       selectedCategoryId: null,
       searchQuery: '',
+      feedSort: 'latest',
+      feedVisibleLimit: 6,
+      articleFontSize: 'base',
       activeView: 'portal',
       activeArticleId: null,
       heroSlideIndex: 0,
+      heroAutoTimer: null,
+      heroPaused: false,
       adminUser: null,
       logoTapCount: 0,
       logoTapTimer: null
@@ -1017,6 +1188,11 @@
       if (diffSec < 3600) return `${Math.floor(diffSec / 60)} menit lalu`;
       if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} jam lalu`;
       return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function estimateReadingMinutes(text) {
+      const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.ceil(words / 180));
     }
 
     function getCategoryName(categoryId) {
@@ -1254,7 +1430,10 @@
       updateBookmarkBadges();
       renderNavigationCategories();
       renderCinematicHero();
+      startHeroAutoSlide();
+      renderKabarKilatMarquee();
       renderPortalFeed();
+      renderCategoryShowcase();
       renderSidebarWidgets();
       renderActiveAds();
       updateAdminKpiCards();
@@ -1306,7 +1485,7 @@
     }
 
     // =========================================================================
-    // 7. RENDER CINEMATIC HERO (PRIORITAS is_headline & 4 SOROTAN VERTIKAL)
+    // 7. RENDER CINEMATIC HERO (AUTO-SLIDE + PRIORITAS is_headline & 4 SOROTAN)
     // =========================================================================
     function getPrioritizedHeroArticles() {
       const headlines = state.articles.filter(a => a.is_headline);
@@ -1314,7 +1493,31 @@
       return [...headlines, ...others];
     }
 
-    function renderCinematicHero() {
+    function startHeroAutoSlide() {
+      clearInterval(state.heroAutoTimer);
+      state.heroAutoTimer = setInterval(() => {
+        if (state.heroPaused || state.activeView !== 'portal') return;
+        const slides = getPrioritizedHeroArticles().slice(0, 3);
+        if (slides.length > 1) {
+          state.heroSlideIndex = (state.heroSlideIndex + 1) % slides.length;
+          renderCinematicHero(true);
+        }
+      }, 6000);
+    }
+
+    window.pauseHeroAutoSlide = (paused) => {
+      state.heroPaused = Boolean(paused);
+    };
+
+    window.stepHeroSlide = (delta) => {
+      const slides = getPrioritizedHeroArticles().slice(0, 3);
+      if (slides.length === 0) return;
+      state.heroSlideIndex = (state.heroSlideIndex + delta + slides.length) % slides.length;
+      renderCinematicHero(true);
+      startHeroAutoSlide();
+    };
+
+    function renderCinematicHero(animateZoom = false) {
       const prioritized = getPrioritizedHeroArticles();
       const slides = prioritized.slice(0, 3);
       if (state.heroSlideIndex >= slides.length) state.heroSlideIndex = 0;
@@ -1323,6 +1526,7 @@
       const bgImg = document.getElementById('hero-bg-image');
       const catBadge = document.getElementById('hero-category-badge');
       const timeBadge = document.getElementById('hero-time-badge');
+      const readBadge = document.getElementById('hero-readtime-badge');
       const mainTitle = document.getElementById('hero-main-title');
       const quoteEl = document.getElementById('hero-quote-text');
       const dotsEl = document.getElementById('hero-slide-dots');
@@ -1330,6 +1534,16 @@
       if (mainArt) {
         if (bgImg) {
           if (mainArt.image_url) {
+            if (animateZoom) {
+              bgImg.classList.remove('hero-zoom-active');
+              bgImg.classList.add('hero-zoom-entering');
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  bgImg.classList.remove('hero-zoom-entering');
+                  bgImg.classList.add('hero-zoom-active');
+                });
+              });
+            }
             bgImg.src = mainArt.image_url;
             bgImg.alt = mainArt.title;
             bgImg.classList.remove('hidden');
@@ -1339,6 +1553,10 @@
         }
         if (catBadge) catBadge.textContent = getCategoryName(mainArt.category_id);
         if (timeBadge) timeBadge.textContent = formatRelativeTime(mainArt.created_at);
+        if (readBadge) {
+          const mins = estimateReadingMinutes(mainArt.content || mainArt.summary);
+          readBadge.innerHTML = `<i data-lucide="clock" class="w-3 h-3"></i> ${mins} mnt baca`;
+        }
         if (mainTitle) {
           mainTitle.textContent = mainArt.title;
           mainTitle.dataset.articleId = mainArt.id;
@@ -1353,7 +1571,7 @@
         dotsEl.innerHTML = slides.map((s, idx) => {
           const active = idx === state.heroSlideIndex;
           return `
-            <button onclick="window.setHeroSlide(${idx})" class="px-2.5 py-1 rounded-lg text-[11px] font-headline font-black transition ${active ? 'bg-white text-slate-950 shadow' : 'bg-white/15 text-white hover:bg-white/25'}">
+            <button onclick="window.setHeroSlide(${idx})" class="px-2 py-0.5 rounded-lg text-[11px] font-headline font-black transition ${active ? 'bg-white text-slate-950 shadow' : 'text-white/80 hover:text-white hover:bg-white/15'}">
               0${idx + 1}
             </button>
           `;
@@ -1375,12 +1593,16 @@
               </div>
             `;
           }
+          const mins = estimateReadingMinutes(item.content || item.summary);
           return `
-            <div onclick="window.openArticleDetail('${item.id}')" class="group h-[52px] sm:h-[64px] rounded-xl bg-slate-950/75 hover:bg-slate-900/90 backdrop-blur-md border border-white/15 hover:border-sky-400/60 p-1.5 sm:p-2 flex items-center gap-2 cursor-pointer transition shadow-md">
+            <div onclick="window.openArticleDetail('${item.id}')" class="group h-[54px] sm:h-[66px] rounded-xl bg-slate-950/75 hover:bg-slate-900/90 backdrop-blur-md border border-white/15 hover:border-sky-400/60 p-1.5 sm:p-2 flex items-center gap-2 cursor-pointer transition shadow-md">
               <img src="${escapeHtml(item.image_url || 'https://placehold.co/160x120/0F172A/FFFFFF?text=KR')}" alt="" class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover shrink-0 bg-slate-800" onerror="this.src='https://placehold.co/160x120/0F172A/FFFFFF?text=KR'" />
               <div class="min-w-0 flex-1">
-                <div class="text-[9px] font-extrabold uppercase text-sky-400 truncate">${escapeHtml(getCategoryName(item.category_id))}</div>
-                <h3 class="font-headline font-bold text-[10px] sm:text-[11px] text-white leading-snug line-clamp-2 group-hover:text-sky-300 transition">
+                <div class="flex items-center justify-between gap-1 text-[9px] font-extrabold uppercase text-sky-400">
+                  <span class="truncate">${escapeHtml(getCategoryName(item.category_id))}</span>
+                  <span class="text-slate-400 font-semibold normal-case shrink-0">${mins}m</span>
+                </div>
+                <h3 class="font-headline font-bold text-[10px] sm:text-[11px] text-white leading-snug line-clamp-2 group-hover:text-sky-300 transition mt-0.5">
                   ${escapeHtml(item.title)}
                 </h3>
               </div>
@@ -1415,11 +1637,14 @@
           `;
         }).join('');
       }
+
+      renderIcons();
     }
 
     window.setHeroSlide = (idx) => {
       state.heroSlideIndex = idx;
-      renderCinematicHero();
+      renderCinematicHero(true);
+      startHeroAutoSlide();
     };
 
     window.openHeroMainArticle = () => {
@@ -1429,7 +1654,28 @@
     };
 
     // =========================================================================
-    // 8. RENDER FEED BERITA & SIDEBAR (TOP 5 VIRAL & HOT TAGS)
+    // 7B. KABAR KILAT MARQUEE STRIP
+    // =========================================================================
+    function renderKabarKilatMarquee() {
+      const marqueeEl = document.getElementById('kabar-kilat-marquee');
+      if (!marqueeEl) return;
+      const items = state.articles.slice(0, 6);
+      if (items.length === 0) {
+        marqueeEl.innerHTML = `<span>Selamat datang di KabarRaya — Portal Berita Terkini, Cepat, Jernih & Terpercaya Indonesia.</span>`;
+        return;
+      }
+      const doubled = [...items, ...items];
+      marqueeEl.innerHTML = doubled.map(art => `
+        <button onclick="window.openArticleDetail('${art.id}')" class="inline-flex items-center gap-2 hover:text-sky-400 transition whitespace-nowrap">
+          <span class="px-1.5 py-0.5 rounded bg-white/10 text-sky-300 text-[10px] font-extrabold uppercase">${escapeHtml(getCategoryName(art.category_id))}</span>
+          <span>${escapeHtml(art.title)}</span>
+          <span class="text-slate-600 ml-3">•</span>
+        </button>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 8. RENDER FEED BERITA, SOROTAN KANAL & SIDEBAR
     // =========================================================================
     function getFilteredArticles() {
       let list = [...state.articles];
@@ -1444,16 +1690,47 @@
           (a.search_keywords || '').toLowerCase().includes(q)
         );
       }
+      if (state.feedSort === 'popular') {
+        list.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      } else if (state.feedSort === 'viral') {
+        list.sort((a, b) => (Number(b.is_trending) - Number(a.is_trending)) || ((b.views_count || 0) - (a.views_count || 0)));
+      }
       return list;
     }
+
+    window.setFeedSort = (sortKey) => {
+      state.feedSort = sortKey;
+      state.feedVisibleLimit = 6;
+      ['latest', 'popular', 'viral'].forEach(k => {
+        const btn = document.getElementById(`sort-pill-${k}`);
+        if (!btn) return;
+        btn.className = k === sortKey
+          ? 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-sky-600 text-white transition'
+          : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 hover:text-sky-600 transition';
+      });
+      renderPortalFeed();
+      renderIcons();
+    };
+
+    window.loadMoreFeedArticles = () => {
+      state.feedVisibleLimit += 6;
+      renderPortalFeed();
+      renderIcons();
+    };
 
     function renderPortalFeed() {
       const feedEl = document.getElementById('articles-feed-list');
       const titleEl = document.getElementById('feed-section-title');
       const filterInd = document.getElementById('active-filter-indicator');
       const filterLbl = document.getElementById('active-filter-label');
+      const loadMoreWrap = document.getElementById('feed-load-more-wrap');
 
       const filtered = getFilteredArticles();
+      const visibleList = filtered.slice(0, state.feedVisibleLimit);
+
+      if (loadMoreWrap) {
+        loadMoreWrap.classList.toggle('hidden', filtered.length <= state.feedVisibleLimit);
+      }
 
       if (state.selectedCategoryId || state.searchQuery.trim()) {
         if (filterInd) filterInd.classList.replace('hidden', 'flex');
@@ -1464,11 +1741,15 @@
         if (titleEl) titleEl.textContent = `Hasil Berita (${filtered.length})`;
       } else {
         if (filterInd) filterInd.classList.replace('flex', 'hidden');
-        if (titleEl) titleEl.textContent = 'Kabar Terbaru Hari Ini';
+        if (titleEl) {
+          titleEl.textContent = state.feedSort === 'popular'
+            ? 'Berita Terpopuler'
+            : (state.feedSort === 'viral' ? 'Kabar Viral Pilihan' : 'Kabar Terbaru Hari Ini');
+        }
       }
 
       if (!feedEl) return;
-      if (filtered.length === 0) {
+      if (visibleList.length === 0) {
         feedEl.innerHTML = `
           <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-2">
             <p class="font-headline font-bold text-base text-slate-700">Belum ada berita yang sesuai</p>
@@ -1478,8 +1759,9 @@
         return;
       }
 
-      feedEl.innerHTML = filtered.map(art => {
+      feedEl.innerHTML = visibleList.map(art => {
         const isSaved = state.bookmarks.includes(art.id);
+        const mins = estimateReadingMinutes(art.content || art.summary);
         return `
           <article class="bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition p-3.5 sm:p-4 flex gap-3.5 sm:gap-4 group">
             <div onclick="window.openArticleDetail('${art.id}')" class="w-28 h-24 sm:w-44 sm:h-32 rounded-xl overflow-hidden bg-slate-100 shrink-0 cursor-pointer relative">
@@ -1492,6 +1774,8 @@
                   <span class="text-sky-600 uppercase">${escapeHtml(getCategoryName(art.category_id))}</span>
                   <span class="text-slate-300">•</span>
                   <span class="text-slate-400 font-medium">${formatRelativeTime(art.created_at)}</span>
+                  <span class="hidden sm:inline text-slate-300">•</span>
+                  <span class="hidden sm:inline text-slate-400 font-medium">${mins} mnt baca</span>
                 </div>
                 <h3 onclick="window.openArticleDetail('${art.id}')" class="font-headline font-extrabold text-sm sm:text-base text-brandSlate leading-snug mt-1 line-clamp-2 cursor-pointer group-hover:text-sky-600 transition">
                   ${escapeHtml(art.title)}
@@ -1511,6 +1795,55 @@
               </div>
             </div>
           </article>
+        `;
+      }).join('');
+    }
+
+    function renderCategoryShowcase() {
+      const showcaseEl = document.getElementById('category-showcase-grid');
+      if (!showcaseEl) return;
+
+      const blocks = state.categories.map(cat => {
+        const catArticles = state.articles.filter(a => a.category_id === cat.id);
+        return { cat, articles: catArticles };
+      }).filter(b => b.articles.length > 0).slice(0, 6);
+
+      if (blocks.length === 0) {
+        showcaseEl.innerHTML = '';
+        return;
+      }
+
+      showcaseEl.innerHTML = blocks.map(({ cat, articles }) => {
+        const lead = articles[0];
+        const subItems = articles.slice(1, 3);
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
+            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+              <span class="font-headline font-extrabold text-xs uppercase tracking-wider text-sky-700">${escapeHtml(cat.name)}</span>
+              <button onclick="window.navigateTo('portal', '${cat.id}')" class="text-[11px] font-bold text-slate-500 hover:text-sky-600 transition">Indeks →</button>
+            </div>
+            <div onclick="window.openArticleDetail('${lead.id}')" class="group cursor-pointer">
+              <div class="h-40 bg-slate-100 overflow-hidden">
+                <img src="${escapeHtml(lead.image_url || 'https://placehold.co/600x400/0F172A/FFFFFF?text=KabarRaya')}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              </div>
+              <div class="p-4 pb-3">
+                <h3 class="font-headline font-extrabold text-sm text-brandSlate leading-snug line-clamp-2 group-hover:text-sky-600 transition">
+                  ${escapeHtml(lead.title)}
+                </h3>
+                <div class="text-[10px] text-slate-400 font-semibold mt-1.5">${formatRelativeTime(lead.created_at)}</div>
+              </div>
+            </div>
+            ${subItems.length > 0 ? `
+              <div class="px-4 pb-4 pt-2 border-t border-slate-100 space-y-2 mt-auto">
+                ${subItems.map(sub => `
+                  <div onclick="window.openArticleDetail('${sub.id}')" class="text-xs font-bold text-slate-600 hover:text-sky-600 line-clamp-1 cursor-pointer flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0"></span>
+                    <span class="truncate">${escapeHtml(sub.title)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
         `;
       }).join('');
     }
@@ -1564,18 +1897,73 @@
     }
 
     // =========================================================================
+    // 8B. JAM WIB LIVE, PROGRESS BAR ARTIKEL & SCROLL TO TOP
+    // =========================================================================
+    function startLiveWibClock() {
+      const updateClock = () => {
+        const now = new Date();
+        const dateEl = document.getElementById('widget-live-date');
+        const clockEl = document.getElementById('widget-live-clock');
+        if (dateEl) {
+          dateEl.textContent = now.toLocaleDateString('id-ID', {
+            weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta'
+          });
+        }
+        if (clockEl) {
+          const timeStr = now.toLocaleTimeString('id-ID', {
+            hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta'
+          }).replace(/\./g, ':');
+          clockEl.textContent = `${timeStr} WIB`;
+        }
+      };
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+    function initScrollListeners() {
+      window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const topBtn = document.getElementById('scroll-to-top-btn');
+        if (topBtn) {
+          if (scrollTop > 360) {
+            topBtn.classList.remove('hidden');
+            topBtn.classList.add('flex');
+          } else {
+            topBtn.classList.add('hidden');
+            topBtn.classList.remove('flex');
+          }
+        }
+
+        const progContainer = document.getElementById('reading-progress-container');
+        const progBar = document.getElementById('reading-progress-bar');
+        if (state.activeView === 'article' && progContainer && progBar) {
+          progContainer.classList.remove('hidden');
+          const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+          progBar.style.width = `${pct}%`;
+        } else if (progContainer) {
+          progContainer.classList.add('hidden');
+        }
+      }, { passive: true });
+    }
+
+    // =========================================================================
     // 9. NAVIGASI ANTAR HALAMAN, ARTIKEL DETAIL & WHATSAPP SHARE
     // =========================================================================
     window.navigateTo = (viewName, categoryId = undefined) => {
       state.activeView = viewName;
       if (categoryId !== undefined) {
         state.selectedCategoryId = categoryId;
+        state.feedVisibleLimit = 6;
       }
 
       ['portal', 'article', 'trending', 'bookmarks', 'admin'].forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.toggle('hidden', v !== viewName);
       });
+
+      const progContainer = document.getElementById('reading-progress-container');
+      if (progContainer) progContainer.classList.toggle('hidden', viewName !== 'article');
 
       if (viewName === 'portal') {
         document.title = 'KabarRaya — Portal Berita Terkini, Trending & Viral Indonesia';
@@ -1599,6 +1987,28 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       renderIcons();
+    };
+
+    window.setArticleFontSize = (sizeKey) => {
+      state.articleFontSize = sizeKey;
+      const contentEl = document.getElementById('detail-content');
+      if (contentEl) {
+        contentEl.classList.remove('text-xs', 'text-sm', 'sm:text-base', 'text-base', 'sm:text-lg', 'text-lg', 'sm:text-xl');
+        if (sizeKey === 'sm') {
+          contentEl.classList.add('text-xs', 'sm:text-sm');
+        } else if (sizeKey === 'lg') {
+          contentEl.classList.add('text-base', 'sm:text-lg');
+        } else {
+          contentEl.classList.add('text-sm', 'sm:text-base');
+        }
+      }
+      ['sm', 'base', 'lg'].forEach(k => {
+        const btn = document.getElementById(`font-btn-${k}`);
+        if (!btn) return;
+        btn.className = k === sizeKey
+          ? 'px-2 py-1 rounded-lg text-[11px] font-extrabold bg-white text-sky-600 shadow-2xs transition'
+          : 'px-2 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 hover:bg-white transition';
+      });
     };
 
     window.openArticleDetail = async (articleId) => {
@@ -1625,6 +2035,11 @@
       document.getElementById('detail-author').textContent = article.author_name || 'Tim Redaksi KabarRaya';
       document.getElementById('detail-date').textContent = formatRelativeTime(article.created_at);
       document.getElementById('detail-views').textContent = article.views_count.toLocaleString('id-ID');
+      const mins = estimateReadingMinutes(article.content || article.summary);
+      const readTimeEl = document.getElementById('detail-read-time');
+      if (readTimeEl) {
+        readTimeEl.innerHTML = `<i data-lucide="book-open" class="w-3.5 h-3.5"></i> ${mins} mnt baca`;
+      }
       document.getElementById('detail-image').src = article.image_url || 'https://placehold.co/1200x675/0F172A/FFFFFF?text=KabarRaya';
       document.getElementById('detail-summary').textContent = article.summary;
 
@@ -1678,6 +2093,39 @@
 
       const message = `*${article.title}*\n\nBaca berita selengkapnya di KabarRaya:\n${shareUrl.toString()}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+    };
+
+    window.shareToSocial = (platform) => {
+      const article = state.articles.find(a => a.id === state.activeArticleId);
+      if (!article) return;
+      const shareUrl = new URL(window.location.origin + window.location.pathname);
+      shareUrl.searchParams.set('article', article.id);
+      shareUrl.searchParams.set('utm_source', platform);
+
+      if (platform === 'x') {
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(shareUrl.toString())}`, '_blank', 'noopener');
+      } else if (platform === 'facebook') {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl.toString())}`, '_blank', 'noopener');
+      }
+    };
+
+    window.copyArticleLink = () => {
+      const article = state.articles.find(a => a.id === state.activeArticleId);
+      const shareUrl = new URL(window.location.origin + window.location.pathname);
+      if (article) shareUrl.searchParams.set('article', article.id);
+      const textToCopy = shareUrl.toString();
+
+      const tempInput = document.createElement('input');
+      tempInput.value = textToCopy;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('Tautan berita berhasil disalin!', 'success');
+      } catch (e) {
+        showToast('Gagal menyalin tautan.', 'error');
+      }
+      document.body.removeChild(tempInput);
     };
 
     function renderTrendingFullView() {
@@ -1767,17 +2215,20 @@
       e.preventDefault();
       const input = document.getElementById(inputId);
       state.searchQuery = input ? input.value : '';
+      state.feedVisibleLimit = 6;
       window.navigateTo('portal');
     };
 
     window.searchByTag = (tag) => {
       state.searchQuery = tag;
+      state.feedVisibleLimit = 6;
       window.navigateTo('portal');
     };
 
     window.resetFilters = () => {
       state.selectedCategoryId = null;
       state.searchQuery = '';
+      state.feedVisibleLimit = 6;
       window.navigateTo('portal', null);
     };
 
@@ -2130,7 +2581,9 @@
           }
           localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(state.articles));
           renderCinematicHero();
+          renderKabarKilatMarquee();
           renderPortalFeed();
+          renderCategoryShowcase();
           renderSidebarWidgets();
         }
 
@@ -2156,7 +2609,9 @@
           state.articles = state.articles.filter(a => a.id !== articleId);
           localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(state.articles));
           renderCinematicHero();
+          renderKabarKilatMarquee();
           renderPortalFeed();
+          renderCategoryShowcase();
           renderSidebarWidgets();
         }
         renderAdminArticles();
@@ -2385,6 +2840,8 @@
     // =========================================================================
     async function initPortal() {
       renderIcons();
+      startLiveWibClock();
+      initScrollListeners();
       supabase = await initSupabaseClient();
 
       if (supabase) {
