@@ -869,76 +869,210 @@
     </footer>
   </div>
 
-  <!-- MODAL 1: EDITOR BERITA (TAMBAH / EDIT) -->
-  <div id="modal-article" class="fixed inset-0 z-[80] hidden items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden">
-      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-        <h3 id="modal-article-title" class="font-headline font-extrabold text-base text-brandSlate">Tulis Kabar Baru</h3>
-        <button type="button" onclick="window.closeModal('modal-article')" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 transition">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+  <!-- MODAL 1: RUANG KERJA EDITOR BERITA JURNALIS (LUAS, LEGA & RAPI) -->
+  <div id="modal-article" class="fixed inset-0 z-[80] hidden items-center justify-center p-2 sm:p-4 lg:p-6 bg-slate-950/75 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-6xl h-[95vh] sm:h-[92vh] flex flex-col overflow-hidden border border-slate-200/80">
+      <!-- Header Modal Ringkas & Informatif -->
+      <div class="px-4 sm:px-6 py-3.5 border-b border-slate-200 flex items-center justify-between gap-3 bg-slate-50/90 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <i data-lucide="file-edit" class="w-4 h-4"></i>
+          </span>
+          <div class="min-w-0">
+            <h3 id="modal-article-title" class="font-headline font-extrabold text-base sm:text-lg text-brandSlate leading-tight truncate">Tulis Kabar Baru</h3>
+            <p class="text-[11px] text-slate-500 hidden sm:block">Ruang kerja redaksi KabarRaya • Gunakan paragraf pendek dan jelas agar nyaman dibaca di ponsel</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span id="editor-word-badge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[11px] font-bold text-slate-600">
+            <i data-lucide="align-left" class="w-3.5 h-3.5 text-sky-600"></i>
+            <span id="editor-word-count">0 kata • ~1 mnt baca</span>
+          </span>
+          <button type="button" onclick="window.closeModal('modal-article')" aria-label="Tutup Editor" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
       </div>
-      <form id="article-editor-form" onsubmit="window.handleSaveArticle(event)" class="p-5 overflow-y-auto space-y-4">
+
+      <!-- Form Utama: 2 Kolom di Desktop (Kiri = Naskah Luas, Kanan = Pengaturan Publikasi & Media) -->
+      <form id="article-editor-form" onsubmit="window.handleSaveArticle(event)" class="flex-1 flex flex-col min-h-0 overflow-hidden">
         <input type="hidden" id="art-id-input" />
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Judul Berita *</label>
-          <input id="art-title-input" type="text" required placeholder="Tulis judul berita yang jelas dan informatif..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500" />
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Kanal / Kategori *</label>
-            <select id="art-category-input" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/40">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+
+            <!-- KOLOM KIRI (8/12): AREA UTAMA MENULIS NASKAH BERITA -->
+            <div class="lg:col-span-8 space-y-5">
+              <!-- Kartu 1: Judul & Teras Berita (Lead) -->
+              <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-4">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <label for="art-title-input" class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Judul Berita *</label>
+                    <span id="art-title-counter" class="text-[11px] font-semibold text-slate-400">0 / 120 karakter (ideal 55–85)</span>
+                  </div>
+                  <input
+                    id="art-title-input"
+                    type="text"
+                    required
+                    oninput="window.updateEditorStats()"
+                    placeholder="Tulis judul berita yang kuat, lugas, dan informatif..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50/70 focus:bg-white border border-slate-200 font-headline text-base sm:text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+                  />
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <label for="art-summary-input" class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Ringkasan / Teras Berita (Lead) *</label>
+                    <span class="text-[11px] text-slate-400 hidden sm:inline">Tampil sebagai pembuka sorotan di bagian atas artikel</span>
+                  </div>
+                  <textarea
+                    id="art-summary-input"
+                    rows="3"
+                    required
+                    oninput="window.updateEditorStats()"
+                    placeholder="Tulis inti berita (5W+1H) dalam 1–2 kalimat padat sebagai teras pembuka..."
+                    class="w-full px-4 py-3 rounded-xl bg-sky-50/40 focus:bg-white border border-sky-200/80 text-xs sm:text-sm font-medium text-slate-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-sky-500 transition resize-y"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Kartu 2: Ruang Ketik Isi Berita Lengkap yang Luas -->
+              <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                  <label for="art-content-input" class="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-sky-600"></i>
+                    Isi Berita Lengkap *
+                  </label>
+
+                  <!-- Bilah Alat Bantu Cepat Jurnalis -->
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <button type="button" onclick="window.insertEditorSnippet('paragraph')" title="Sisipkan jarak paragraf baru" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
+                      + Paragraf
+                    </button>
+                    <button type="button" onclick="window.insertEditorSnippet('quote')" title="Sisipkan format kutipan narasumber" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
+                      + Kutipan
+                    </button>
+                    <button type="button" onclick="window.cleanEditorSpacing()" title="Rapikan spasi dan baris kosong berlebih" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200/80 text-[11px] font-bold transition">
+                      Rapikan Paragraf
+                    </button>
+                  </div>
+                </div>
+
+                <textarea
+                  id="art-content-input"
+                  rows="16"
+                  required
+                  oninput="window.updateEditorStats()"
+                  placeholder="Mulai mengetik tubuh berita di sini dengan leluasa...&#10;&#10;Pisahkan setiap paragraf dengan satu baris kosong (Enter 2x) agar tampil rapi dan nyaman dibaca pengunjung."
+                  class="w-full min-h-[320px] sm:min-h-[420px] p-4 sm:p-5 rounded-xl bg-slate-50/50 focus:bg-white border border-slate-200 text-sm sm:text-[15px] text-slate-800 leading-[1.85] tracking-normal focus:outline-none focus:ring-2 focus:ring-sky-500 transition resize-y"
+                ></textarea>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 pt-1">
+                  <span>Tips: Tekan <strong>Enter 2 kali</strong> untuk membuat paragraf baru.</span>
+                  <span id="editor-word-count-mobile" class="font-bold text-slate-600">0 kata • 0 paragraf</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- KOLOM KANAN (4/12): PENGATURAN KANAL, FOTO UTAMA, TAG & STATUS -->
+            <div class="lg:col-span-4 space-y-4">
+              <!-- Kartu Publikasi & Rubrik -->
+              <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-3.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
+                  <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-sky-600"></i>
+                  Rubrik &amp; Redaksi
+                </div>
+
+                <div>
+                  <label for="art-category-input" class="block text-xs font-bold text-slate-700 mb-1">Kanal / Kategori *</label>
+                  <select id="art-category-input" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+                </div>
+
+                <div>
+                  <label for="art-author-input" class="block text-xs font-bold text-slate-700 mb-1">Nama Penulis / Redaksi</label>
+                  <input id="art-author-input" type="text" value="Tim Redaksi KabarRaya" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                </div>
+
+                <div>
+                  <label for="art-keywords-input" class="block text-xs font-bold text-slate-700 mb-1">Kata Kunci / Tag</label>
+                  <input id="art-keywords-input" type="text" placeholder="Nasional, Ekonomi, Viral Hari Ini" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <p class="text-[10px] text-slate-400 mt-1">Pisahkan tiap tag dengan tanda koma (,)</p>
+                </div>
+              </div>
+
+              <!-- Kartu Foto Utama & Pratinjau -->
+              <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-3">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
+                  <i data-lucide="image" class="w-3.5 h-3.5 text-sky-600"></i>
+                  Foto Utama Berita
+                </div>
+
+                <div>
+                  <input
+                    id="art-image-input"
+                    type="text"
+                    oninput="window.syncArticleImagePreview(this.value)"
+                    placeholder="Tempel URL gambar https://... atau upload file"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                  <label class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold cursor-pointer transition">
+                    <i data-lucide="image-plus" class="w-4 h-4"></i>
+                    <span id="art-upload-label">Pilih Foto dari HP/PC</span>
+                    <input type="file" accept="image/*" onchange="window.handleArticlePhotoUpload(event)" class="hidden" />
+                  </label>
+                </div>
+
+                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-[16/9] flex items-center justify-center relative">
+                  <img id="art-image-preview" src="" alt="Pratinjau Foto Berita" class="hidden w-full h-full object-cover" />
+                  <div id="art-image-placeholder" class="text-center p-4 text-slate-400 space-y-1">
+                    <i data-lucide="image" class="w-6 h-6 mx-auto opacity-60"></i>
+                    <p class="text-[11px] font-medium">Pratinjau foto utama (16:9)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kartu Prioritas Tayang -->
+              <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-2.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                  Prioritas Penayangan
+                </div>
+
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/70 cursor-pointer transition">
+                  <input id="art-headline-input" type="checkbox" class="w-4 h-4 mt-0.5 rounded text-sky-600 focus:ring-sky-500" />
+                  <div>
+                    <div class="text-xs font-extrabold text-slate-800">Jadikan Headline Utama (Hero 01)</div>
+                    <div class="text-[10px] text-slate-500">Tampil paling besar di layar depan portal</div>
+                  </div>
+                </label>
+
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-rose-50/60 hover:bg-rose-50 border border-rose-200/70 cursor-pointer transition">
+                  <input id="art-trending-input" type="checkbox" class="w-4 h-4 mt-0.5 rounded text-rose-600 focus:ring-rose-500" />
+                  <div>
+                    <div class="text-xs font-extrabold text-slate-800">Tandai Viral / Paling Dicari</div>
+                    <div class="text-[10px] text-slate-500">Masuk jajaran Top 5 Viral &amp; label merah</div>
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Penulis</label>
-            <input id="art-author-input" type="text" value="Tim Redaksi KabarRaya" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500" />
+        </div>
+
+        <!-- Footer Sticky Modal: Selalu Terlihat Tanpa Perlu Scroll -->
+        <div class="px-4 sm:px-6 py-3.5 border-t border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
+          <span class="text-[11px] text-slate-500 hidden sm:inline">Pastikan ejaan judul dan isi berita sudah diperiksa sebelum diterbitkan.</span>
+          <div class="flex items-center gap-2.5 ml-auto">
+            <button type="button" onclick="window.closeModal('modal-article')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+              Batal
+            </button>
+            <button id="art-save-btn" type="submit" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-extrabold shadow-md transition flex items-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Terbitkan Kabar</span>
+            </button>
           </div>
-        </div>
-
-        <div class="space-y-2">
-          <label class="block text-xs font-bold text-slate-700">Foto Utama (URL atau Upload HP/PC)</label>
-          <input id="art-image-input" type="text" placeholder="https://... atau upload file di bawah" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
-          <div class="flex flex-wrap items-center gap-2">
-            <label class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold cursor-pointer transition">
-              <i data-lucide="image-plus" class="w-4 h-4"></i>
-              <span id="art-upload-label">Pilih Foto dari HP/PC</span>
-              <input type="file" accept="image/*" onchange="window.handleArticlePhotoUpload(event)" class="hidden" />
-            </label>
-            <span class="text-[11px] text-slate-400">Otomatis unggah ke Storage / WebP</span>
-          </div>
-          <img id="art-image-preview" src="" alt="Pratinjau" class="hidden w-full h-40 object-cover rounded-xl border border-slate-200 mt-2" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Ringkasan / Teras Berita *</label>
-          <textarea id="art-summary-input" rows="2" required placeholder="Ringkasan singkat 1-2 kalimat..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Isi Berita Lengkap *</label>
-          <textarea id="art-content-input" rows="6" required placeholder="Tulis paragraf berita lengkap. Pisahkan antar paragraf dengan baris kosong..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Kata Kunci / Tag (pisahkan dengan koma)</label>
-          <input id="art-keywords-input" type="text" placeholder="Nasional, Ekonomi, Viral Hari Ini" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
-        </div>
-
-        <div class="flex flex-wrap items-center gap-4 pt-1">
-          <label class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
-            <input id="art-headline-input" type="checkbox" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500" />
-            Jadikan Headline Utama (Hero 01)
-          </label>
-          <label class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
-            <input id="art-trending-input" type="checkbox" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500" />
-            Tandai Viral / Paling Banyak Dicari
-          </label>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-          <button type="button" onclick="window.closeModal('modal-article')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Batal</button>
-          <button id="art-save-btn" type="submit" class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shadow transition">Terbitkan Kabar</button>
         </div>
       </form>
     </div>
@@ -2940,6 +3074,86 @@
       });
     }
 
+    window.syncArticleImagePreview = (urlVal) => {
+      const prev = document.getElementById('art-image-preview');
+      const placeholder = document.getElementById('art-image-placeholder');
+      const cleanUrl = String(urlVal || '').trim();
+      if (!prev) return;
+
+      if (cleanUrl) {
+        prev.src = cleanUrl;
+        prev.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        prev.onerror = () => {
+          prev.classList.add('hidden');
+          if (placeholder) placeholder.classList.remove('hidden');
+        };
+      } else {
+        prev.src = '';
+        prev.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
+      }
+    };
+
+    window.updateEditorStats = () => {
+      const titleVal = (document.getElementById('art-title-input')?.value || '');
+      const contentVal = (document.getElementById('art-content-input')?.value || '').trim();
+
+      const titleCounter = document.getElementById('art-title-counter');
+      if (titleCounter) {
+        titleCounter.textContent = `${titleVal.length} / 120 karakter (ideal 55–85)`;
+      }
+
+      const words = contentVal ? contentVal.split(/\s+/).filter(Boolean).length : 0;
+      const paragraphs = contentVal ? contentVal.split(/\n+/).map(p => p.trim()).filter(Boolean).length : 0;
+      const readMins = Math.max(1, Math.ceil(words / 200));
+
+      const topCount = document.getElementById('editor-word-count');
+      if (topCount) {
+        topCount.textContent = `${words} kata • ~${readMins} mnt baca`;
+      }
+      const bottomCount = document.getElementById('editor-word-count-mobile');
+      if (bottomCount) {
+        bottomCount.textContent = `${words} kata • ${paragraphs} paragraf`;
+      }
+    };
+
+    window.insertEditorSnippet = (type) => {
+      const textarea = document.getElementById('art-content-input');
+      if (!textarea) return;
+      const start = textarea.selectionStart ?? textarea.value.length;
+      const end = textarea.selectionEnd ?? textarea.value.length;
+      const before = textarea.value.slice(0, start);
+      const after = textarea.value.slice(end);
+
+      let snippet = '\n\n';
+      if (type === 'quote') {
+        const prefix = before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : '';
+        snippet = `${prefix}"Tulis kutipan langsung narasumber di sini," ujar Narasumber dalam keterangannya.\n\n`;
+      } else {
+        snippet = before.endsWith('\n') ? '\n' : '\n\n';
+      }
+
+      textarea.value = before + snippet + after;
+      const nextCursor = before.length + snippet.length;
+      textarea.focus();
+      textarea.setSelectionRange(nextCursor, nextCursor);
+      window.updateEditorStats();
+    };
+
+    window.cleanEditorSpacing = () => {
+      const textarea = document.getElementById('art-content-input');
+      if (!textarea) return;
+      const normalized = textarea.value
+        .split(/\r?\n/)
+        .map(line => line.replace(/[ \t]+/g, ' ').trim())
+        .filter(Boolean)
+        .join('\n\n');
+      textarea.value = normalized;
+      window.updateEditorStats();
+      showToast('Spasi dan jarak antarparagraf berhasil dirapikan.', 'info');
+    };
+
     window.handleArticlePhotoUpload = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
@@ -2955,9 +3169,7 @@
             const { data } = supabase.storage.from('news-images').getPublicUrl(path);
             if (data?.publicUrl) {
               document.getElementById('art-image-input').value = data.publicUrl;
-              const prev = document.getElementById('art-image-preview');
-              prev.src = data.publicUrl;
-              prev.classList.remove('hidden');
+              window.syncArticleImagePreview(data.publicUrl);
               showToast('Foto berhasil diunggah ke Supabase Storage!', 'success');
               return;
             }
@@ -2965,9 +3177,7 @@
         }
         const webpData = await compressImageToWebp(file, 1100, 0.76);
         document.getElementById('art-image-input').value = webpData;
-        const prev = document.getElementById('art-image-preview');
-        prev.src = webpData;
-        prev.classList.remove('hidden');
+        window.syncArticleImagePreview(webpData);
         showToast('Foto siap diterbitkan (format WebP ringan).', 'success');
       } catch (err) {
         showToast('Gagal memproses foto: ' + err.message, 'error');
@@ -2993,12 +3203,13 @@
       if (catSelect) {
         catSelect.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
       }
-      const prev = document.getElementById('art-image-preview');
+      const saveBtnSpan = document.querySelector('#art-save-btn span');
 
       if (editId) {
         const art = state.articles.find(a => a.id === editId);
         if (!art) return;
         document.getElementById('modal-article-title').textContent = 'Edit Berita';
+        if (saveBtnSpan) saveBtnSpan.textContent = 'Simpan Perubahan';
         document.getElementById('art-id-input').value = art.id;
         document.getElementById('art-title-input').value = art.title || '';
         document.getElementById('art-category-input').value = art.category_id || (state.categories[0]?.id || '');
@@ -3009,26 +3220,29 @@
         document.getElementById('art-keywords-input').value = art.search_keywords || '';
         document.getElementById('art-headline-input').checked = Boolean(art.is_headline);
         document.getElementById('art-trending-input').checked = Boolean(art.is_trending);
-        if (art.image_url && prev) {
-          prev.src = art.image_url;
-          prev.classList.remove('hidden');
-        } else if (prev) {
-          prev.classList.add('hidden');
-        }
+        window.syncArticleImagePreview(art.image_url || '');
       } else {
         document.getElementById('modal-article-title').textContent = 'Tulis Kabar Baru';
+        if (saveBtnSpan) saveBtnSpan.textContent = 'Terbitkan Kabar';
         document.getElementById('article-editor-form').reset();
         document.getElementById('art-id-input').value = '';
         document.getElementById('art-author-input').value = 'Tim Redaksi KabarRaya';
-        if (prev) prev.classList.add('hidden');
+        window.syncArticleImagePreview('');
       }
+      window.updateEditorStats();
       openModal('modal-article');
+      setTimeout(() => {
+        document.getElementById('art-title-input')?.focus();
+      }, 60);
     };
 
     window.handleSaveArticle = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('art-save-btn');
-      if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan...'; }
+      const btnSpan = btn?.querySelector('span');
+      const prevBtnText = btnSpan ? btnSpan.textContent : 'Terbitkan Kabar';
+      if (btn) { btn.disabled = true; }
+      if (btnSpan) { btnSpan.textContent = 'Menyimpan...'; }
 
       const editId = document.getElementById('art-id-input').value.trim();
       const rawCatId = document.getElementById('art-category-input').value;
@@ -3070,7 +3284,8 @@
       } catch (err) {
         showToast('Gagal menyimpan berita: ' + (err.message || 'Cek izin RLS Supabase'), 'error');
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Terbitkan Kabar'; }
+        if (btn) { btn.disabled = false; }
+        if (btnSpan) { btnSpan.textContent = prevBtnText; }
       }
     };
 
