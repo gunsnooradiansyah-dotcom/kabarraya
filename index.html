@@ -1549,8 +1549,8 @@
 
       if (bar) {
         let pillHtml = `
-          <button onclick="window.navigate('home', 'all')" class="shrink-0 py-1 border-b-2 transition ${isHomeActive ? 'border-sky-400 text-white' : 'border-transparent text-white/75 hover:text-white'}">
-            UTAMA
+          <button onclick="window.navigate('home', 'all')" title="Beranda Utama" aria-label="Beranda Utama" class="shrink-0 py-1 px-1 border-b-2 inline-flex items-center justify-center transition ${isHomeActive ? 'border-sky-400 text-white' : 'border-transparent text-white/75 hover:text-white'}">
+            <i data-lucide="home" class="w-4 h-4"></i>
           </button>
         `;
         state.categories.forEach(cat => {
@@ -1566,8 +1566,8 @@
 
       if (mobileQuickBar) {
         let qHtml = `
-          <button onclick="window.navigate('home', 'all')" class="shrink-0 py-0.5 border-b-2 transition ${isHomeActive ? 'border-sky-400 text-white' : 'border-transparent text-white/80'}">
-            UTAMA
+          <button onclick="window.navigate('home', 'all')" title="Beranda Utama" aria-label="Beranda Utama" class="shrink-0 py-0.5 px-1 border-b-2 inline-flex items-center justify-center transition ${isHomeActive ? 'border-sky-400 text-white' : 'border-transparent text-white/80'}">
+            <i data-lucide="home" class="w-4 h-4"></i>
           </button>
         `;
         state.categories.forEach(cat => {
