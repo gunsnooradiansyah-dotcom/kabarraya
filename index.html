@@ -47,6 +47,24 @@
       overflow-x: hidden;
       max-width: 100%;
     }
+    /* Aturan dasar kursor & fokus keyboard kontras tinggi (R-03, R-39) */
+    button,
+    a[href],
+    select,
+    label[for],
+    [role="button"] {
+      cursor: pointer;
+    }
+    button:disabled,
+    select:disabled,
+    input:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+    }
+    :focus-visible {
+      outline: 2px solid #0284C7;
+      outline-offset: 2px;
+    }
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -74,51 +92,72 @@
     .text-shadow-hero {
       text-shadow: 0 2px 14px rgba(15, 23, 42, 0.72);
     }
+    /* Preferensi pengurangan gerak sistem operasi (R-32) */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto !important;
+      }
+      .hero-ken-burns,
+      .hero-progress-running {
+        animation: none !important;
+        transition: none !important;
+      }
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-sky-200 selection:text-slate-900">
 
+  <!-- BILAH PROGRES BACA ARTIKEL (AKTIF SAAT MEMBACA BERITA) -->
+  <div id="reading-progress-wrap" class="fixed top-0 inset-x-0 h-1 bg-slate-200/70 z-[95] hidden pointer-events-none" aria-hidden="true">
+    <div id="reading-progress-bar" class="h-full bg-gradient-to-r from-sky-500 via-teal-500 to-amber-500 w-0 transition-[width] duration-75"></div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
-  <div id="toast-container" class="fixed top-4 right-4 z-[90] flex flex-col gap-2 max-w-xs sm:max-w-sm pointer-events-none"></div>
+  <div id="toast-container" aria-live="polite" class="fixed top-4 right-4 z-[90] flex flex-col gap-2 max-w-xs sm:max-w-sm pointer-events-none"></div>
 
   <!-- MOBILE NAVIGATION DRAWER (GARIS 3 KHUSUS LAYAR HP/TABLET) -->
-  <div id="mobile-drawer-overlay" onclick="window.closeMobileDrawer()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[70] hidden transition-opacity"></div>
-  <aside id="mobile-drawer-panel" class="fixed top-0 left-0 bottom-0 w-[82%] max-w-[310px] bg-white z-[75] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+  <div id="mobile-drawer-overlay" onclick="window.closeMobileDrawer()" aria-hidden="true" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[70] hidden transition-opacity"></div>
+  <aside id="mobile-drawer-panel" aria-label="Menu Navigasi Mobile" class="fixed top-0 left-0 bottom-0 w-[82%] max-w-[310px] bg-white z-[75] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
     <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-950 text-white">
-      <div onclick="window.handleLogoSecretTap()" class="flex items-center gap-2.5 cursor-pointer select-none">
+      <button type="button" onclick="window.handleLogoSecretTap()" class="flex items-center gap-2.5 text-left select-none min-h-[44px]">
         <span class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-400 to-teal-500 flex items-center justify-center font-headline font-extrabold text-sm text-white shadow">K</span>
-        <div>
-          <div class="font-headline font-extrabold tracking-tight text-sm leading-none">KABARRAYA</div>
-          <div class="text-[10px] text-sky-300 font-medium mt-0.5">Cepat • Jernih • Terpercaya</div>
-        </div>
-      </div>
-      <button type="button" onclick="window.closeMobileDrawer()" aria-label="Tutup Menu" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
-        <i data-lucide="x" class="w-4 h-4"></i>
+        <span>
+          <span class="block font-headline font-extrabold tracking-tight text-sm leading-none">KABARRAYA</span>
+          <span class="block text-[10px] text-sky-300 font-medium mt-0.5">Cepat • Jernih • Terpercaya</span>
+        </span>
+      </button>
+      <button type="button" onclick="window.closeMobileDrawer()" aria-label="Tutup Menu Navigasi" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
+        <i data-lucide="x" aria-hidden="true" class="w-5 h-5"></i>
       </button>
     </div>
 
     <div class="p-4 overflow-y-auto flex-1 space-y-5">
       <!-- Pencarian Cepat Mobile Drawer -->
-      <form onsubmit="window.handleSearchSubmit(event, 'drawer-search-input')" class="relative">
-        <input id="drawer-search-input" type="text" placeholder="Cari berita, tokoh, topik..." class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+      <form onsubmit="window.handleSearchSubmit(event, 'drawer-search-input')" class="relative" role="search">
+        <label for="drawer-search-input" class="sr-only">Cari berita, tokoh, atau topik</label>
+        <input id="drawer-search-input" type="search" placeholder="Cari berita, tokoh, topik..." class="w-full min-h-[44px] pl-9 pr-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+        <i data-lucide="search" aria-hidden="true" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
       </form>
 
       <!-- Menu Utama -->
       <div class="space-y-1">
         <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pb-1">Navigasi Utama</div>
-        <button type="button" onclick="window.navigatePortal('home'); window.closeMobileDrawer();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-sky-50 hover:text-sky-700 transition">
-          <i data-lucide="home" class="w-4 h-4 text-sky-600"></i> Beranda Utama
+        <button type="button" onclick="window.navigatePortal('home'); window.closeMobileDrawer();" class="w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-sky-50 hover:text-sky-700 transition">
+          <i data-lucide="home" aria-hidden="true" class="w-4 h-4 text-sky-600"></i> Beranda Utama
         </button>
-        <button type="button" onclick="window.navigatePortal('viral'); window.closeMobileDrawer();" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-700 transition">
-          <i data-lucide="flame" class="w-4 h-4 text-rose-500"></i> Berita Viral &amp; Populer
+        <button type="button" onclick="window.navigatePortal('viral'); window.closeMobileDrawer();" class="w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-700 transition">
+          <i data-lucide="flame" aria-hidden="true" class="w-4 h-4 text-rose-500"></i> Berita Viral &amp; Populer
         </button>
-        <button type="button" onclick="window.navigatePortal('bookmarks'); window.closeMobileDrawer();" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-amber-50 hover:text-amber-700 transition">
-          <span class="flex items-center gap-3"><i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i> Bacaan Tersimpan</span>
+        <button type="button" onclick="window.navigatePortal('bookmarks'); window.closeMobileDrawer();" class="w-full min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-slate-800 hover:bg-amber-50 hover:text-amber-700 transition">
+          <span class="flex items-center gap-3"><i data-lucide="bookmark" aria-hidden="true" class="w-4 h-4 text-amber-500"></i> Bacaan Tersimpan</span>
           <span id="drawer-bookmark-count" class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-extrabold">0</span>
         </button>
-        <button id="drawer-admin-btn" type="button" onclick="window.navigatePortal('admin'); window.closeMobileDrawer();" class="hidden w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition">
-          <i data-lucide="layout-dashboard" class="w-4 h-4 text-sky-400"></i> Dapur Redaksi
+        <button id="drawer-admin-btn" type="button" onclick="window.navigatePortal('admin'); window.closeMobileDrawer();" class="hidden w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition">
+          <i data-lucide="layout-dashboard" aria-hidden="true" class="w-4 h-4 text-sky-400"></i> Dapur Redaksi
         </button>
       </div>
 
@@ -131,17 +170,17 @@
       <!-- Layanan & Redaksi -->
       <div class="space-y-1 pt-2 border-t border-slate-100">
         <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pb-1">Informasi &amp; Redaksi</div>
-        <button type="button" onclick="window.openLegalModal('about'); window.closeMobileDrawer();" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Tentang Redaksi</button>
-        <button type="button" onclick="window.openLegalModal('guideline'); window.closeMobileDrawer();" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Pedoman Media Siber</button>
-        <button type="button" onclick="window.openLegalModal('privacy'); window.closeMobileDrawer();" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Kebijakan Privasi</button>
-        <button type="button" onclick="window.openLegalModal('contact'); window.closeMobileDrawer();" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Kontak &amp; Pasang Iklan</button>
+        <button type="button" onclick="window.openLegalModal('about'); window.closeMobileDrawer();" class="w-full min-h-[44px] text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Tentang Redaksi</button>
+        <button type="button" onclick="window.openLegalModal('guideline'); window.closeMobileDrawer();" class="w-full min-h-[44px] text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Pedoman Media Siber</button>
+        <button type="button" onclick="window.openLegalModal('privacy'); window.closeMobileDrawer();" class="w-full min-h-[44px] text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Kebijakan Privasi</button>
+        <button type="button" onclick="window.openLegalModal('contact'); window.closeMobileDrawer();" class="w-full min-h-[44px] text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Kontak &amp; Pasang Iklan</button>
       </div>
     </div>
 
     <div class="p-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
       <span class="text-[10px] font-semibold text-slate-400">&copy; 2026 KabarRaya</span>
-      <button type="button" onclick="window.openAdminAccess(); window.closeMobileDrawer();" class="text-[11px] font-bold text-slate-600 hover:text-sky-600 flex items-center gap-1">
-        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Akses Redaksi
+      <button type="button" onclick="window.openAdminAccess(); window.closeMobileDrawer();" class="min-h-[44px] px-2 text-[11px] font-bold text-slate-600 hover:text-sky-600 flex items-center gap-1">
+        <i data-lucide="shield-check" aria-hidden="true" class="w-3.5 h-3.5"></i> Akses Redaksi
       </button>
     </div>
   </aside>
@@ -156,91 +195,95 @@
           id="hero-bg-image"
           src=""
           alt="Sorotan Utama KabarRaya"
+          width="1400"
+          height="780"
           fetchpriority="high"
           decoding="async"
           class="hidden absolute inset-0 w-full h-full object-cover object-center sm:object-top transition-opacity duration-700 opacity-100"
         />
-        <!-- Lapisan Gradasi Editorial Ringan agar Foto Tetap Cerah & Teks Tajam -->
-        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/20 to-slate-950/85 pointer-events-none"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-transparent to-slate-950/45 pointer-events-none"></div>
+        <!-- Lapisan Gradasi Editorial agar Foto Tetap Cerah & Teks Tajam -->
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/20 to-slate-950/85 pointer-events-none"></div>
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-transparent to-slate-950/45 pointer-events-none"></div>
 
         <!-- TOP GLASS HEADER + CHANNEL BAR -->
         <header class="relative z-30 w-full border-b border-white/10 bg-slate-950/35 backdrop-blur-md">
-          <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+          <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
             <!-- Kiri: Hamburger Mobile + Logo KABARRAYA (Klik 3x cepat = Akses Redaksi) -->
             <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-              <button type="button" onclick="window.openMobileDrawer()" aria-label="Buka Menu Navigasi" class="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
-                <i data-lucide="menu" class="w-5 h-5"></i>
+              <button type="button" onclick="window.openMobileDrawer()" aria-label="Buka Menu Navigasi" class="lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
+                <i data-lucide="menu" aria-hidden="true" class="w-5 h-5"></i>
               </button>
-              <button type="button" onclick="window.handleLogoClick()" class="flex items-center gap-2.5 text-left group select-none">
+              <button type="button" onclick="window.handleLogoClick()" class="min-h-[44px] flex items-center gap-2.5 text-left group select-none">
                 <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-sky-400 via-sky-500 to-teal-500 flex items-center justify-center shadow-lg ring-2 ring-white/25 group-hover:scale-105 transition">
-                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg aria-hidden="true" class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 11a9 9 0 0 1 9 9"></path>
                     <path d="M4 4a16 16 0 0 1 16 16"></path>
                     <circle cx="5" cy="19" r="1.5" fill="currentColor"></circle>
                   </svg>
                 </span>
-                <div>
-                  <div class="font-headline font-extrabold tracking-tight text-base sm:text-lg leading-none text-white">KABARRAYA</div>
-                  <div class="hidden sm:block text-[10px] font-semibold tracking-widest uppercase text-sky-300 mt-0.5">Indonesia Terkini</div>
-                </div>
+                <span>
+                  <span class="block font-headline font-extrabold tracking-tight text-base sm:text-lg leading-none text-white">KABARRAYA</span>
+                  <span class="hidden sm:block text-[10px] font-semibold tracking-widest uppercase text-sky-300 mt-0.5">Indonesia Terkini</span>
+                </span>
               </button>
             </div>
 
             <!-- Tengah: Pencarian Desktop -->
-            <form onsubmit="window.handleSearchSubmit(event, 'desktop-search-input')" class="hidden md:flex flex-1 max-w-md relative">
+            <form onsubmit="window.handleSearchSubmit(event, 'desktop-search-input')" class="hidden md:flex flex-1 max-w-md relative" role="search">
+              <label for="desktop-search-input" class="sr-only">Cari berita terkini, tokoh, atau isu viral</label>
               <input
                 id="desktop-search-input"
-                type="text"
+                type="search"
                 placeholder="Cari berita terkini, tokoh, atau isu viral..."
-                class="w-full pl-10 pr-4 py-2 rounded-full bg-white/10 hover:bg-white/15 focus:bg-slate-900/85 border border-white/20 text-xs text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
+                class="w-full min-h-[44px] pl-10 pr-4 py-2 rounded-full bg-white/10 hover:bg-white/15 focus:bg-slate-900/85 border border-white/20 text-xs text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400 transition"
               />
-              <i data-lucide="search" class="w-4 h-4 text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <i data-lucide="search" aria-hidden="true" class="w-4 h-4 text-slate-300 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             </form>
 
             <!-- Kanan: Aksi Cepat -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <button type="button" onclick="window.toggleMobileSearch()" aria-label="Cari Berita" class="md:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
-                <i data-lucide="search" class="w-4 h-4"></i>
+              <button type="button" onclick="window.toggleMobileSearch()" aria-label="Buka Kolom Pencarian Berita" class="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
+                <i data-lucide="search" aria-hidden="true" class="w-4 h-4"></i>
               </button>
 
-              <button type="button" onclick="window.navigatePortal('viral')" class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-400/35 text-rose-100 text-xs font-bold flex items-center gap-1.5 transition">
-                <i data-lucide="flame" class="w-3.5 h-3.5 text-rose-400"></i>
+              <button type="button" onclick="window.navigatePortal('viral')" class="min-h-[44px] px-3 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-400/35 text-rose-100 text-xs font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="flame" aria-hidden="true" class="w-3.5 h-3.5 text-rose-400"></i>
                 <span class="hidden sm:inline">Viral</span>
               </button>
 
-              <button type="button" onclick="window.navigatePortal('bookmarks')" class="relative px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition">
-                <i data-lucide="bookmark" class="w-3.5 h-3.5 text-amber-300"></i>
+              <button type="button" onclick="window.navigatePortal('bookmarks')" class="relative min-h-[44px] px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5 text-amber-300"></i>
                 <span class="hidden sm:inline">Tersimpan</span>
                 <span id="header-bookmark-badge" class="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold leading-tight">0</span>
               </button>
 
-              <button id="header-admin-btn" type="button" onclick="window.navigatePortal('admin')" class="hidden px-3 py-1.5 sm:py-2 rounded-full bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold items-center gap-1.5 shadow-lg transition">
-                <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+              <button id="header-admin-btn" type="button" onclick="window.navigatePortal('admin')" class="hidden min-h-[44px] px-3.5 py-2 rounded-full bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold items-center gap-1.5 shadow-lg transition">
+                <i data-lucide="layout-dashboard" aria-hidden="true" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Dapur Redaksi</span>
               </button>
             </div>
           </div>
 
           <!-- Bar Pencarian Mobile (Collapsible) -->
-          <div id="mobile-search-bar" class="hidden md:hidden px-3 pb-3 pt-1 border-t border-white/10 bg-slate-950/75">
-            <form onsubmit="window.handleSearchSubmit(event, 'mobile-search-input')" class="flex gap-2">
+          <div id="mobile-search-bar" class="hidden md:hidden px-3 pb-3 pt-1.5 border-t border-white/10 bg-slate-950/80">
+            <form onsubmit="window.handleSearchSubmit(event, 'mobile-search-input')" class="flex gap-2" role="search">
+              <label for="mobile-search-input" class="sr-only">Ketik kata kunci berita</label>
               <input
                 id="mobile-search-input"
-                type="text"
+                type="search"
                 placeholder="Ketik kata kunci berita..."
-                class="flex-1 px-3.5 py-2 rounded-xl bg-white/15 border border-white/20 text-xs text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                class="flex-1 min-h-[44px] px-3.5 py-2 rounded-xl bg-white/15 border border-white/20 text-xs text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
               />
-              <button type="submit" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold">Cari</button>
+              <button type="submit" class="min-h-[44px] px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold">Cari Berita</button>
             </form>
           </div>
 
           <!-- Horizontal Channel Bar -->
           <div class="border-t border-white/10 bg-slate-950/25">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-10 flex items-center justify-between gap-3">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-11 flex items-center justify-between gap-3">
               <nav id="channel-bar-nav" class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1" aria-label="Kanal Berita"></nav>
               <div id="header-today-date" class="hidden lg:flex items-center gap-1.5 text-[11px] font-semibold text-slate-300 shrink-0">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-400"></i>
+                <i data-lucide="calendar" aria-hidden="true" class="w-3.5 h-3.5 text-sky-400"></i>
                 <span></span>
               </div>
             </div>
@@ -276,9 +319,9 @@
                     onclick="window.toggleHeroAutoplay()"
                     aria-label="Jeda atau Putar Slide Otomatis"
                     title="Jeda / Putar Slide Otomatis"
-                    class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-md flex items-center justify-center text-white transition"
+                    class="min-w-[44px] min-h-[44px] rounded-full bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-md flex items-center justify-center text-white transition"
                   >
-                    <i data-lucide="pause" class="w-3.5 h-3.5"></i>
+                    <i data-lucide="pause" aria-hidden="true" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
               </div>
@@ -287,14 +330,14 @@
         </div>
 
         <!-- WATERMARK RAKSASA DI BATAS BAWAH HERO -->
-        <div id="hero-watermark" class="pointer-events-none select-none absolute inset-x-0 -bottom-2 sm:-bottom-4 z-10 text-center overflow-hidden">
+        <div id="hero-watermark" aria-hidden="true" class="pointer-events-none select-none absolute inset-x-0 -bottom-2 sm:-bottom-4 z-10 text-center overflow-hidden">
           <span class="font-headline font-extrabold uppercase tracking-[0.22em] text-3xl sm:text-5xl lg:text-7xl text-white/[0.08] whitespace-nowrap">
             KABAR RAYA INDONESIA
           </span>
         </div>
 
         <!-- BILAH PROGRES 6 DETIK AUTO-SLIDE -->
-        <div id="hero-progress-track" class="absolute bottom-0 inset-x-0 h-1 bg-white/15 z-30 overflow-hidden">
+        <div id="hero-progress-track" aria-hidden="true" class="absolute bottom-0 inset-x-0 h-1 bg-white/15 z-30 overflow-hidden">
           <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-teal-400 to-amber-400 w-0"></div>
         </div>
       </div>
@@ -314,11 +357,11 @@
         <div id="active-filter-banner" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-6">
           <div class="bg-sky-50 border border-sky-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
             <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-sky-900">
-              <i data-lucide="filter" class="w-4 h-4 text-sky-600"></i>
+              <i data-lucide="filter" aria-hidden="true" class="w-4 h-4 text-sky-600"></i>
               <span id="active-filter-text">Menampilkan kanal</span>
             </div>
-            <button type="button" onclick="window.resetFilters()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition">
-              Reset Filter
+            <button type="button" onclick="window.resetFilters()" class="min-h-[44px] px-4 py-2 rounded-xl bg-white hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold transition">
+              Tampilkan Semua Berita
             </button>
           </div>
         </div>
@@ -331,14 +374,14 @@
             <div class="lg:col-span-8 space-y-5">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                 <div class="flex items-center gap-2.5">
-                  <span class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
+                  <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
                   <h2 id="feed-section-title" class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">Kabar Terbaru</h2>
                 </div>
-                <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-full self-start sm:self-auto" role="tablist" aria-label="Urutkan Berita">
-                  <button type="button" id="pill-filter-latest" onclick="window.setFeedFilter('latest')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-brandSlate text-white shadow-xs">Terbaru</button>
-                  <button type="button" id="pill-filter-popular" onclick="window.setFeedFilter('popular')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900">Terpopuler</button>
-                  <button type="button" id="pill-filter-viral" onclick="window.setFeedFilter('viral')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
-                    <i data-lucide="flame" class="w-3 h-3 text-rose-500"></i> Viral
+                <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-full self-start sm:self-auto" role="group" aria-label="Urutkan Daftar Berita">
+                  <button type="button" id="pill-filter-latest" onclick="window.setFeedFilter('latest')" class="min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-brandSlate text-white shadow-xs">Terbaru</button>
+                  <button type="button" id="pill-filter-popular" onclick="window.setFeedFilter('popular')" class="min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900">Terpopuler</button>
+                  <button type="button" id="pill-filter-viral" onclick="window.setFeedFilter('viral')" class="min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                    <i data-lucide="flame" aria-hidden="true" class="w-3 h-3 text-rose-500"></i> Viral
                   </button>
                 </div>
               </div>
@@ -348,25 +391,25 @@
 
               <!-- Tombol Muat Berita Lainnya -->
               <div id="load-more-container" class="pt-2 text-center hidden">
-                <button type="button" onclick="window.loadMoreArticles()" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white hover:bg-slate-900 text-slate-800 hover:text-white border border-slate-200 font-bold text-xs sm:text-sm shadow-card transition">
-                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <button type="button" onclick="window.loadMoreArticles()" class="min-h-[44px] inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white hover:bg-slate-900 text-slate-800 hover:text-white border border-slate-200 font-bold text-xs sm:text-sm shadow-card transition">
+                  <i data-lucide="plus-circle" aria-hidden="true" class="w-4 h-4"></i>
                   Muat Berita Lainnya
                 </button>
               </div>
             </div>
 
             <!-- KOLOM KANAN: SIDEBAR STICKY -->
-            <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
+            <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
               <!-- Widget 1: Top 5 Paling Banyak Dicari & Viral -->
               <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
                 <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
                   <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2">
                     <span class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                      <i data-lucide="trending-up" class="w-4 h-4"></i>
+                      <i data-lucide="trending-up" aria-hidden="true" class="w-4 h-4"></i>
                     </span>
                     Top 5 Viral &amp; Dicari
                   </h3>
-                  <button type="button" onclick="window.navigatePortal('viral')" class="text-[11px] font-bold text-sky-600 hover:text-sky-700">Semua &rarr;</button>
+                  <button type="button" onclick="window.navigatePortal('viral')" class="min-h-[36px] px-2 text-[11px] font-bold text-sky-600 hover:text-sky-700">Lihat Semua &rarr;</button>
                 </div>
                 <div id="sidebar-top-viral" class="divide-y divide-slate-100"></div>
               </div>
@@ -378,7 +421,7 @@
               <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
                 <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2 pb-3 mb-3 border-b border-slate-100">
                   <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <i data-lucide="hash" class="w-4 h-4"></i>
+                    <i data-lucide="hash" aria-hidden="true" class="w-4 h-4"></i>
                   </span>
                   Topik Hangat Hari Ini
                 </h3>
@@ -392,7 +435,7 @@
         <section id="channel-highlights-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12">
           <div class="flex items-center justify-between pb-3 mb-5 border-b border-slate-200">
             <div class="flex items-center gap-2.5">
-              <span class="w-1.5 h-6 rounded-full bg-gradient-to-b from-amber-500 to-rose-500"></span>
+              <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-amber-500 to-rose-500"></span>
               <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">Sorotan Pilihan Kanal</h2>
             </div>
             <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Rangkuman berita pilihan tiap rubrik</span>
@@ -404,10 +447,10 @@
       <!-- SUBVIEW 2: HALAMAN BACA ARTIKEL LENGKAP (#subview-detail) -->
       <div id="subview-detail" class="hidden max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" onclick="window.navigatePortal('home')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 shadow-xs transition">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Beranda
+          <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 shadow-xs transition">
+            <i data-lucide="arrow-left" aria-hidden="true" class="w-4 h-4"></i> Kembali ke Beranda
           </button>
-          <nav id="detail-breadcrumb" class="flex items-center gap-1.5 text-xs font-semibold text-slate-500"></nav>
+          <nav id="detail-breadcrumb" aria-label="Jejak Navigasi Artikel" class="flex items-center gap-1.5 text-xs font-semibold text-slate-500"></nav>
         </div>
 
         <article class="bg-white rounded-3xl border border-slate-200/80 shadow-card overflow-hidden">
@@ -418,50 +461,54 @@
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-slate-500 pb-4 border-b border-slate-100">
               <span class="flex items-center gap-1.5 font-bold text-slate-700">
-                <i data-lucide="user-pen" class="w-3.5 h-3.5 text-sky-600"></i>
+                <i data-lucide="user-pen" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
                 <span id="detail-author">Tim Redaksi KabarRaya</span>
               </span>
               <span class="flex items-center gap-1.5">
-                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                <i data-lucide="clock" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400"></i>
                 <span id="detail-date"></span>
               </span>
               <span class="flex items-center gap-1.5">
-                <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i>
+                <i data-lucide="book-open" aria-hidden="true" class="w-3.5 h-3.5 text-teal-600"></i>
+                <span id="detail-read-time">2 menit baca</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <i data-lucide="eye" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400"></i>
                 <span id="detail-views">0</span> dibaca
               </span>
             </div>
 
             <!-- ACTION BAR INTERAKTIF -->
-            <div class="flex flex-wrap items-center justify-between gap-2.5 py-2 px-3 rounded-2xl bg-slate-50 border border-slate-200/70">
+            <div class="flex flex-wrap items-center justify-between gap-2.5 py-2.5 px-3 rounded-2xl bg-slate-50 border border-slate-200/70">
               <div class="flex items-center gap-2">
-                <button id="detail-like-btn" type="button" onclick="window.toggleArticleLike()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-sky-50 border border-slate-200 text-xs font-bold text-slate-700 transition">
-                  <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+                <button id="detail-like-btn" type="button" onclick="window.toggleArticleLike()" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-sky-50 border border-slate-200 text-xs font-bold text-slate-700 transition">
+                  <i data-lucide="thumbs-up" aria-hidden="true" class="w-4 h-4"></i>
                   <span>Suka</span>
                   <span id="detail-like-count" class="px-1.5 py-0.5 rounded-md bg-slate-100 text-[11px] font-extrabold">0</span>
                 </button>
-                <button type="button" onclick="window.scrollToComments()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-teal-50 border border-slate-200 text-xs font-bold text-slate-700 transition">
-                  <i data-lucide="message-square" class="w-4 h-4 text-teal-600"></i>
+                <button type="button" onclick="window.scrollToComments()" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-teal-50 border border-slate-200 text-xs font-bold text-slate-700 transition">
+                  <i data-lucide="message-square" aria-hidden="true" class="w-4 h-4 text-teal-600"></i>
                   <span>Komentar</span>
                   <span id="detail-comment-count-badge" class="px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[11px] font-extrabold">0</span>
                 </button>
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" onclick="window.shareToWhatsApp()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
-                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                <button type="button" onclick="window.shareToWhatsApp()" aria-label="Bagikan ke WhatsApp" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                  <i data-lucide="message-circle" aria-hidden="true" class="w-3.5 h-3.5"></i>
                   <span class="hidden sm:inline">WhatsApp</span>
                 </button>
-                <button type="button" onclick="window.shareToTwitter()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
-                  <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                <button type="button" onclick="window.shareToTwitter()" aria-label="Bagikan ke X" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                  <i data-lucide="share-2" aria-hidden="true" class="w-3.5 h-3.5"></i>
                   <span class="hidden sm:inline">X</span>
                 </button>
-                <button type="button" onclick="window.copyArticleLink()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition">
-                  <i data-lucide="link" class="w-3.5 h-3.5"></i>
-                  <span class="hidden sm:inline">Salin</span>
+                <button type="button" onclick="window.copyArticleLink()" aria-label="Salin Tautan Berita" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition">
+                  <i data-lucide="link" aria-hidden="true" class="w-3.5 h-3.5"></i>
+                  <span class="hidden sm:inline">Salin Tautan</span>
                 </button>
-                <button id="detail-bookmark-btn" type="button" onclick="window.toggleActiveArticleBookmark()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 text-xs font-bold transition">
-                  <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
-                  <span id="detail-bookmark-text" class="hidden sm:inline">Simpan</span>
+                <button id="detail-bookmark-btn" type="button" onclick="window.toggleActiveArticleBookmark()" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 text-xs font-bold transition">
+                  <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5"></i>
+                  <span id="detail-bookmark-text" class="hidden sm:inline">Simpan Berita</span>
                 </button>
               </div>
             </div>
@@ -469,7 +516,7 @@
             <!-- Foto Utama Artikel -->
             <figure class="space-y-2">
               <div class="w-full rounded-2xl overflow-hidden bg-slate-100 aspect-[16/9]">
-                <img id="detail-image" src="" alt="" class="w-full h-full object-cover" />
+                <img id="detail-image" src="" alt="" width="1200" height="675" class="w-full h-full object-cover" />
               </div>
               <figcaption id="detail-image-caption" class="text-[11px] text-slate-500 italic"></figcaption>
             </figure>
@@ -478,7 +525,7 @@
             <p id="detail-summary" class="text-base sm:text-lg font-semibold text-slate-800 leading-relaxed bg-sky-50/70 border-l-4 border-sky-500 px-4 py-3 rounded-r-xl"></p>
 
             <!-- Isi Artikel Lengkap -->
-            <div id="detail-content" class="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed"></div>
+            <div id="detail-content" class="space-y-4 text-sm sm:text-base text-slate-700 leading-[1.85]"></div>
 
             <!-- Slot Iklan Dalam Artikel -->
             <div id="ad-slot-in-article" class="my-6 rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-50"></div>
@@ -486,7 +533,7 @@
             <!-- Daftar Vertikal Tag Terpopuler -->
             <div class="pt-5 border-t border-slate-100">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate mb-3 flex items-center gap-2">
-                <i data-lucide="tags" class="w-4 h-4 text-sky-600"></i> Tag Terpopuler
+                <i data-lucide="tags" aria-hidden="true" class="w-4 h-4 text-sky-600"></i> Tag Terpopuler
               </h3>
               <ul id="detail-tags-list" class="divide-y divide-slate-100 border border-slate-200/80 rounded-2xl overflow-hidden bg-slate-50/60"></ul>
             </div>
@@ -497,22 +544,24 @@
         <section id="article-comments-section" class="bg-white rounded-3xl border border-slate-200/80 shadow-card p-5 sm:p-8 space-y-5">
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <h2 id="comments-heading" class="font-headline font-extrabold text-lg text-brandSlate flex items-center gap-2">
-              <i data-lucide="messages-square" class="w-5 h-5 text-sky-600"></i>
+              <i data-lucide="messages-square" aria-hidden="true" class="w-5 h-5 text-sky-600"></i>
               Komentar (0)
             </h2>
           </div>
 
           <form onsubmit="window.handleSubmitComment(event)" class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
             <div>
+              <label for="comment-author-input" class="sr-only">Nama Anda</label>
               <input
                 id="comment-author-input"
                 type="text"
                 maxlength="60"
                 placeholder="Nama Anda (opsional, kosongkan untuk Pembaca KabarRaya)"
-                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
             <div>
+              <label for="comment-text-input" class="sr-only">Tulis tanggapan Anda</label>
               <textarea
                 id="comment-text-input"
                 rows="3"
@@ -525,19 +574,19 @@
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span id="comment-char-counter" class="text-xs font-semibold text-slate-500">1000 Karakter tersisa</span>
-              <button type="submit" class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5">
-                <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim Komentar
+              <button type="submit" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5">
+                <i data-lucide="send" aria-hidden="true" class="w-3.5 h-3.5"></i> Kirim Tanggapan
               </button>
             </div>
           </form>
 
           <!-- 5 Tab Filter Komentar -->
-          <div id="comment-filter-tabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            <button type="button" data-cfilter="newest" onclick="window.setCommentFilter('newest')" class="comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0">Terbaru</button>
-            <button type="button" data-cfilter="featured" onclick="window.setCommentFilter('featured')" class="comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpilih</button>
-            <button type="button" data-cfilter="popular" onclick="window.setCommentFilter('popular')" class="comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpopuler</button>
-            <button type="button" data-cfilter="discussed" onclick="window.setCommentFilter('discussed')" class="comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Teramai</button>
-            <button type="button" data-cfilter="pinned" onclick="window.setCommentFilter('pinned')" class="comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Komentar yang disematkan</button>
+          <div id="comment-filter-tabs" role="group" aria-label="Filter Komentar Pembaca" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <button type="button" data-cfilter="newest" onclick="window.setCommentFilter('newest')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0">Terbaru</button>
+            <button type="button" data-cfilter="featured" onclick="window.setCommentFilter('featured')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpilih</button>
+            <button type="button" data-cfilter="popular" onclick="window.setCommentFilter('popular')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpopuler</button>
+            <button type="button" data-cfilter="discussed" onclick="window.setCommentFilter('discussed')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Teramai</button>
+            <button type="button" data-cfilter="pinned" onclick="window.setCommentFilter('pinned')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Komentar yang disematkan</button>
           </div>
 
           <div id="comments-list-container" class="space-y-3"></div>
@@ -547,11 +596,11 @@
         <section class="space-y-4">
           <div class="flex items-center justify-between pb-2 border-b border-slate-200">
             <div class="flex items-center gap-2.5">
-              <span class="w-1.5 h-6 rounded-full bg-sky-500"></span>
+              <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-sky-500"></span>
               <h2 class="font-headline font-extrabold text-lg text-brandSlate">Rekomendasi Untuk Anda</h2>
             </div>
-            <button type="button" onclick="window.navigatePortal('home')" class="text-xs font-bold text-sky-600 hover:text-sky-800 transition">
-              Lihat Selengkapnya &rarr;
+            <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] px-2 text-xs font-bold text-sky-600 hover:text-sky-800 transition">
+              Jelajahi Kabar Lainnya &rarr;
             </button>
           </div>
           <div id="detail-recommendations-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
@@ -563,11 +612,11 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
           <div>
             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-extrabold mb-2">
-              <i data-lucide="flame" class="w-3.5 h-3.5"></i> TRENDING INDONESIA
+              <i data-lucide="flame" aria-hidden="true" class="w-3.5 h-3.5"></i> TRENDING INDONESIA
             </div>
             <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-brandSlate">Paling Banyak Dicari &amp; Viral</h1>
           </div>
-          <button type="button" onclick="window.navigatePortal('home')" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition">
+          <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition">
             &larr; Kembali ke Beranda
           </button>
         </div>
@@ -579,11 +628,11 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
           <div>
             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold mb-2">
-              <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> DAFTAR BACAAN PRIBADI
+              <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5"></i> DAFTAR BACAAN PRIBADI
             </div>
             <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-brandSlate">Berita Tersimpan</h1>
           </div>
-          <button type="button" onclick="window.navigatePortal('home')" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition">
+          <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition">
             &larr; Kembali ke Beranda
           </button>
         </div>
@@ -602,14 +651,14 @@
             <p id="admin-user-email" class="text-xs text-slate-300 mt-0.5">redaksi@kabarraya.id</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="window.openArticleModal()" class="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
-              <i data-lucide="plus" class="w-4 h-4"></i> Tulis Kabar Baru
+            <button type="button" onclick="window.openArticleModal()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
+              <i data-lucide="plus" aria-hidden="true" class="w-4 h-4"></i> Tulis Berita Baru
             </button>
-            <button type="button" onclick="window.navigatePortal('home')" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
-              Lihat Portal
+            <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
+              Buka Halaman Portal
             </button>
-            <button type="button" onclick="window.handleAdminLogout()" class="px-3.5 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-bold transition">
-              Keluar
+            <button type="button" onclick="window.handleAdminLogout()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-bold transition">
+              Keluar Sesi
             </button>
           </div>
         </div>
@@ -635,18 +684,18 @@
         </div>
 
         <!-- Tab Navigasi Admin (Grid 2x2 di HP, Flex di Desktop) -->
-        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-          <button type="button" id="admin-tab-articles" onclick="window.switchAdminTab('articles')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white flex items-center justify-center sm:justify-start gap-1.5 transition">
-            <i data-lucide="newspaper" class="w-3.5 h-3.5"></i> Daftar Berita
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2" role="tablist" aria-label="Menu Pengelolaan Redaksi">
+          <button type="button" id="admin-tab-articles" onclick="window.switchAdminTab('articles')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white flex items-center justify-center sm:justify-start gap-1.5 transition">
+            <i data-lucide="newspaper" aria-hidden="true" class="w-3.5 h-3.5"></i> Daftar Berita
           </button>
-          <button type="button" id="admin-tab-categories" onclick="window.switchAdminTab('categories')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
-            <i data-lucide="folder-kanban" class="w-3.5 h-3.5"></i> Kanal Berita
+          <button type="button" id="admin-tab-categories" onclick="window.switchAdminTab('categories')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
+            <i data-lucide="folder-kanban" aria-hidden="true" class="w-3.5 h-3.5"></i> Kanal Berita
           </button>
-          <button type="button" id="admin-tab-ads" onclick="window.switchAdminTab('ads')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
-            <i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Iklan Mandiri
+          <button type="button" id="admin-tab-ads" onclick="window.switchAdminTab('ads')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
+            <i data-lucide="megaphone" aria-hidden="true" class="w-3.5 h-3.5"></i> Iklan Mandiri
           </button>
-          <button type="button" id="admin-tab-stats" onclick="window.switchAdminTab('stats')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
-            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i> Statistik &amp; Pengunjung
+          <button type="button" id="admin-tab-stats" onclick="window.switchAdminTab('stats')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
+            <i data-lucide="bar-chart-3" aria-hidden="true" class="w-3.5 h-3.5"></i> Statistik &amp; Pengunjung
           </button>
         </div>
 
@@ -677,10 +726,10 @@
           <form onsubmit="window.handleSaveCategory(event)" class="lg:col-span-4 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-4 h-fit">
             <h3 class="font-headline font-extrabold text-sm text-brandSlate">Tambah Kanal Baru</h3>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Nama Kanal</label>
-              <input id="cat-name-input" type="text" required placeholder="Contoh: Otomotif, Gaya Hidup" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <label for="cat-name-input" class="block text-xs font-bold text-slate-600 mb-1">Nama Kanal</label>
+              <input id="cat-name-input" type="text" required placeholder="Contoh: Otomotif, Gaya Hidup" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
             </div>
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold transition">Simpan Kanal</button>
+            <button type="submit" class="w-full min-h-[44px] py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold transition">Simpan Kanal Baru</button>
           </form>
           <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
             <h3 class="font-headline font-extrabold text-sm text-brandSlate mb-3">Daftar Kanal Aktif</h3>
@@ -693,30 +742,30 @@
           <form onsubmit="window.handleSaveAd(event)" class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3.5 h-fit">
             <h3 class="font-headline font-extrabold text-sm text-brandSlate">Pasang Iklan Sponsor Mandiri</h3>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Judul / Nama Sponsor</label>
-              <input id="ad-title-input" type="text" required placeholder="Promo UMKM / Sponsor Utama" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <label for="ad-title-input" class="block text-xs font-bold text-slate-600 mb-1">Judul / Nama Sponsor</label>
+              <input id="ad-title-input" type="text" required placeholder="Promo UMKM / Sponsor Utama" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Posisi Slot Iklan</label>
-              <select id="ad-slot-input" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <label for="ad-slot-input" class="block text-xs font-bold text-slate-600 mb-1">Posisi Slot Iklan</label>
+              <select id="ad-slot-input" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500">
                 <option value="sidebar">Sidebar Kanan (Beranda)</option>
                 <option value="leaderboard">Leaderboard Bawah (Sebelum Footer)</option>
                 <option value="in_article">Dalam Artikel (Halaman Baca)</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">URL Gambar Banner atau Upload File</label>
-              <input id="ad-image-input" type="text" required placeholder="https://... atau upload di bawah" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 mb-2" />
-              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer transition">
-                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Pilih Gambar Banner (Otomatis WebP)
-                <input type="file" accept="image/*" onchange="window.handleAdImageUpload(event)" class="hidden" />
+              <label for="ad-image-input" class="block text-xs font-bold text-slate-600 mb-1">URL Gambar Banner atau Upload File</label>
+              <input id="ad-image-input" type="text" required placeholder="https://... atau unggah berkas di bawah" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 mb-2" />
+              <label for="ad-image-file-input" class="min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer transition">
+                <i data-lucide="upload" aria-hidden="true" class="w-3.5 h-3.5"></i> Pilih Gambar Banner (Otomatis WebP)
+                <input id="ad-image-file-input" type="file" accept="image/*" onchange="window.handleAdImageUpload(event)" class="hidden" />
               </label>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Link Tujuan (WA / Web / IG)</label>
-              <input id="ad-link-input" type="text" required placeholder="https://wa.me/6282118062433" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <label for="ad-link-input" class="block text-xs font-bold text-slate-600 mb-1">Link Tujuan (WA / Web / IG)</label>
+              <input id="ad-link-input" type="text" required placeholder="https://wa.me/6282118062433" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
             </div>
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-extrabold transition">Terbitkan Banner Iklan</button>
+            <button type="submit" class="w-full min-h-[44px] py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-extrabold transition">Terbitkan Banner Iklan</button>
           </form>
 
           <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
@@ -750,7 +799,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
-                  <i data-lucide="activity" class="w-4 h-4 text-sky-600"></i> Tren Kunjungan 7 Hari Terakhir
+                  <i data-lucide="activity" aria-hidden="true" class="w-4 h-4 text-sky-600"></i> Tren Kunjungan 7 Hari Terakhir
                 </h3>
                 <span class="text-[10px] font-bold text-slate-400">Harian</span>
               </div>
@@ -760,7 +809,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
-                  <i data-lucide="share-2" class="w-4 h-4 text-emerald-600"></i> Sumber Trafik &amp; Platform (UTM)
+                  <i data-lucide="share-2" aria-hidden="true" class="w-4 h-4 text-emerald-600"></i> Sumber Trafik &amp; Platform (UTM)
                 </h3>
                 <span class="text-[10px] font-bold text-slate-400">WA / Google / Medsos</span>
               </div>
@@ -770,7 +819,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
-                  <i data-lucide="globe" class="w-4 h-4 text-violet-600"></i> Distribusi Negara &amp; Wilayah
+                  <i data-lucide="globe" aria-hidden="true" class="w-4 h-4 text-violet-600"></i> Distribusi Negara &amp; Wilayah
                 </h3>
                 <span class="text-[10px] font-bold text-slate-400">WIB / WITA / WIT &amp; Global</span>
               </div>
@@ -780,7 +829,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 space-y-3">
               <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <h3 class="font-headline font-extrabold text-sm text-brandSlate flex items-center gap-2">
-                  <i data-lucide="smartphone" class="w-4 h-4 text-amber-600"></i> Perangkat Pembaca
+                  <i data-lucide="smartphone" aria-hidden="true" class="w-4 h-4 text-amber-600"></i> Perangkat Pembaca
                 </h3>
                 <span class="text-[10px] font-bold text-slate-400">Android / iOS / Desktop</span>
               </div>
@@ -791,8 +840,8 @@
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
             <div class="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
               <h3 class="font-headline font-extrabold text-sm text-brandSlate">Riwayat Kunjungan Terbaru</h3>
-              <button type="button" onclick="window.loadVisitorStats()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Segarkan
+              <button type="button" onclick="window.loadVisitorStats()" class="min-h-[40px] px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan Data
               </button>
             </div>
             <div class="overflow-x-auto">
@@ -824,22 +873,22 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
           <div class="md:col-span-5 space-y-3">
-            <div onclick="window.handleLogoSecretTap()" class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+            <button type="button" onclick="window.handleLogoSecretTap()" class="inline-flex items-center gap-2.5 text-left select-none min-h-[44px]">
               <span class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-teal-500 flex items-center justify-center font-headline font-extrabold text-white shadow">K</span>
-              <div>
-                <div class="font-headline font-extrabold text-white text-lg tracking-tight leading-none">KABARRAYA</div>
-                <div class="text-[10px] font-semibold uppercase tracking-widest text-sky-400 mt-0.5">Cepat • Jernih • Terpercaya</div>
-              </div>
-            </div>
+              <span>
+                <span class="block font-headline font-extrabold text-white text-lg tracking-tight leading-none">KABARRAYA</span>
+                <span class="block text-[10px] font-semibold uppercase tracking-widest text-sky-400 mt-0.5">Cepat • Jernih • Terpercaya</span>
+              </span>
+            </button>
             <p class="text-xs leading-relaxed text-slate-400 max-w-sm">
               Portal berita independen Indonesia yang menghadirkan kabar nasional, ekonomi, teknologi, olahraga, dan hiburan secara akurat serta berimbang.
             </p>
             <div class="pt-1 flex flex-wrap items-center gap-2">
-              <button type="button" onclick="window.openLegalModal('contact')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition">
-                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Pasang Iklan / WA Redaksi
+              <button type="button" onclick="window.openLegalModal('contact')" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition">
+                <i data-lucide="qr-code" aria-hidden="true" class="w-3.5 h-3.5"></i> Pasang Iklan / WA Redaksi
               </button>
-              <button type="button" onclick="window.openAdminAccess()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-bold transition">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-400"></i> Akses Redaksi
+              <button type="button" onclick="window.openAdminAccess()" class="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-bold transition">
+                <i data-lucide="shield-check" aria-hidden="true" class="w-3.5 h-3.5 text-sky-400"></i> Akses Redaksi
               </button>
             </div>
           </div>
@@ -852,10 +901,10 @@
             <div>
               <h4 class="font-headline font-extrabold text-xs uppercase tracking-wider text-white mb-3">Redaksi &amp; Transparansi</h4>
               <ul class="space-y-2 text-xs text-slate-400">
-                <li><button type="button" onclick="window.openLegalModal('about')" class="hover:text-sky-400 transition text-left">Tentang Redaksi</button></li>
-                <li><button type="button" onclick="window.openLegalModal('guideline')" class="hover:text-sky-400 transition text-left">Pedoman Media Siber</button></li>
-                <li><button type="button" onclick="window.openLegalModal('privacy')" class="hover:text-sky-400 transition text-left">Kebijakan Privasi</button></li>
-                <li><button type="button" onclick="window.openLegalModal('contact')" class="hover:text-sky-400 transition text-left">Kontak Redaksi &amp; Iklan</button></li>
+                <li><button type="button" onclick="window.openLegalModal('about')" class="min-h-[36px] hover:text-sky-400 transition text-left">Tentang Redaksi</button></li>
+                <li><button type="button" onclick="window.openLegalModal('guideline')" class="min-h-[36px] hover:text-sky-400 transition text-left">Pedoman Media Siber</button></li>
+                <li><button type="button" onclick="window.openLegalModal('privacy')" class="min-h-[36px] hover:text-sky-400 transition text-left">Kebijakan Privasi</button></li>
+                <li><button type="button" onclick="window.openLegalModal('contact')" class="min-h-[36px] hover:text-sky-400 transition text-left">Kontak Redaksi &amp; Iklan</button></li>
               </ul>
             </div>
           </div>
@@ -869,27 +918,27 @@
     </footer>
   </div>
 
-  <!-- MODAL 1: RUANG KERJA EDITOR BERITA JURNALIS (LUAS, LEGA & RAPI) -->
-  <div id="modal-article" class="fixed inset-0 z-[80] hidden items-center justify-center p-2 sm:p-4 lg:p-6 bg-slate-950/75 backdrop-blur-xs">
+  <!-- MODAL 1: RUANG KERJA EDITOR BERITA JURNALIS (LUAS 2 KOLOM, LEGA & RAPI) -->
+  <div id="modal-article" role="dialog" aria-modal="true" aria-labelledby="modal-article-title" class="fixed inset-0 z-[80] hidden items-center justify-center p-2 sm:p-4 lg:p-6 bg-slate-950/75 backdrop-blur-xs">
     <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-6xl h-[95vh] sm:h-[92vh] flex flex-col overflow-hidden border border-slate-200/80">
       <!-- Header Modal Ringkas & Informatif -->
       <div class="px-4 sm:px-6 py-3.5 border-b border-slate-200 flex items-center justify-between gap-3 bg-slate-50/90 shrink-0">
         <div class="flex items-center gap-3 min-w-0">
           <span class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <i data-lucide="file-edit" class="w-4 h-4"></i>
+            <i data-lucide="file-edit" aria-hidden="true" class="w-4 h-4"></i>
           </span>
           <div class="min-w-0">
-            <h3 id="modal-article-title" class="font-headline font-extrabold text-base sm:text-lg text-brandSlate leading-tight truncate">Tulis Kabar Baru</h3>
-            <p class="text-[11px] text-slate-500 hidden sm:block">Ruang kerja redaksi KabarRaya • Gunakan paragraf pendek dan jelas agar nyaman dibaca di ponsel</p>
+            <h3 id="modal-article-title" class="font-headline font-extrabold text-base sm:text-lg text-brandSlate leading-tight truncate">Tulis Berita Baru</h3>
+            <p class="text-[11px] text-slate-500 hidden sm:block">Ruang kerja redaksi KabarRaya • Susun paragraf pendek dan jelas agar nyaman dibaca di layar ponsel</p>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <span id="editor-word-badge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[11px] font-bold text-slate-600">
-            <i data-lucide="align-left" class="w-3.5 h-3.5 text-sky-600"></i>
+            <i data-lucide="align-left" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
             <span id="editor-word-count">0 kata • ~1 mnt baca</span>
           </span>
-          <button type="button" onclick="window.closeModal('modal-article')" aria-label="Tutup Editor" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
-            <i data-lucide="x" class="w-5 h-5"></i>
+          <button type="button" onclick="window.closeModal('modal-article')" aria-label="Tutup Ruang Editor" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+            <i data-lucide="x" aria-hidden="true" class="w-5 h-5"></i>
           </button>
         </div>
       </div>
@@ -908,7 +957,7 @@
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-1.5">
                     <label for="art-title-input" class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Judul Berita *</label>
-                    <span id="art-title-counter" class="text-[11px] font-semibold text-slate-400">0 / 120 karakter (ideal 55–85)</span>
+                    <span id="art-title-counter" class="text-[11px] font-semibold text-slate-400">0 / 120 karakter (ideal 55 sampai 85)</span>
                   </div>
                   <input
                     id="art-title-input"
@@ -916,7 +965,7 @@
                     required
                     oninput="window.updateEditorStats()"
                     placeholder="Tulis judul berita yang kuat, lugas, dan informatif..."
-                    class="w-full px-4 py-3 rounded-xl bg-slate-50/70 focus:bg-white border border-slate-200 font-headline text-base sm:text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+                    class="w-full min-h-[48px] px-4 py-3 rounded-xl bg-slate-50/70 focus:bg-white border border-slate-200 font-headline text-base sm:text-lg font-bold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
                   />
                 </div>
 
@@ -930,7 +979,7 @@
                     rows="3"
                     required
                     oninput="window.updateEditorStats()"
-                    placeholder="Tulis inti berita (5W+1H) dalam 1–2 kalimat padat sebagai teras pembuka..."
+                    placeholder="Tulis inti berita (5W+1H) dalam 1 sampai 2 kalimat padat sebagai teras pembuka..."
                     class="w-full px-4 py-3 rounded-xl bg-sky-50/40 focus:bg-white border border-sky-200/80 text-xs sm:text-sm font-medium text-slate-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-sky-500 transition resize-y"
                   ></textarea>
                 </div>
@@ -940,19 +989,22 @@
               <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
                   <label for="art-content-input" class="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                    <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-sky-600"></i>
+                    <i data-lucide="pen-tool" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
                     Isi Berita Lengkap *
                   </label>
 
                   <!-- Bilah Alat Bantu Cepat Jurnalis -->
                   <div class="flex flex-wrap items-center gap-1.5">
-                    <button type="button" onclick="window.insertEditorSnippet('paragraph')" title="Sisipkan jarak paragraf baru" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
+                    <button type="button" onclick="window.insertEditorSnippet('paragraph')" title="Sisipkan jarak paragraf baru" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
                       + Paragraf
                     </button>
-                    <button type="button" onclick="window.insertEditorSnippet('quote')" title="Sisipkan format kutipan narasumber" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
+                    <button type="button" onclick="window.insertEditorSnippet('subhead')" title="Sisipkan subjudul bagian berita" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
+                      + Subjudul
+                    </button>
+                    <button type="button" onclick="window.insertEditorSnippet('quote')" title="Sisipkan format kutipan narasumber" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200/80 text-[11px] font-bold transition">
                       + Kutipan
                     </button>
-                    <button type="button" onclick="window.cleanEditorSpacing()" title="Rapikan spasi dan baris kosong berlebih" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200/80 text-[11px] font-bold transition">
+                    <button type="button" onclick="window.cleanEditorSpacing()" title="Rapikan spasi dan baris kosong berlebih" class="min-h-[36px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200/80 text-[11px] font-bold transition">
                       Rapikan Paragraf
                     </button>
                   </div>
@@ -964,7 +1016,7 @@
                   required
                   oninput="window.updateEditorStats()"
                   placeholder="Mulai mengetik tubuh berita di sini dengan leluasa...&#10;&#10;Pisahkan setiap paragraf dengan satu baris kosong (Enter 2x) agar tampil rapi dan nyaman dibaca pengunjung."
-                  class="w-full min-h-[320px] sm:min-h-[420px] p-4 sm:p-5 rounded-xl bg-slate-50/50 focus:bg-white border border-slate-200 text-sm sm:text-[15px] text-slate-800 leading-[1.85] tracking-normal focus:outline-none focus:ring-2 focus:ring-sky-500 transition resize-y"
+                  class="w-full min-h-[340px] sm:min-h-[420px] p-4 sm:p-5 rounded-xl bg-slate-50/50 focus:bg-white border border-slate-200 text-sm sm:text-[15px] text-slate-800 leading-[1.85] tracking-normal focus:outline-none focus:ring-2 focus:ring-sky-500 transition resize-y"
                 ></textarea>
 
                 <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 pt-1">
@@ -979,23 +1031,23 @@
               <!-- Kartu Publikasi & Rubrik -->
               <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-3.5">
                 <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
-                  <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-sky-600"></i>
+                  <i data-lucide="sliders-horizontal" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
                   Rubrik &amp; Redaksi
                 </div>
 
                 <div>
                   <label for="art-category-input" class="block text-xs font-bold text-slate-700 mb-1">Kanal / Kategori *</label>
-                  <select id="art-category-input" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+                  <select id="art-category-input" required class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
                 </div>
 
                 <div>
                   <label for="art-author-input" class="block text-xs font-bold text-slate-700 mb-1">Nama Penulis / Redaksi</label>
-                  <input id="art-author-input" type="text" value="Tim Redaksi KabarRaya" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input id="art-author-input" type="text" value="Tim Redaksi KabarRaya" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
                 </div>
 
                 <div>
                   <label for="art-keywords-input" class="block text-xs font-bold text-slate-700 mb-1">Kata Kunci / Tag</label>
-                  <input id="art-keywords-input" type="text" placeholder="Nasional, Ekonomi, Viral Hari Ini" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input id="art-keywords-input" type="text" placeholder="Nasional, Ekonomi, Viral Hari Ini" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
                   <p class="text-[10px] text-slate-400 mt-1">Pisahkan tiap tag dengan tanda koma (,)</p>
                 </div>
               </div>
@@ -1003,32 +1055,33 @@
               <!-- Kartu Foto Utama & Pratinjau -->
               <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-3">
                 <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
-                  <i data-lucide="image" class="w-3.5 h-3.5 text-sky-600"></i>
+                  <i data-lucide="image" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
                   Foto Utama Berita
                 </div>
 
                 <div>
+                  <label for="art-image-input" class="sr-only">URL Gambar Utama</label>
                   <input
                     id="art-image-input"
                     type="text"
                     oninput="window.syncArticleImagePreview(this.value)"
-                    placeholder="Tempel URL gambar https://... atau upload file"
-                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    placeholder="Tempel URL gambar https://... atau unggah berkas"
+                    class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
 
                 <div class="flex items-center justify-between gap-2">
-                  <label class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold cursor-pointer transition">
-                    <i data-lucide="image-plus" class="w-4 h-4"></i>
+                  <label for="art-photo-file-input" class="min-h-[44px] flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs font-bold cursor-pointer transition">
+                    <i data-lucide="image-plus" aria-hidden="true" class="w-4 h-4"></i>
                     <span id="art-upload-label">Pilih Foto dari HP/PC</span>
-                    <input type="file" accept="image/*" onchange="window.handleArticlePhotoUpload(event)" class="hidden" />
+                    <input id="art-photo-file-input" type="file" accept="image/*" onchange="window.handleArticlePhotoUpload(event)" class="hidden" />
                   </label>
                 </div>
 
                 <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-[16/9] flex items-center justify-center relative">
-                  <img id="art-image-preview" src="" alt="Pratinjau Foto Berita" class="hidden w-full h-full object-cover" />
+                  <img id="art-image-preview" src="" alt="Pratinjau Foto Berita" width="640" height="360" class="hidden w-full h-full object-cover" />
                   <div id="art-image-placeholder" class="text-center p-4 text-slate-400 space-y-1">
-                    <i data-lucide="image" class="w-6 h-6 mx-auto opacity-60"></i>
+                    <i data-lucide="image" aria-hidden="true" class="w-6 h-6 mx-auto opacity-60"></i>
                     <p class="text-[11px] font-medium">Pratinjau foto utama (16:9)</p>
                   </div>
                 </div>
@@ -1037,24 +1090,24 @@
               <!-- Kartu Prioritas Tayang -->
               <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 space-y-2.5">
                 <div class="text-xs font-extrabold uppercase tracking-wider text-slate-700 pb-2 border-b border-slate-100 flex items-center gap-1.5">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                  <i data-lucide="sparkles" aria-hidden="true" class="w-3.5 h-3.5 text-amber-500"></i>
                   Prioritas Penayangan
                 </div>
 
-                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/70 cursor-pointer transition">
+                <label for="art-headline-input" class="flex items-start gap-2.5 p-2.5 rounded-xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/70 cursor-pointer transition">
                   <input id="art-headline-input" type="checkbox" class="w-4 h-4 mt-0.5 rounded text-sky-600 focus:ring-sky-500" />
-                  <div>
-                    <div class="text-xs font-extrabold text-slate-800">Jadikan Headline Utama (Hero 01)</div>
-                    <div class="text-[10px] text-slate-500">Tampil paling besar di layar depan portal</div>
-                  </div>
+                  <span>
+                    <span class="block text-xs font-extrabold text-slate-800">Jadikan Headline Utama (Hero 01)</span>
+                    <span class="block text-[10px] text-slate-500">Tampil paling besar di layar depan portal</span>
+                  </span>
                 </label>
 
-                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-rose-50/60 hover:bg-rose-50 border border-rose-200/70 cursor-pointer transition">
+                <label for="art-trending-input" class="flex items-start gap-2.5 p-2.5 rounded-xl bg-rose-50/60 hover:bg-rose-50 border border-rose-200/70 cursor-pointer transition">
                   <input id="art-trending-input" type="checkbox" class="w-4 h-4 mt-0.5 rounded text-rose-600 focus:ring-rose-500" />
-                  <div>
-                    <div class="text-xs font-extrabold text-slate-800">Tandai Viral / Paling Dicari</div>
-                    <div class="text-[10px] text-slate-500">Masuk jajaran Top 5 Viral &amp; label merah</div>
-                  </div>
+                  <span>
+                    <span class="block text-xs font-extrabold text-slate-800">Tandai Viral / Paling Dicari</span>
+                    <span class="block text-[10px] text-slate-500">Masuk jajaran Top 5 Viral &amp; label merah</span>
+                  </span>
                 </label>
               </div>
             </div>
@@ -1065,12 +1118,12 @@
         <div class="px-4 sm:px-6 py-3.5 border-t border-slate-200 bg-white flex items-center justify-between gap-3 shrink-0">
           <span class="text-[11px] text-slate-500 hidden sm:inline">Pastikan ejaan judul dan isi berita sudah diperiksa sebelum diterbitkan.</span>
           <div class="flex items-center gap-2.5 ml-auto">
-            <button type="button" onclick="window.closeModal('modal-article')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+            <button type="button" onclick="window.closeModal('modal-article')" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
               Batal
             </button>
-            <button id="art-save-btn" type="submit" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-extrabold shadow-md transition flex items-center gap-2">
-              <i data-lucide="send" class="w-4 h-4"></i>
-              <span>Terbitkan Kabar</span>
+            <button id="art-save-btn" type="submit" class="min-h-[44px] px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-extrabold shadow-md transition flex items-center gap-2">
+              <i data-lucide="send" aria-hidden="true" class="w-4 h-4"></i>
+              <span>Terbitkan Berita</span>
             </button>
           </div>
         </div>
@@ -1079,30 +1132,30 @@
   </div>
 
   <!-- MODAL 2: LOGIN REDAKSI -->
-  <div id="modal-login" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs">
+  <div id="modal-login" role="dialog" aria-modal="true" aria-labelledby="modal-login-title" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
       <div class="p-6 bg-slate-950 text-white flex items-center justify-between">
         <div>
           <div class="text-[10px] font-extrabold uppercase tracking-widest text-sky-400">Akses Khusus</div>
-          <h3 class="font-headline font-extrabold text-lg mt-0.5">Masuk Dapur Redaksi</h3>
+          <h3 id="modal-login-title" class="font-headline font-extrabold text-lg mt-0.5">Masuk Dapur Redaksi</h3>
         </div>
-        <button type="button" onclick="window.closeModal('modal-login')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
-          <i data-lucide="x" class="w-4 h-4"></i>
+        <button type="button" onclick="window.closeModal('modal-login')" aria-label="Tutup Jendela Masuk Redaksi" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
+          <i data-lucide="x" aria-hidden="true" class="w-4 h-4"></i>
         </button>
       </div>
       <form onsubmit="window.handleAdminLogin(event)" class="p-6 space-y-4">
         <div id="login-sandbox-note" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-medium">
-          Mode Pratinjau/Sandbox aktif: masukkan email &amp; password apa saja untuk langsung membuka Dapur Redaksi.
+          Mode Pratinjau/Sandbox aktif: masukkan email &amp; kata sandi apa saja untuk langsung membuka Dapur Redaksi.
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Email Redaksi</label>
-          <input id="login-email-input" type="email" required placeholder="guns.nooradiansyah@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          <label for="login-email-input" class="block text-xs font-bold text-slate-700 mb-1">Email Redaksi</label>
+          <input id="login-email-input" type="email" required placeholder="guns.nooradiansyah@gmail.com" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi</label>
-          <input id="login-password-input" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          <label for="login-password-input" class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi</label>
+          <input id="login-password-input" type="password" required placeholder="••••••••" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
         </div>
-        <button id="login-submit-btn" type="submit" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shadow transition">
+        <button id="login-submit-btn" type="submit" class="w-full min-h-[44px] py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shadow transition">
           Masuk ke Dapur Redaksi
         </button>
       </form>
@@ -1110,12 +1163,12 @@
   </div>
 
   <!-- MODAL 3: 4 HALAMAN WAJIB ADSENSE + QR CODE WHATSAPP -->
-  <div id="modal-legal" class="fixed inset-0 z-[80] hidden items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-xs">
+  <div id="modal-legal" role="dialog" aria-modal="true" aria-labelledby="modal-legal-title" class="fixed inset-0 z-[80] hidden items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-xs">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
         <h3 id="modal-legal-title" class="font-headline font-extrabold text-base text-brandSlate">Informasi Redaksi</h3>
-        <button type="button" onclick="window.closeModal('modal-legal')" class="p-2 rounded-xl hover:bg-slate-200 text-slate-500 transition">
-          <i data-lucide="x" class="w-4 h-4"></i>
+        <button type="button" onclick="window.closeModal('modal-legal')" aria-label="Tutup Informasi Redaksi" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-200 text-slate-500 transition">
+          <i data-lucide="x" aria-hidden="true" class="w-4 h-4"></i>
         </button>
       </div>
       <div id="modal-legal-body" class="p-5 sm:p-6 overflow-y-auto text-xs sm:text-sm text-slate-700 leading-relaxed space-y-4"></div>
@@ -1123,11 +1176,11 @@
   </div>
 
   <!-- MODAL 4: KONFIRMASI KUSTOM -->
-  <div id="modal-confirm" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+  <div id="modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message" class="fixed inset-0 z-[85] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-4">
       <div class="flex items-start gap-3">
         <span class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          <i data-lucide="alert-triangle" aria-hidden="true" class="w-5 h-5"></i>
         </span>
         <div>
           <h4 id="confirm-title" class="font-headline font-extrabold text-sm text-brandSlate">Konfirmasi Tindakan</h4>
@@ -1135,8 +1188,8 @@
         </div>
       </div>
       <div class="flex items-center justify-end gap-2 pt-2">
-        <button type="button" onclick="window.closeConfirmModal(false)" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
-        <button type="button" onclick="window.closeConfirmModal(true)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">Ya, Lanjutkan</button>
+        <button type="button" onclick="window.closeConfirmModal(false)" class="min-h-[44px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
+        <button type="button" onclick="window.closeConfirmModal(true)" class="min-h-[44px] px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">Ya, Hapus Sekarang</button>
       </div>
     </div>
   </div>
@@ -1373,6 +1426,11 @@
       } catch (e) {
         return '';
       }
+    }
+
+    function estimateReadMinutes(text) {
+      const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.ceil(words / 200));
     }
 
     function formatNumber(n) {
@@ -1618,15 +1676,15 @@
       if (nav) {
         const homeBtn = `
           <button type="button" onclick="window.selectCategory(null)" aria-label="Beranda Utama" title="Beranda Utama"
-            class="px-2.5 py-1.5 rounded-lg flex items-center justify-center transition shrink-0 ${isHomeActive ? 'bg-sky-500 text-white shadow' : 'text-slate-200 hover:bg-white/10'}">
-            <i data-lucide="home" class="w-4 h-4"></i>
+            class="min-w-[40px] min-h-[36px] px-2.5 py-1.5 rounded-lg flex items-center justify-center transition shrink-0 ${isHomeActive ? 'bg-sky-500 text-white shadow' : 'text-slate-200 hover:bg-white/10'}">
+            <i data-lucide="home" aria-hidden="true" class="w-4 h-4"></i>
           </button>
         `;
         const catBtns = state.categories.map(c => {
           const active = state.currentView === 'home' && state.selectedCategoryId === c.id;
           return `
             <button type="button" onclick="window.selectCategory('${escapeHtml(c.id)}')"
-              class="px-3 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition shrink-0 ${active ? 'bg-white text-slate-950 shadow' : 'text-slate-200 hover:bg-white/10 hover:text-white'}">
+              class="min-h-[36px] px-3 py-1 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition shrink-0 ${active ? 'bg-white text-slate-950 shadow' : 'text-slate-200 hover:bg-white/10 hover:text-white'}">
               ${escapeHtml(c.name)}
             </button>
           `;
@@ -1637,7 +1695,7 @@
       if (drawerCats) {
         drawerCats.innerHTML = state.categories.map(c => `
           <button type="button" onclick="window.selectCategory('${escapeHtml(c.id)}'); window.closeMobileDrawer();"
-            class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-sky-50 border border-slate-200/70 text-xs font-bold text-slate-700 hover:text-sky-700 text-left truncate transition">
+            class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 hover:bg-sky-50 border border-slate-200/70 text-xs font-bold text-slate-700 hover:text-sky-700 text-left truncate transition">
             ${escapeHtml(c.name)}
           </button>
         `).join('');
@@ -1646,7 +1704,7 @@
       if (footerCats) {
         footerCats.innerHTML = state.categories.map(c => `
           <li>
-            <button type="button" onclick="window.selectCategory('${escapeHtml(c.id)}')" class="hover:text-sky-400 transition text-left">
+            <button type="button" onclick="window.selectCategory('${escapeHtml(c.id)}')" class="min-h-[36px] hover:text-sky-400 transition text-left">
               ${escapeHtml(c.name)}
             </button>
           </li>
@@ -1744,6 +1802,25 @@
       renderAllPortalViews();
     };
 
+    function updateReadingProgressBar() {
+      const wrap = document.getElementById('reading-progress-wrap');
+      const bar = document.getElementById('reading-progress-bar');
+      if (!wrap || !bar) return;
+
+      if (state.currentView !== 'detail') {
+        wrap.classList.add('hidden');
+        bar.style.width = '0%';
+        return;
+      }
+
+      wrap.classList.remove('hidden');
+      const doc = document.documentElement;
+      const scrollTop = window.scrollY || doc.scrollTop || 0;
+      const maxScroll = Math.max(1, doc.scrollHeight - doc.clientHeight);
+      const pct = Math.min(100, Math.max(0, Math.round((scrollTop / maxScroll) * 100)));
+      bar.style.width = pct + '%';
+    }
+
     window.navigatePortal = (view) => {
       if (view === 'admin' && !state.adminUser) {
         window.openAdminAccess();
@@ -1795,6 +1872,7 @@
 
       renderChannelBars();
       updateHeaderMeta();
+      updateReadingProgressBar();
       renderIcons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -1874,7 +1952,7 @@
       const btn = document.getElementById('hero-autoplay-btn');
       if (!btn) return;
       const iconName = state.heroAutoplayPaused ? 'play' : 'pause';
-      btn.innerHTML = `<i data-lucide="${iconName}" class="w-3.5 h-3.5"></i>`;
+      btn.innerHTML = `<i data-lucide="${iconName}" aria-hidden="true" class="w-3.5 h-3.5"></i>`;
       btn.setAttribute('title', state.heroAutoplayPaused ? 'Putar Slide Otomatis' : 'Jeda Slide Otomatis');
       renderIcons();
     }
@@ -1936,25 +2014,27 @@
             </span>
             ${active.is_headline ? `<span class="px-2.5 py-1 rounded-full bg-amber-500/90 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">Headline Utama</span>` : ''}
             <span class="text-[11px] font-semibold text-slate-200 flex items-center gap-1 text-shadow-hero">
-              <i data-lucide="clock" class="w-3 h-3 text-sky-300"></i> ${escapeHtml(formatRelativeTime(active.created_at))}
+              <i data-lucide="clock" aria-hidden="true" class="w-3 h-3 text-sky-300"></i> ${escapeHtml(formatRelativeTime(active.created_at))}
             </span>
           </div>
 
-          <h1 onclick="window.openArticleDetail('${escapeHtml(active.id)}')" class="cursor-pointer font-headline font-extrabold text-2xl sm:text-4xl lg:text-[42px] text-white leading-[1.15] max-w-2xl text-shadow-hero hover:text-sky-200 transition">
-            ${escapeHtml(active.title)}
+          <h1 class="font-headline font-extrabold text-2xl sm:text-4xl lg:text-[42px] text-white leading-[1.15] max-w-2xl text-shadow-hero">
+            <button type="button" onclick="window.openArticleDetail('${escapeHtml(active.id)}')" class="text-left hover:text-sky-200 transition focus-visible:outline-white">
+              ${escapeHtml(active.title)}
+            </button>
           </h1>
 
           <div class="flex flex-wrap items-center gap-3 pt-1">
-            <button type="button" onclick="window.openArticleDetail('${escapeHtml(active.id)}')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-sky-400 text-slate-950 hover:text-white text-xs font-extrabold shadow-lg transition">
-              Baca Selengkapnya <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <button type="button" onclick="window.openArticleDetail('${escapeHtml(active.id)}')" class="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-sky-400 text-slate-950 hover:text-white text-xs font-extrabold shadow-lg transition">
+              Baca Berita Lengkap <i data-lucide="arrow-right" aria-hidden="true" class="w-4 h-4"></i>
             </button>
 
             <div class="hidden sm:flex items-center gap-2">
               ${miniRelated.map(rel => `
-                <button type="button" onclick="window.openArticleDetail('${escapeHtml(rel.id)}')" class="group flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-left max-w-[205px] transition">
+                <button type="button" onclick="window.openArticleDetail('${escapeHtml(rel.id)}')" class="min-h-[48px] group flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-left max-w-[205px] transition">
                   ${rel.image_url
-                    ? `<img src="${escapeHtml(rel.image_url)}" alt="${escapeHtml(rel.title)}" class="w-9 h-9 rounded-lg object-cover shrink-0" />`
-                    : `<span class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-4 h-4 text-sky-300"></i></span>`
+                    ? `<img src="${escapeHtml(rel.image_url)}" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" />`
+                    : `<span class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center shrink-0"><i data-lucide="newspaper" aria-hidden="true" class="w-4 h-4 text-sky-300"></i></span>`
                   }
                   <span class="text-[11px] font-bold text-white line-clamp-2 leading-snug group-hover:text-sky-200">${escapeHtml(rel.title)}</span>
                 </button>
@@ -1967,15 +2047,15 @@
       const spotlights = pool.filter(a => a.id !== active.id).slice(0, 4);
       if (rightCards) {
         rightCards.innerHTML = spotlights.map((item, idx) => `
-          <button type="button" onclick="window.openArticleDetail('${escapeHtml(item.id)}')" class="group w-full flex items-center gap-2.5 p-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-left transition">
+          <button type="button" onclick="window.openArticleDetail('${escapeHtml(item.id)}')" class="min-h-[56px] group w-full flex items-center gap-2.5 p-2 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-left transition">
             ${item.image_url
-              ? `<img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}" class="w-12 h-11 rounded-lg object-cover shrink-0" />`
-              : `<span class="w-12 h-11 rounded-lg bg-slate-800/80 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-4 h-4 text-sky-300"></i></span>`
+              ? `<img src="${escapeHtml(item.image_url)}" alt="" width="48" height="44" class="w-12 h-11 rounded-lg object-cover shrink-0" />`
+              : `<span class="w-12 h-11 rounded-lg bg-slate-800/80 flex items-center justify-center shrink-0"><i data-lucide="newspaper" aria-hidden="true" class="w-4 h-4 text-sky-300"></i></span>`
             }
-            <div class="min-w-0 flex-1">
-              <div class="text-[9px] font-extrabold uppercase tracking-wider text-sky-300">Sorotan #${idx + 2} • ${escapeHtml(getCategoryName(item.category_id))}</div>
-              <div class="text-[11px] font-bold text-white line-clamp-2 leading-tight mt-0.5 group-hover:text-sky-200">${escapeHtml(item.title)}</div>
-            </div>
+            <span class="min-w-0 flex-1 block">
+              <span class="block text-[9px] font-extrabold uppercase tracking-wider text-sky-300">Sorotan #${idx + 2} • ${escapeHtml(getCategoryName(item.category_id))}</span>
+              <span class="block text-[11px] font-bold text-white line-clamp-2 leading-tight mt-0.5 group-hover:text-sky-200">${escapeHtml(item.title)}</span>
+            </span>
           </button>
         `).join('');
       }
@@ -1988,8 +2068,8 @@
         dotsEl.innerHTML = slides.map((_, idx) => {
           const isCurr = idx === state.heroSlideIndex;
           return `
-            <button type="button" onclick="window.selectHeroSlide(${idx})"
-              class="px-2.5 py-1 rounded-full text-[11px] font-extrabold transition ${isCurr ? 'bg-sky-500 text-white shadow ring-2 ring-white/40' : 'bg-white/15 hover:bg-white/25 text-slate-200 border border-white/20'}">
+            <button type="button" onclick="window.selectHeroSlide(${idx})" aria-label="Pilih Sorotan Utama 0${idx + 1}"
+              class="min-w-[40px] min-h-[40px] px-2.5 py-1 rounded-full text-[11px] font-extrabold transition ${isCurr ? 'bg-sky-500 text-white shadow ring-2 ring-white/40' : 'bg-white/15 hover:bg-white/25 text-slate-200 border border-white/20'}">
               0${idx + 1}
             </button>
           `;
@@ -2000,21 +2080,21 @@
       const tickerItems = pool.slice(0, 4);
       if (tickerEl) {
         tickerEl.innerHTML = tickerItems.map((item, idx) => `
-          <button type="button" onclick="window.openArticleDetail('${escapeHtml(item.id)}')" class="group p-3.5 sm:p-4 text-left hover:bg-sky-50/60 transition flex items-center gap-3 w-full">
+          <button type="button" onclick="window.openArticleDetail('${escapeHtml(item.id)}')" class="min-h-[76px] group p-3.5 sm:p-4 text-left hover:bg-sky-50/60 transition flex items-center gap-3 w-full">
             ${item.image_url
-              ? `<img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" class="w-16 h-14 rounded-xl object-cover shrink-0 bg-slate-100" />
-                 <span style="display:none" class="w-16 h-14 rounded-xl bg-slate-100 text-slate-400 items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-5 h-5"></i></span>`
-              : `<span class="w-16 h-14 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-5 h-5"></i></span>`
+              ? `<img src="${escapeHtml(item.image_url)}" alt="" width="64" height="56" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" class="w-16 h-14 rounded-xl object-cover shrink-0 bg-slate-100" />
+                 <span style="display:none" class="w-16 h-14 rounded-xl bg-slate-100 text-slate-400 items-center justify-center shrink-0"><i data-lucide="newspaper" aria-hidden="true" class="w-5 h-5"></i></span>`
+              : `<span class="w-16 h-14 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0"><i data-lucide="newspaper" aria-hidden="true" class="w-5 h-5"></i></span>`
             }
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5 mb-1">
+            <span class="min-w-0 flex-1 block">
+              <span class="flex items-center gap-1.5 mb-1">
                 <span class="font-headline font-extrabold text-xs text-sky-600">0${idx + 1}</span>
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 truncate">${escapeHtml(getCategoryName(item.category_id))}</span>
-              </div>
-              <h3 class="font-headline font-bold text-xs sm:text-[13px] text-brandSlate line-clamp-2 leading-snug group-hover:text-sky-700 transition">
+              </span>
+              <span class="block font-headline font-bold text-xs sm:text-[13px] text-brandSlate line-clamp-2 leading-snug group-hover:text-sky-700 transition">
                 ${escapeHtml(item.title)}
-              </h3>
-            </div>
+              </span>
+            </span>
           </button>
         `).join('');
       }
@@ -2034,8 +2114,8 @@
         if (!btn) return;
         const active = f === filter;
         btn.className = active
-          ? 'px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-brandSlate text-white shadow-xs flex items-center gap-1'
-          : 'px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1';
+          ? 'min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition bg-brandSlate text-white shadow-xs flex items-center gap-1'
+          : 'min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition text-slate-600 hover:text-slate-900 flex items-center gap-1';
       });
       renderPortalFeed();
     };
@@ -2115,7 +2195,7 @@
         if (!visible.length) {
           container.innerHTML = `
             <div class="bg-white rounded-2xl border border-slate-200/80 p-8 text-center space-y-2">
-              <i data-lucide="search-x" class="w-8 h-8 text-slate-300 mx-auto"></i>
+              <i data-lucide="search-x" aria-hidden="true" class="w-8 h-8 text-slate-300 mx-auto"></i>
               <h3 class="font-headline font-bold text-sm text-slate-700">Tidak ada berita ditemukan</h3>
               <p class="text-xs text-slate-500">Coba kata kunci lain atau kembali ke semua kanal berita.</p>
             </div>
@@ -2125,29 +2205,31 @@
             const isBookmarked = state.bookmarks.includes(art.id);
             return `
               <article class="group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition overflow-hidden flex flex-col sm:flex-row">
-                <div onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="cursor-pointer sm:w-56 md:w-64 aspect-[16/10] sm:aspect-auto bg-slate-100 shrink-0 overflow-hidden relative">
+                <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" aria-label="Baca berita: ${escapeHtml(art.title)}" class="sm:w-56 md:w-64 aspect-[16/10] sm:aspect-auto bg-slate-100 shrink-0 overflow-hidden relative text-left">
                   ${art.image_url
-                    ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
-                    : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" class="w-10 h-10"></i></div>`
+                    ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" width="480" height="300" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
+                    : `<span class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-10 h-10"></i></span>`
                   }
                   ${art.is_trending ? `<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold shadow">VIRAL</span>` : ''}
-                </div>
+                </button>
                 <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between gap-2.5">
                   <div class="space-y-1.5">
                     <div class="flex items-center justify-between gap-2">
                       <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(getCategoryName(art.category_id))}</span>
                       <span class="text-[11px] text-slate-400 font-medium">${escapeHtml(formatRelativeTime(art.created_at))}</span>
                     </div>
-                    <h3 onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="cursor-pointer font-headline font-extrabold text-base sm:text-lg text-brandSlate leading-snug group-hover:text-sky-700 transition line-clamp-2">
-                      ${escapeHtml(art.title)}
+                    <h3 class="font-headline font-extrabold text-base sm:text-lg text-brandSlate leading-snug">
+                      <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="text-left group-hover:text-sky-700 transition line-clamp-2">
+                        ${escapeHtml(art.title)}
+                      </button>
                     </h3>
                     <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">${escapeHtml(art.summary)}</p>
                   </div>
                   <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                    <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i> ${formatNumber(art.views_count)} dibaca</span>
-                    <button type="button" onclick="window.toggleBookmark('${escapeHtml(art.id)}')" class="inline-flex items-center gap-1 font-bold ${isBookmarked ? 'text-amber-600' : 'text-slate-500 hover:text-amber-600'} transition">
-                      <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
-                      ${isBookmarked ? 'Tersimpan' : 'Simpan'}
+                    <span class="flex items-center gap-1"><i data-lucide="eye" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400"></i> ${formatNumber(art.views_count)} dibaca</span>
+                    <button type="button" onclick="window.toggleBookmark('${escapeHtml(art.id)}')" class="min-h-[36px] px-2 inline-flex items-center gap-1 font-bold ${isBookmarked ? 'text-amber-600' : 'text-slate-500 hover:text-amber-600'} transition">
+                      <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500' : ''}"></i>
+                      ${isBookmarked ? 'Tersimpan' : 'Simpan Berita'}
                     </button>
                   </div>
                 </div>
@@ -2174,13 +2256,13 @@
         }).slice(0, 5);
 
         topViralEl.innerHTML = sorted.map((art, i) => `
-          <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="group w-full py-3 first:pt-1 last:pb-1 flex items-start gap-3 text-left">
+          <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="min-h-[56px] group w-full py-3 first:pt-1 last:pb-1 flex items-start gap-3 text-left">
             <span class="font-headline font-extrabold text-xl leading-none ${i < 3 ? 'text-rose-500' : 'text-slate-300'} w-6 shrink-0">0${i + 1}</span>
-            <div class="min-w-0 flex-1">
-              <div class="text-[10px] font-extrabold uppercase tracking-wider text-sky-600 mb-0.5">${escapeHtml(getCategoryName(art.category_id))}</div>
-              <h4 class="font-headline font-bold text-xs sm:text-[13px] text-brandSlate leading-snug line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(art.title)}</h4>
-              <div class="text-[10px] text-slate-400 mt-1">${formatNumber(art.views_count)} pembaca</div>
-            </div>
+            <span class="min-w-0 flex-1 block">
+              <span class="block text-[10px] font-extrabold uppercase tracking-wider text-sky-600 mb-0.5">${escapeHtml(getCategoryName(art.category_id))}</span>
+              <span class="block font-headline font-bold text-xs sm:text-[13px] text-brandSlate leading-snug line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(art.title)}</span>
+              <span class="block text-[10px] text-slate-400 mt-1">${formatNumber(art.views_count)} pembaca</span>
+            </span>
           </button>
         `).join('');
       }
@@ -2196,7 +2278,7 @@
         });
         const tags = Array.from(tagSet).slice(0, 10);
         topicsEl.innerHTML = tags.map(t => `
-          <button type="button" onclick="window.searchByTag('${escapeHtml(t)}')" class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-sky-600 text-slate-700 hover:text-white text-xs font-bold transition">
+          <button type="button" onclick="window.searchByTag('${escapeHtml(t)}')" class="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-100 hover:bg-sky-600 text-slate-700 hover:text-white text-xs font-bold transition">
             #${escapeHtml(t)}
           </button>
         `).join('');
@@ -2220,32 +2302,32 @@
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
             <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
               <h3 class="font-headline font-extrabold text-sm uppercase tracking-wide text-brandSlate flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                <span aria-hidden="true" class="w-2 h-2 rounded-full bg-sky-500"></span>
                 ${escapeHtml(cat.name)}
               </h3>
-              <button type="button" onclick="window.selectCategory('${escapeHtml(cat.id)}')" class="text-xs font-bold text-sky-600 hover:text-sky-800 transition">
-                Indeks &rarr;
+              <button type="button" onclick="window.selectCategory('${escapeHtml(cat.id)}')" class="min-h-[36px] px-2 text-xs font-bold text-sky-600 hover:text-sky-800 transition">
+                Indeks Kanal &rarr;
               </button>
             </div>
             <div class="p-4 flex-1 flex flex-col gap-3">
               <button type="button" onclick="window.openArticleDetail('${escapeHtml(lead.id)}')" class="group text-left space-y-2">
-                <div class="aspect-[16/9] w-full rounded-xl overflow-hidden bg-slate-100">
+                <span class="block aspect-[16/9] w-full rounded-xl overflow-hidden bg-slate-100">
                   ${lead.image_url
-                    ? `<img src="${escapeHtml(lead.image_url)}" alt="${escapeHtml(lead.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
-                    : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" class="w-8 h-8"></i></div>`
+                    ? `<img src="${escapeHtml(lead.image_url)}" alt="${escapeHtml(lead.title)}" width="640" height="360" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
+                    : `<span class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`
                   }
-                </div>
-                <h4 class="font-headline font-extrabold text-sm text-brandSlate leading-snug line-clamp-2 group-hover:text-sky-700 transition">
+                </span>
+                <span class="block font-headline font-extrabold text-sm text-brandSlate leading-snug line-clamp-2 group-hover:text-sky-700 transition">
                   ${escapeHtml(lead.title)}
-                </h4>
+                </span>
               </button>
 
               ${bullets.length ? `
                 <ul class="space-y-2 pt-2 border-t border-slate-100">
                   ${bullets.map(b => `
                     <li class="flex items-start gap-2">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0"></span>
-                      <button type="button" onclick="window.openArticleDetail('${escapeHtml(b.id)}')" class="text-left text-xs font-semibold text-slate-700 hover:text-sky-700 line-clamp-2 leading-snug transition">
+                      <span aria-hidden="true" class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0"></span>
+                      <button type="button" onclick="window.openArticleDetail('${escapeHtml(b.id)}')" class="min-h-[32px] text-left text-xs font-semibold text-slate-700 hover:text-sky-700 line-clamp-2 leading-snug transition">
                         ${escapeHtml(b.title)}
                       </button>
                     </li>
@@ -2273,16 +2355,16 @@
           el.innerHTML = `
             <a href="${escapeHtml(ad.link_url || '#')}" target="_blank" rel="noopener noreferrer" class="block relative group">
               <span class="absolute top-2 right-2 z-10 px-2 py-0.5 rounded bg-slate-950/75 text-white text-[9px] font-bold uppercase tracking-wider">Sponsor</span>
-              <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" class="w-full ${heightClass} object-cover group-hover:opacity-95 transition" />
+              <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="800" height="250" class="w-full ${heightClass} object-cover group-hover:opacity-95 transition" />
             </a>
           `;
         } else {
           el.innerHTML = `
-            <div onclick="window.openLegalModal('contact')" class="cursor-pointer p-5 text-center bg-gradient-to-br from-slate-50 to-sky-50/60 hover:from-sky-50 hover:to-teal-50/60 transition flex flex-col items-center justify-center gap-1.5 min-h-[110px]">
+            <button type="button" onclick="window.openLegalModal('contact')" class="w-full p-5 text-center bg-gradient-to-br from-slate-50 to-sky-50/60 hover:from-sky-50 hover:to-teal-50/60 transition flex flex-col items-center justify-center gap-1.5 min-h-[110px]">
               <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Ruang Iklan &bull; ${escapeHtml(label)}</span>
-              <div class="font-headline font-extrabold text-sm text-brandSlate">Promosikan Bisnis &amp; Brand Anda di KabarRaya</div>
-              <span class="text-xs font-bold text-sky-600">Hubungi Redaksi / Scan QR WhatsApp &rarr;</span>
-            </div>
+              <span class="block font-headline font-extrabold text-sm text-brandSlate">Promosikan Bisnis &amp; Brand Anda di KabarRaya</span>
+              <span class="text-xs font-bold text-sky-600">Hubungi Redaksi / Pindai QR WhatsApp &rarr;</span>
+            </button>
           `;
         }
       };
@@ -2318,9 +2400,9 @@
       const bc = document.getElementById('detail-breadcrumb');
       if (bc) {
         bc.innerHTML = `
-          <button type="button" onclick="window.navigatePortal('home')" class="hover:text-sky-600">Beranda</button>
-          <span>/</span>
-          <button type="button" onclick="window.selectCategory('${escapeHtml(art.category_id)}')" class="hover:text-sky-600">${escapeHtml(catName)}</button>
+          <button type="button" onclick="window.navigatePortal('home')" class="min-h-[36px] px-1 hover:text-sky-600">Beranda</button>
+          <span aria-hidden="true">/</span>
+          <button type="button" onclick="window.selectCategory('${escapeHtml(art.category_id)}')" class="min-h-[36px] px-1 hover:text-sky-600">${escapeHtml(catName)}</button>
         `;
       }
 
@@ -2335,6 +2417,7 @@
       document.getElementById('detail-title').textContent = art.title;
       document.getElementById('detail-author').textContent = art.author_name || 'Tim Redaksi KabarRaya';
       document.getElementById('detail-date').textContent = formatFullDateId(art.created_at);
+      document.getElementById('detail-read-time').textContent = estimateReadMinutes((art.summary || '') + ' ' + (art.content || '')) + ' menit baca';
       document.getElementById('detail-views').textContent = formatNumber(art.views_count);
       document.getElementById('detail-summary').textContent = art.summary || '';
 
@@ -2349,7 +2432,12 @@
       const contentEl = document.getElementById('detail-content');
       if (contentEl) {
         const paragraphs = String(art.content || '').split(/\n+/).map(p => p.trim()).filter(Boolean);
-        contentEl.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+        contentEl.innerHTML = paragraphs.map(p => {
+          if (p.startsWith('## ')) {
+            return `<h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate pt-2">${escapeHtml(p.slice(3))}</h2>`;
+          }
+          return `<p>${escapeHtml(p)}</p>`;
+        }).join('');
       }
 
       const tagsList = document.getElementById('detail-tags-list');
@@ -2357,12 +2445,12 @@
         const tags = String(art.search_keywords || catName).split(',').map(t => t.trim()).filter(Boolean);
         tagsList.innerHTML = tags.map((t, idx) => `
           <li>
-            <button type="button" onclick="window.searchByTag('${escapeHtml(t)}')" class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-sky-50 text-left transition">
+            <button type="button" onclick="window.searchByTag('${escapeHtml(t)}')" class="min-h-[44px] w-full px-4 py-2.5 flex items-center justify-between hover:bg-sky-50 text-left transition">
               <span class="flex items-center gap-2.5 text-xs font-bold text-slate-700">
                 <span class="text-sky-600 font-extrabold">#${idx + 1}</span>
                 <span>${escapeHtml(t)}</span>
               </span>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+              <i data-lucide="chevron-right" aria-hidden="true" class="w-4 h-4 text-slate-400"></i>
             </button>
           </li>
         `).join('');
@@ -2385,18 +2473,18 @@
       if (likeCount) likeCount.textContent = String(likeData.count);
       if (likeBtn) {
         likeBtn.className = likeData.liked
-          ? 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-600 text-white border border-sky-600 text-xs font-bold transition'
-          : 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-sky-50 border border-slate-200 text-xs font-bold text-slate-700 transition';
+          ? 'min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 text-white border border-sky-600 text-xs font-bold transition'
+          : 'min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-sky-50 border border-slate-200 text-xs font-bold text-slate-700 transition';
       }
 
       const isSaved = state.bookmarks.includes(id);
       const bmBtn = document.getElementById('detail-bookmark-btn');
       const bmTxt = document.getElementById('detail-bookmark-text');
-      if (bmTxt) bmTxt.textContent = isSaved ? 'Tersimpan' : 'Simpan';
+      if (bmTxt) bmTxt.textContent = isSaved ? 'Tersimpan' : 'Simpan Berita';
       if (bmBtn) {
         bmBtn.className = isSaved
-          ? 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-slate-950 border border-amber-500 text-xs font-bold transition'
-          : 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 text-xs font-bold transition';
+          ? 'min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 border border-amber-500 text-xs font-bold transition'
+          : 'min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 text-xs font-bold transition';
       }
     }
 
@@ -2543,8 +2631,8 @@
       document.querySelectorAll('.comment-tab-btn').forEach(btn => {
         const active = btn.getAttribute('data-cfilter') === filter;
         btn.className = active
-          ? 'comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0'
-          : 'comment-tab-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0';
+          ? 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0'
+          : 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0';
       });
       renderArticleComments();
     };
@@ -2583,7 +2671,12 @@
 
     window.toggleReplyForm = (commentId) => {
       const form = document.getElementById('reply-form-' + commentId);
-      if (form) form.classList.toggle('hidden');
+      if (form) {
+        form.classList.toggle('hidden');
+        if (!form.classList.contains('hidden')) {
+          document.getElementById('reply-input-' + commentId)?.focus();
+        }
+      }
     };
 
     window.handleSubmitReply = (e, commentId) => {
@@ -2615,7 +2708,7 @@
       const heading = document.getElementById('comments-heading');
       const badge = document.getElementById('detail-comment-count-badge');
       if (heading) {
-        heading.innerHTML = `<i data-lucide="messages-square" class="w-5 h-5 text-sky-600"></i> Komentar (${all.length})`;
+        heading.innerHTML = `<i data-lucide="messages-square" aria-hidden="true" class="w-5 h-5 text-sky-600"></i> Komentar (${all.length})`;
       }
       if (badge) badge.textContent = String(all.length);
 
@@ -2654,20 +2747,21 @@
           </div>
           <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${escapeHtml(c.text)}</p>
           <div class="flex items-center gap-3 pt-1">
-            <button type="button" onclick="window.toggleCommentReaction('${escapeHtml(c.id)}', 'like')" class="inline-flex items-center gap-1 text-[11px] font-bold ${c.reaction === 'like' ? 'text-sky-600' : 'text-slate-500 hover:text-sky-600'} transition">
-              <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> (${c.likes || 0})
+            <button type="button" onclick="window.toggleCommentReaction('${escapeHtml(c.id)}', 'like')" aria-label="Suka komentar dari ${escapeHtml(c.author)}" class="min-h-[36px] px-1.5 inline-flex items-center gap-1 text-[11px] font-bold ${c.reaction === 'like' ? 'text-sky-600' : 'text-slate-500 hover:text-sky-600'} transition">
+              <i data-lucide="thumbs-up" aria-hidden="true" class="w-3.5 h-3.5"></i> (${c.likes || 0})
             </button>
-            <button type="button" onclick="window.toggleCommentReaction('${escapeHtml(c.id)}', 'dislike')" class="inline-flex items-center gap-1 text-[11px] font-bold ${c.reaction === 'dislike' ? 'text-rose-600' : 'text-slate-500 hover:text-rose-600'} transition">
-              <i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i> (${c.dislikes || 0})
+            <button type="button" onclick="window.toggleCommentReaction('${escapeHtml(c.id)}', 'dislike')" aria-label="Tidak suka komentar dari ${escapeHtml(c.author)}" class="min-h-[36px] px-1.5 inline-flex items-center gap-1 text-[11px] font-bold ${c.reaction === 'dislike' ? 'text-rose-600' : 'text-slate-500 hover:text-rose-600'} transition">
+              <i data-lucide="thumbs-down" aria-hidden="true" class="w-3.5 h-3.5"></i> (${c.dislikes || 0})
             </button>
-            <button type="button" onclick="window.toggleReplyForm('${escapeHtml(c.id)}')" class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-teal-600 transition">
-              <i data-lucide="corner-down-right" class="w-3.5 h-3.5"></i> Balas (${(c.replies || []).length})
+            <button type="button" onclick="window.toggleReplyForm('${escapeHtml(c.id)}')" class="min-h-[36px] px-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-teal-600 transition">
+              <i data-lucide="corner-down-right" aria-hidden="true" class="w-3.5 h-3.5"></i> Balas (${(c.replies || []).length})
             </button>
           </div>
 
           <form id="reply-form-${escapeHtml(c.id)}" onsubmit="window.handleSubmitReply(event, '${escapeHtml(c.id)}')" class="hidden pt-2 flex gap-2">
-            <input id="reply-input-${escapeHtml(c.id)}" type="text" required placeholder="Tulis balasan..." class="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
-            <button type="submit" class="px-3.5 py-2 rounded-xl bg-brandSlate text-white text-xs font-bold">Balas</button>
+            <label for="reply-input-${escapeHtml(c.id)}" class="sr-only">Tulis balasan komentar</label>
+            <input id="reply-input-${escapeHtml(c.id)}" type="text" required placeholder="Tulis balasan..." class="flex-1 min-h-[40px] px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            <button type="submit" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-brandSlate text-white text-xs font-bold">Kirim Balasan</button>
           </form>
 
           ${(c.replies && c.replies.length) ? `
@@ -2697,39 +2791,39 @@
 
       const cards = recs.map(r => `
         <button type="button" onclick="window.openArticleDetail('${escapeHtml(r.id)}')" class="group bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden text-left flex flex-col hover:shadow-md transition">
-          <div class="aspect-[16/9] w-full bg-slate-100 overflow-hidden">
+          <span class="block aspect-[16/9] w-full bg-slate-100 overflow-hidden">
             ${r.image_url
-              ? `<img src="${escapeHtml(r.image_url)}" alt="${escapeHtml(r.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
-              : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" class="w-8 h-8"></i></div>`
+              ? `<img src="${escapeHtml(r.image_url)}" alt="${escapeHtml(r.title)}" width="640" height="360" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />`
+              : `<span class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`
             }
-          </div>
-          <div class="p-4 space-y-1.5">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(getCategoryName(r.category_id))}</span>
-            <h4 class="font-headline font-bold text-sm text-brandSlate line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(r.title)}</h4>
-          </div>
+          </span>
+          <span class="block p-4 space-y-1.5">
+            <span class="block text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(getCategoryName(r.category_id))}</span>
+            <span class="block font-headline font-bold text-sm text-brandSlate line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(r.title)}</span>
+          </span>
         </button>
       `);
 
       const promotedCard = promoAd
         ? `
           <a href="${escapeHtml(promoAd.link_url || '#')}" target="_blank" rel="noopener noreferrer" class="group bg-white rounded-2xl border border-amber-200/80 shadow-card overflow-hidden text-left flex flex-col hover:shadow-md transition">
-            <div class="aspect-[16/9] w-full bg-amber-50 overflow-hidden relative">
+            <span class="block aspect-[16/9] w-full bg-amber-50 overflow-hidden relative">
               <span class="absolute top-2.5 left-2.5 z-10 px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow">Promoted</span>
-              <img src="${escapeHtml(promoAd.image_url)}" alt="${escapeHtml(promoAd.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-            </div>
-            <div class="p-4 space-y-1.5">
-              <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Konten Bersponsor</span>
-              <h4 class="font-headline font-bold text-sm text-brandSlate line-clamp-2 group-hover:text-amber-700 transition">${escapeHtml(promoAd.title)}</h4>
-            </div>
+              <img src="${escapeHtml(promoAd.image_url)}" alt="${escapeHtml(promoAd.title)}" width="640" height="360" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            </span>
+            <span class="block p-4 space-y-1.5">
+              <span class="block text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Konten Bersponsor</span>
+              <span class="block font-headline font-bold text-sm text-brandSlate line-clamp-2 group-hover:text-amber-700 transition">${escapeHtml(promoAd.title)}</span>
+            </span>
           </a>
         `
         : `
           <button type="button" onclick="window.openLegalModal('contact')" class="group bg-gradient-to-br from-amber-50/70 to-white rounded-2xl border border-amber-200/80 shadow-card overflow-hidden text-left flex flex-col justify-between p-5 hover:shadow-md transition">
-            <div class="space-y-2">
+            <span class="block space-y-2">
               <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">Promoted</span>
-              <h4 class="font-headline font-extrabold text-base text-brandSlate leading-snug">Tampilkan Artikel &amp; Promo Brand Anda di Sini</h4>
-              <p class="text-xs text-slate-600 leading-relaxed">Jangkau pembaca aktif KabarRaya setiap hari melalui format native advertorial yang elegan dan terpercaya.</p>
-            </div>
+              <span class="block font-headline font-extrabold text-base text-brandSlate leading-snug">Tampilkan Artikel &amp; Promo Brand Anda di Sini</span>
+              <span class="block text-xs text-slate-600 leading-relaxed">Jangkau pembaca aktif KabarRaya setiap hari melalui format native advertorial yang elegan dan terpercaya.</span>
+            </span>
             <span class="mt-4 text-xs font-extrabold text-amber-700 inline-flex items-center gap-1">Hubungi Tim Iklan &rarr;</span>
           </button>
         `;
@@ -2751,15 +2845,19 @@
         return (b.views_count || 0) - (a.views_count || 0);
       });
       grid.innerHTML = sorted.map((art, i) => `
-        <article onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="cursor-pointer group bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col hover:shadow-md transition">
-          <div class="aspect-[16/10] bg-slate-100 relative overflow-hidden">
-            ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : ''}
+        <article class="group bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col hover:shadow-md transition">
+          <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" aria-label="Baca berita viral #${i + 1}: ${escapeHtml(art.title)}" class="aspect-[16/10] bg-slate-100 relative overflow-hidden text-left">
+            ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" width="640" height="400" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : ''}
             <span class="absolute top-3 left-3 px-2.5 py-1 rounded-xl bg-rose-600 text-white font-headline font-extrabold text-xs shadow">#${i + 1} VIRAL</span>
-          </div>
+          </button>
           <div class="p-4 space-y-2 flex-1 flex flex-col justify-between">
             <div>
               <div class="text-[10px] font-extrabold uppercase tracking-wider text-sky-600 mb-1">${escapeHtml(getCategoryName(art.category_id))}</div>
-              <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate line-clamp-2 group-hover:text-sky-700">${escapeHtml(art.title)}</h3>
+              <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">
+                <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="text-left line-clamp-2 group-hover:text-sky-700 transition">
+                  ${escapeHtml(art.title)}
+                </button>
+              </h3>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
               <span>${formatNumber(art.views_count)} pembaca</span>
@@ -2777,9 +2875,9 @@
       if (!saved.length) {
         grid.innerHTML = `
           <div class="col-span-full bg-white rounded-3xl border border-slate-200/80 p-10 text-center space-y-3">
-            <i data-lucide="bookmark" class="w-10 h-10 text-slate-300 mx-auto"></i>
+            <i data-lucide="bookmark" aria-hidden="true" class="w-10 h-10 text-slate-300 mx-auto"></i>
             <h3 class="font-headline font-extrabold text-base text-slate-700">Belum Ada Berita Tersimpan</h3>
-            <p class="text-xs text-slate-500">Klik tombol Simpan pada berita mana saja untuk membacanya kembali nanti.</p>
+            <p class="text-xs text-slate-500">Klik tombol Simpan Berita pada artikel mana saja untuk membacanya kembali nanti.</p>
           </div>
         `;
         renderIcons();
@@ -2787,14 +2885,18 @@
       }
       grid.innerHTML = saved.map(art => `
         <article class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
-          <div onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="cursor-pointer aspect-[16/10] bg-slate-100 overflow-hidden">
-            ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" class="w-full h-full object-cover" />` : ''}
-          </div>
+          <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" aria-label="Baca berita tersimpan: ${escapeHtml(art.title)}" class="aspect-[16/10] bg-slate-100 overflow-hidden text-left">
+            ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" width="640" height="400" class="w-full h-full object-cover" />` : ''}
+          </button>
           <div class="p-4 flex-1 flex flex-col justify-between gap-3">
-            <h3 onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="cursor-pointer font-headline font-extrabold text-sm text-brandSlate line-clamp-2 hover:text-sky-700">${escapeHtml(art.title)}</h3>
+            <h3 class="font-headline font-extrabold text-sm text-brandSlate">
+              <button type="button" onclick="window.openArticleDetail('${escapeHtml(art.id)}')" class="text-left line-clamp-2 hover:text-sky-700 transition">
+                ${escapeHtml(art.title)}
+              </button>
+            </h3>
             <div class="flex items-center justify-between pt-2 border-t border-slate-100">
               <span class="text-[11px] text-slate-400">${escapeHtml(getCategoryName(art.category_id))}</span>
-              <button type="button" onclick="window.toggleBookmark('${escapeHtml(art.id)}')" class="text-xs font-bold text-rose-600 hover:text-rose-700">Hapus</button>
+              <button type="button" onclick="window.toggleBookmark('${escapeHtml(art.id)}')" class="min-h-[36px] px-2 text-xs font-bold text-rose-600 hover:text-rose-700">Hapus Simpanan</button>
             </div>
           </div>
         </article>
@@ -2861,14 +2963,16 @@
                   <div class="font-extrabold text-slate-900">0821-1806-2433</div>
                 </div>
                 <a href="https://wa.me/6282118062433?text=Halo%20Tim%20Redaksi%20KabarRaya%2C%20saya%20ingin%20bertanya%20terkait%20berita%20atau%20pemasangan%20iklan." target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow transition">
-                  <i data-lucide="message-circle" class="w-4 h-4"></i> Chat WhatsApp Sekarang
+                  class="min-h-[44px] inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow transition">
+                  <i data-lucide="message-circle" aria-hidden="true" class="w-4 h-4"></i> Chat WhatsApp Sekarang
                 </a>
               </div>
               <div class="flex flex-col items-center justify-center bg-white p-3.5 rounded-2xl border border-slate-200">
                 <img
                   src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://wa.me/6282118062433"
                   alt="QR Code WhatsApp Redaksi KabarRaya"
+                  width="144"
+                  height="144"
                   onerror="this.src='https://placehold.co/160x160/0f172a/ffffff?text=WA+082118062433'"
                   class="w-36 h-36 rounded-xl"
                 />
@@ -2940,8 +3044,8 @@
         const btn = document.getElementById('admin-tab-' + t);
         if (btn) {
           btn.className = t === tab
-            ? 'px-4 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white flex items-center justify-center sm:justify-start gap-1.5 transition'
-            : 'px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition';
+            ? 'min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white flex items-center justify-center sm:justify-start gap-1.5 transition'
+            : 'min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition';
         }
       });
       if (tab === 'stats') window.loadVisitorStats();
@@ -2969,8 +3073,8 @@
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 space-y-3">
             <div class="flex gap-3">
               ${art.image_url
-                ? `<img src="${escapeHtml(art.image_url)}" alt="" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-100" />`
-                : `<div class="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i data-lucide="newspaper" class="w-5 h-5"></i></div>`
+                ? `<img src="${escapeHtml(art.image_url)}" alt="" width="64" height="64" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-100" />`
+                : `<div class="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i data-lucide="newspaper" aria-hidden="true" class="w-5 h-5"></i></div>`
               }
               <div class="min-w-0 flex-1">
                 <div class="text-[10px] font-extrabold uppercase text-sky-600">${escapeHtml(getCategoryName(art.category_id))} • ${formatNumber(art.views_count)} views</div>
@@ -2978,10 +3082,10 @@
               </div>
             </div>
             <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-100">
-              <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_headline')" class="py-1.5 rounded-lg text-[10px] font-bold transition ${art.is_headline ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-600'}">Headline</button>
-              <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_trending')" class="py-1.5 rounded-lg text-[10px] font-bold transition ${art.is_trending ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600'}">Viral</button>
-              <button type="button" onclick="window.openArticleModal('${escapeHtml(art.id)}')" class="py-1.5 rounded-lg bg-sky-50 text-sky-700 text-[10px] font-bold">Edit</button>
-              <button type="button" onclick="window.handleDeleteArticle('${escapeHtml(art.id)}')" class="py-1.5 rounded-lg bg-rose-50 text-rose-700 text-[10px] font-bold">Hapus</button>
+              <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_headline')" class="min-h-[38px] py-1.5 rounded-lg text-[10px] font-bold transition ${art.is_headline ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-600'}">Headline</button>
+              <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_trending')" class="min-h-[38px] py-1.5 rounded-lg text-[10px] font-bold transition ${art.is_trending ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600'}">Viral</button>
+              <button type="button" onclick="window.openArticleModal('${escapeHtml(art.id)}')" class="min-h-[38px] py-1.5 rounded-lg bg-sky-50 text-sky-700 text-[10px] font-bold">Sunting</button>
+              <button type="button" onclick="window.handleDeleteArticle('${escapeHtml(art.id)}')" class="min-h-[38px] py-1.5 rounded-lg bg-rose-50 text-rose-700 text-[10px] font-bold">Hapus</button>
             </div>
           </div>
         `).join('');
@@ -2993,7 +3097,7 @@
           <tr class="hover:bg-slate-50/80">
             <td class="py-3 px-4">
               <div class="flex items-center gap-3">
-                ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="" class="w-12 h-9 rounded-lg object-cover shrink-0" />` : ''}
+                ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="" width="48" height="36" class="w-12 h-9 rounded-lg object-cover shrink-0" />` : ''}
                 <div class="min-w-0">
                   <div class="font-bold text-slate-800 line-clamp-1 max-w-md">${escapeHtml(art.title)}</div>
                   <div class="text-[10px] text-slate-400">${escapeHtml(formatRelativeTime(art.created_at))}</div>
@@ -3003,14 +3107,14 @@
             <td class="py-3 px-4 font-bold text-sky-700">${escapeHtml(getCategoryName(art.category_id))}</td>
             <td class="py-3 px-4">
               <div class="flex items-center gap-1.5">
-                <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_headline')" class="px-2 py-0.5 rounded-md text-[10px] font-bold ${art.is_headline ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-500'}">Headline</button>
-                <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_trending')" class="px-2 py-0.5 rounded-md text-[10px] font-bold ${art.is_trending ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-500'}">Viral</button>
+                <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_headline')" class="min-h-[32px] px-2.5 py-1 rounded-md text-[10px] font-bold ${art.is_headline ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-500'}">Headline</button>
+                <button type="button" onclick="window.quickToggleFlag('${escapeHtml(art.id)}', 'is_trending')" class="min-h-[32px] px-2.5 py-1 rounded-md text-[10px] font-bold ${art.is_trending ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-500'}">Viral</button>
               </div>
             </td>
             <td class="py-3 px-4 text-right font-bold text-slate-700">${formatNumber(art.views_count)}</td>
             <td class="py-3 px-4 text-right whitespace-nowrap">
-              <button type="button" onclick="window.openArticleModal('${escapeHtml(art.id)}')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold mr-1">Edit</button>
-              <button type="button" onclick="window.handleDeleteArticle('${escapeHtml(art.id)}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Hapus</button>
+              <button type="button" onclick="window.openArticleModal('${escapeHtml(art.id)}')" class="min-h-[36px] px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold mr-1">Sunting</button>
+              <button type="button" onclick="window.handleDeleteArticle('${escapeHtml(art.id)}')" class="min-h-[36px] px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Hapus</button>
             </td>
           </tr>
         `).join('');
@@ -3024,7 +3128,7 @@
               <span class="font-bold text-slate-800">${escapeHtml(c.name)}</span>
               <span class="text-slate-400 ml-2">/${escapeHtml(c.slug)}</span>
             </div>
-            <button type="button" onclick="window.handleDeleteCategory('${escapeHtml(c.id)}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Hapus</button>
+            <button type="button" onclick="window.handleDeleteCategory('${escapeHtml(c.id)}')" class="min-h-[36px] px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">Hapus Kanal</button>
           </div>
         `).join('');
       }
@@ -3037,13 +3141,13 @@
           adsList.innerHTML = state.ads.map(ad => `
             <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <img src="${escapeHtml(ad.image_url)}" alt="" class="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0" />
+                <img src="${escapeHtml(ad.image_url)}" alt="" width="64" height="48" class="w-16 h-12 rounded-lg object-cover bg-slate-100 shrink-0" />
                 <div class="min-w-0">
                   <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(ad.title)}</div>
                   <div class="text-[10px] font-bold uppercase text-teal-600">${escapeHtml(ad.slot)}</div>
                 </div>
               </div>
-              <button type="button" onclick="window.handleDeleteAd('${escapeHtml(ad.id)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold shrink-0">Hapus</button>
+              <button type="button" onclick="window.handleDeleteAd('${escapeHtml(ad.id)}')" class="min-h-[36px] px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold shrink-0">Hapus Iklan</button>
             </div>
           `).join('');
         }
@@ -3101,7 +3205,7 @@
 
       const titleCounter = document.getElementById('art-title-counter');
       if (titleCounter) {
-        titleCounter.textContent = `${titleVal.length} / 120 karakter (ideal 55–85)`;
+        titleCounter.textContent = `${titleVal.length} / 120 karakter (ideal 55 sampai 85)`;
       }
 
       const words = contentVal ? contentVal.split(/\s+/).filter(Boolean).length : 0;
@@ -3125,11 +3229,13 @@
       const end = textarea.selectionEnd ?? textarea.value.length;
       const before = textarea.value.slice(0, start);
       const after = textarea.value.slice(end);
+      const prefix = before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : '';
 
       let snippet = '\n\n';
       if (type === 'quote') {
-        const prefix = before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : '';
         snippet = `${prefix}"Tulis kutipan langsung narasumber di sini," ujar Narasumber dalam keterangannya.\n\n`;
+      } else if (type === 'subhead') {
+        snippet = `${prefix}## Subjudul Bagian Berita\n\n`;
       } else {
         snippet = before.endsWith('\n') ? '\n' : '\n\n';
       }
@@ -3208,7 +3314,7 @@
       if (editId) {
         const art = state.articles.find(a => a.id === editId);
         if (!art) return;
-        document.getElementById('modal-article-title').textContent = 'Edit Berita';
+        document.getElementById('modal-article-title').textContent = 'Sunting Berita';
         if (saveBtnSpan) saveBtnSpan.textContent = 'Simpan Perubahan';
         document.getElementById('art-id-input').value = art.id;
         document.getElementById('art-title-input').value = art.title || '';
@@ -3222,8 +3328,8 @@
         document.getElementById('art-trending-input').checked = Boolean(art.is_trending);
         window.syncArticleImagePreview(art.image_url || '');
       } else {
-        document.getElementById('modal-article-title').textContent = 'Tulis Kabar Baru';
-        if (saveBtnSpan) saveBtnSpan.textContent = 'Terbitkan Kabar';
+        document.getElementById('modal-article-title').textContent = 'Tulis Berita Baru';
+        if (saveBtnSpan) saveBtnSpan.textContent = 'Terbitkan Berita';
         document.getElementById('article-editor-form').reset();
         document.getElementById('art-id-input').value = '';
         document.getElementById('art-author-input').value = 'Tim Redaksi KabarRaya';
@@ -3240,7 +3346,7 @@
       e.preventDefault();
       const btn = document.getElementById('art-save-btn');
       const btnSpan = btn?.querySelector('span');
-      const prevBtnText = btnSpan ? btnSpan.textContent : 'Terbitkan Kabar';
+      const prevBtnText = btnSpan ? btnSpan.textContent : 'Terbitkan Berita';
       if (btn) { btn.disabled = true; }
       if (btnSpan) { btnSpan.textContent = 'Menyimpan...'; }
 
@@ -3571,6 +3677,8 @@
           }
         });
       }
+
+      window.addEventListener('scroll', updateReadingProgressBar, { passive: true });
 
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
