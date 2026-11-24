@@ -1630,7 +1630,12 @@
         return;
       }
 
-      const heroPool = state.articles.slice(0, 3);
+      // Prioritaskan artikel yang dicentang "Jadikan Headline Utama" (is_headline) di posisi terdepan Hero
+      const headlineArticles = state.articles.filter(a => a.is_headline);
+      const nonHeadlineArticles = state.articles.filter(a => !a.is_headline);
+      const prioritizedHeroList = [...headlineArticles, ...nonHeadlineArticles];
+
+      const heroPool = prioritizedHeroList.slice(0, 3);
       if (state.heroSlideIndex >= heroPool.length) state.heroSlideIndex = 0;
       const activeHero = heroPool[state.heroSlideIndex];
 
@@ -1639,7 +1644,7 @@
         heroBg.classList.remove('opacity-0');
       }
 
-      const miniLinks = state.articles.filter(a => a.id !== activeHero.id).slice(0, 2);
+      const miniLinks = prioritizedHeroList.filter(a => a.id !== activeHero.id).slice(0, 2);
 
       leftStage.innerHTML = `
         <div class="space-y-2 sm:space-y-3">
@@ -1672,7 +1677,7 @@
         </div>
       `;
 
-      const sideCardsData = state.articles.filter(a => a.id !== activeHero.id).slice(0, 4);
+      const sideCardsData = prioritizedHeroList.filter(a => a.id !== activeHero.id).slice(0, 4);
       const sideCardsHtml = sideCardsData.map(card => `
         <article onclick="window.openArticleDetail('${card.id}')" class="relative h-[74px] sm:h-[116px] lg:h-[122px] rounded-lg overflow-hidden bg-slate-900/90 border border-white/25 shadow-lg cursor-pointer group">
           <img src="${card.image_url || 'https://placehold.co/400x300/0F172A/FFFFFF?text=KabarRaya'}" alt="${card.title}" class="w-full h-full object-cover object-top opacity-95 group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x300/0F172A/FFFFFF?text=KabarRaya'" />
@@ -1715,7 +1720,7 @@
         }).join('');
       }
 
-      const tickerItems = state.articles.slice(0, 4);
+      const tickerItems = prioritizedHeroList.slice(0, 4);
       const filledTickerHtml = tickerItems.map(item => `
         <div onclick="window.openArticleDetail('${item.id}')" class="p-2.5 sm:p-4 flex items-center gap-2 sm:gap-3 hover:bg-slate-50 transition cursor-pointer group">
           <img src="${item.image_url || 'https://placehold.co/120x120/F1F5F9/0284C7?text=KR'}" alt="${item.title}" class="w-9 h-9 sm:w-12 sm:h-12 rounded-md object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/120x120/F1F5F9/0284C7?text=KR'" />
@@ -1751,7 +1756,12 @@
       const totalViewsEl = document.getElementById('trending-total-views');
       if (!container) return;
 
-      const sorted = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      const sorted = [...state.articles].sort((a, b) => {
+        if (Boolean(b.is_trending) !== Boolean(a.is_trending)) {
+          return Number(Boolean(b.is_trending)) - Number(Boolean(a.is_trending));
+        }
+        return (b.views_count || 0) - (a.views_count || 0);
+      });
       const totalViews = sorted.reduce((acc, item) => acc + Number(item.views_count || 0), 0);
       if (totalViewsEl) totalViewsEl.textContent = formatViews(totalViews);
 
@@ -1765,18 +1775,18 @@
       }
 
       container.innerHTML = sorted.map((art, idx) => `
-        <div onclick="window.openArticleDetail('${art.id}')" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3.5 sm:p-4 flex items-center gap-3 sm:gap-4 hover:border-brandSky transition cursor-pointer group">
-          <div class="font-headline font-extrabold text-xl sm:text-2xl w-7 sm:w-9 text-center shrink-0 ${idx < 3 ? 'text-brandCoral' : 'text-slate-300'}">
+        <div onclick="window.openArticleDetail('${art.id}')" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 flex items-center gap-4 hover:border-brandSky transition cursor-pointer group">
+          <div class="font-headline font-extrabold text-2xl w-9 text-center shrink-0 ${idx < 3 ? 'text-brandCoral' : 'text-slate-300'}">
             #${idx + 1}
           </div>
           <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'}" alt="${art.title}" class="w-20 h-14 sm:w-28 sm:h-20 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'" />
           <div class="min-w-0 flex-1 space-y-1">
-            <div class="flex items-center gap-2 text-[10px] sm:text-[11px] font-bold">
+            <div class="flex items-center gap-2 text-[11px] font-bold">
               <span class="text-brandSky uppercase">${getCategoryName(art.category_id)}</span>
               <span class="text-slate-300">•</span>
               <span class="text-slate-500">${formatViews(art.views_count)} pembaca</span>
             </div>
-            <h3 class="font-headline font-bold text-xs sm:text-base text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug">
+            <h3 class="font-headline font-bold text-sm sm:text-base text-brandSlate group-hover:text-brandSky line-clamp-2 leading-snug">
               ${art.title}
             </h3>
           </div>
@@ -1808,15 +1818,15 @@
       container.innerHTML = `
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card divide-y divide-slate-100 overflow-hidden">
           ${savedList.map(art => `
-            <div onclick="window.openArticleDetail('${art.id}')" class="p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 hover:bg-slate-50 transition cursor-pointer">
-              <div class="flex items-center gap-3 min-w-0">
+            <div onclick="window.openArticleDetail('${art.id}')" class="p-4 flex items-center justify-between gap-4 hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center gap-3.5 min-w-0">
                 <img src="${art.image_url || 'https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'}" class="w-20 h-14 rounded-xl object-cover shrink-0 bg-slate-100" onerror="this.src='https://placehold.co/160x110/F1F5F9/0284C7?text=KabarRaya'" />
                 <div class="min-w-0">
                   <div class="text-[10px] font-extrabold text-brandSky uppercase">${getCategoryName(art.category_id)} • ${formatRelativeTime(art.created_at)}</div>
                   <h4 class="font-headline font-bold text-xs sm:text-sm text-brandSlate line-clamp-2 mt-0.5">${art.title}</h4>
                 </div>
               </div>
-              <button onclick="event.stopPropagation(); window.toggleBookmark('${art.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-brandCoral text-xs font-bold shrink-0 transition">
+              <button onclick="event.stopPropagation(); window.toggleBookmark('${art.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-brandCoral text-xs font-bold shrink-0 transition">
                 Hapus
               </button>
             </div>
@@ -1826,18 +1836,26 @@
     }
 
     function getFilteredArticles() {
-      return state.articles.filter(art => {
-        const matchCat = state.selectedCategory === 'all' || art.category_id === state.selectedCategory;
-        if (!matchCat) return false;
-        if (!state.searchQuery) return true;
-        const q = state.searchQuery.toLowerCase();
-        return (
-          (art.title || '').toLowerCase().includes(q) ||
-          (art.summary || '').toLowerCase().includes(q) ||
-          (art.search_keywords || '').toLowerCase().includes(q) ||
-          getCategoryName(art.category_id).toLowerCase().includes(q)
-        );
-      });
+      return state.articles
+        .filter(art => {
+          const matchCat = state.selectedCategory === 'all' || art.category_id === state.selectedCategory;
+          if (!matchCat) return false;
+          if (!state.searchQuery) return true;
+          const q = state.searchQuery.toLowerCase();
+          return (
+            (art.title || '').toLowerCase().includes(q) ||
+            (art.summary || '').toLowerCase().includes(q) ||
+            (art.search_keywords || '').toLowerCase().includes(q) ||
+            getCategoryName(art.category_id).toLowerCase().includes(q)
+          );
+        })
+        .sort((a, b) => {
+          // Berita yang dicentang Headline Utama tampil paling atas di daftar beranda
+          if (Boolean(b.is_headline) !== Boolean(a.is_headline)) {
+            return Number(Boolean(b.is_headline)) - Number(Boolean(a.is_headline));
+          }
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        });
     }
 
     function renderPortalView() {
@@ -1921,7 +1939,12 @@
       const popList = document.getElementById('sidebar-terpopuler-list');
       if (popList) {
         const sortedPopular = [...state.articles]
-          .sort((a, b) => (b.views_count || 0) - (a.views_count || 0))
+          .sort((a, b) => {
+            if (Boolean(b.is_trending) !== Boolean(a.is_trending)) {
+              return Number(Boolean(b.is_trending)) - Number(Boolean(a.is_trending));
+            }
+            return (b.views_count || 0) - (a.views_count || 0);
+          })
           .slice(0, 5);
 
         if (sortedPopular.length === 0) {
