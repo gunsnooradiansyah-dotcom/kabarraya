@@ -931,51 +931,54 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- PANEL 5: KELOLA & BALAS KOMENTAR PEMBACA OLEH ADMIN -->
-      <div id="admin-panel-comments" class="hidden space-y-4">
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Moderasi &amp; Balasan Komentar Pembaca</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Balasan redaksi akan tersimpan ke Supabase dan muncul di bawah komentar pembaca pada halaman artikel.</p>
+        <!-- PANEL 5: KELOLA & BALAS KOMENTAR PEMBACA OLEH ADMIN -->
+        <div id="admin-panel-comments" class="hidden space-y-4 w-full">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Moderasi &amp; Balasan Komentar Pembaca</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Balasan redaksi akan tersimpan ke Supabase dan muncul di bawah komentar pembaca pada halaman artikel.</p>
+              </div>
+              <button type="button" onclick="window.loadAdminComments()" class="min-h-[40px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition self-start sm:self-auto shrink-0">
+                <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan Komentar
+              </button>
             </div>
-            <button type="button" onclick="window.loadAdminComments()" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
-              <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan Komentar
-            </button>
+
+            <!-- Filter Cepat (Kiri) & Pencarian Komentar (Kanan) -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3.5 border-t border-slate-100">
+              <div id="admin-comment-filter-bar" role="group" aria-label="Filter Status Balasan Komentar" class="flex flex-wrap items-center gap-2 shrink-0">
+                <button type="button" data-acfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                  <span>Semua</span>
+                  <span id="admin-cfilter-count-all" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20">0</span>
+                </button>
+                <button type="button" data-acfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                  <span>Belum Dibalas</span>
+                  <span id="admin-cfilter-count-unreplied" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">0</span>
+                </button>
+                <button type="button" data-acfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                  <span>Sudah Dibalas</span>
+                  <span id="admin-cfilter-count-replied" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">0</span>
+                </button>
+              </div>
+
+              <div class="relative w-full md:w-72 lg:w-80 shrink-0">
+                <label for="admin-comment-search-input" class="sr-only">Cari komentar, nama pembaca, atau judul berita</label>
+                <input
+                  id="admin-comment-search-input"
+                  type="search"
+                  oninput="window.handleAdminCommentSearch(this.value)"
+                  placeholder="Cari komentar, pembaca, atau berita..."
+                  class="w-full min-h-[38px] pl-9 pr-3.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+                />
+                <i data-lucide="search" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+              </div>
+            </div>
           </div>
 
-          <!-- Filter Cepat & Pencarian Komentar Admin -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t border-slate-100">
-            <div id="admin-comment-filter-bar" role="group" aria-label="Filter Status Balasan Komentar" class="flex flex-wrap items-center gap-1.5">
-              <button type="button" data-acfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white transition">
-                Semua <span id="admin-cfilter-count-all" class="ml-1 opacity-80">(0)</span>
-              </button>
-              <button type="button" data-acfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition">
-                Belum Dibalas <span id="admin-cfilter-count-unreplied" class="ml-1 font-extrabold">(0)</span>
-              </button>
-              <button type="button" data-acfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition">
-                Sudah Dibalas <span id="admin-cfilter-count-replied" class="ml-1 font-extrabold">(0)</span>
-              </button>
-            </div>
-
-            <div class="relative w-full md:w-72">
-              <label for="admin-comment-search-input" class="sr-only">Cari komentar, nama pembaca, atau judul berita</label>
-              <input
-                id="admin-comment-search-input"
-                type="search"
-                oninput="window.handleAdminCommentSearch(this.value)"
-                placeholder="Cari komentar, pembaca, atau berita..."
-                class="w-full min-h-[38px] pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              />
-              <i data-lucide="search" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-            </div>
-          </div>
+          <div id="admin-comments-list" class="w-full space-y-4"></div>
         </div>
-        <div id="admin-comments-list" class="space-y-3"></div>
       </div>
-    </div>
 
       <!-- LEADERBOARD AD BANNER (SEBELUM FOOTER) -->
       <section id="leaderboard-ad-wrapper" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12 mb-10">
@@ -3513,13 +3516,48 @@
         }
       });
       if (tab === 'stats') window.loadVisitorStats();
-      if (tab === 'comments') window.loadAdminComments();
+      if (tab === 'comments') {
+        syncAdminCommentFilterStyles();
+        window.loadAdminComments();
+      }
       renderIcons();
     };
 
     // =========================================================================
     // MODERASI & BALASAN KOMENTAR OLEH ADMIN DI HALAMAN EDITOR/ADMIN
     // =========================================================================
+    function syncAdminCommentFilterStyles() {
+      const current = state.adminCommentFilter || 'all';
+      document.querySelectorAll('.admin-cfilter-btn').forEach(btn => {
+        const type = btn.getAttribute('data-acfilter');
+        const isActive = type === current;
+        const badge = btn.querySelector('span[id^="admin-cfilter-count-"]');
+
+        if (type === 'all') {
+          btn.className = isActive
+            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70 transition inline-flex items-center gap-1.5 shrink-0';
+          if (badge) badge.className = isActive
+            ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
+            : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-200/80 text-slate-700';
+        } else if (type === 'unreplied') {
+          btn.className = isActive
+            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0';
+          if (badge) badge.className = isActive
+            ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
+            : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-200/70 text-amber-900';
+        } else {
+          btn.className = isActive
+            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0';
+          if (badge) badge.className = isActive
+            ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
+            : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-200/70 text-emerald-900';
+        }
+      });
+    }
+
     function updateAdminCommentCounts(rows) {
       const allCount = rows.length;
       const repliedCount = rows.filter(r => Boolean(String(r.admin_reply || '').trim())).length;
@@ -3528,14 +3566,16 @@
       const cAll = document.getElementById('admin-cfilter-count-all');
       const cUnrep = document.getElementById('admin-cfilter-count-unreplied');
       const cRep = document.getElementById('admin-cfilter-count-replied');
-      if (cAll) cAll.textContent = `(${allCount})`;
-      if (cUnrep) cUnrep.textContent = `(${unrepliedCount})`;
-      if (cRep) cRep.textContent = `(${repliedCount})`;
+      if (cAll) cAll.textContent = String(allCount);
+      if (cUnrep) cUnrep.textContent = String(unrepliedCount);
+      if (cRep) cRep.textContent = String(repliedCount);
     }
 
     function renderAdminCommentsList() {
       const box = document.getElementById('admin-comments-list');
       if (!box) return;
+
+      syncAdminCommentFilterStyles();
 
       const articleMap = Object.fromEntries(state.articles.map(a => [String(a.id), a.title]));
       const allRows = state.adminCommentsCache || [];
@@ -3561,7 +3601,7 @@
       });
 
       if (!filtered.length) {
-        box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-xs text-slate-400">Tidak ada komentar yang sesuai dengan filter atau pencarian saat ini.</div>`;
+        box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-8 text-center text-xs text-slate-500">Tidak ada komentar yang sesuai dengan filter atau pencarian saat ini.</div>`;
         renderIcons();
         return;
       }
@@ -3575,7 +3615,7 @@
         const isReplied = Boolean(String(r.admin_reply || '').trim());
 
         return `
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 space-y-3.5">
+          <div class="w-full bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-6 space-y-3.5">
             <!-- Header Kartu Komentar -->
             <div class="flex flex-wrap items-start justify-between gap-2.5 pb-3 border-b border-slate-100">
               <div class="flex items-center gap-2.5 min-w-0">
@@ -3659,22 +3699,7 @@
 
     window.setAdminCommentFilter = (filter) => {
       state.adminCommentFilter = filter;
-      document.querySelectorAll('.admin-cfilter-btn').forEach(btn => {
-        const isActive = btn.getAttribute('data-acfilter') === filter;
-        if (filter === 'all') {
-          btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white transition'
-            : 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
-        } else if (filter === 'unreplied') {
-          btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition'
-            : 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition';
-        } else {
-          btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition'
-            : 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition';
-        }
-      });
+      syncAdminCommentFilterStyles();
       renderAdminCommentsList();
     };
 
@@ -3686,7 +3711,8 @@
     window.loadAdminComments = async () => {
       const box = document.getElementById('admin-comments-list');
       if (!box) return;
-      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
+      syncAdminCommentFilterStyles();
+      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
 
       let rows = [];
 
