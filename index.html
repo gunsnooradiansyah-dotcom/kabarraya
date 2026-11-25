@@ -275,24 +275,24 @@
             </form>
 
             <!-- Kanan: Aksi Cepat -->
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <button type="button" onclick="window.toggleMobileSearch()" aria-label="Buka Kolom Pencarian Berita" class="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition">
+            <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              <button type="button" onclick="window.toggleMobileSearch()" aria-label="Buka Kolom Pencarian Berita" class="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition">
                 <i data-lucide="search" aria-hidden="true" class="w-4 h-4"></i>
               </button>
 
-              <button type="button" onclick="window.navigatePortal('viral')" class="min-h-[44px] px-3 py-2 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-400/35 text-rose-100 text-xs font-bold flex items-center gap-1.5 transition">
+              <button type="button" onclick="window.navigatePortal('viral')" class="min-h-[40px] px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
                 <i data-lucide="flame" aria-hidden="true" class="w-3.5 h-3.5 text-rose-400"></i>
                 <span class="hidden sm:inline">Viral</span>
               </button>
 
-              <button type="button" onclick="window.navigatePortal('bookmarks')" class="relative min-h-[44px] px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition">
+              <button type="button" onclick="window.navigatePortal('bookmarks')" class="min-h-[40px] px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
                 <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5 text-amber-300"></i>
                 <span class="hidden sm:inline">Tersimpan</span>
-                <span id="header-bookmark-badge" class="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold leading-tight">0</span>
+                <span id="header-bookmark-badge" class="text-[11px] font-bold text-slate-300 tabular-nums">0</span>
               </button>
 
-              <button id="header-admin-btn" type="button" onclick="window.navigatePortal('admin')" class="hidden min-h-[44px] px-3.5 py-2 rounded-full bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold items-center gap-1.5 shadow-lg transition">
-                <i data-lucide="layout-dashboard" aria-hidden="true" class="w-3.5 h-3.5"></i>
+              <button id="header-admin-btn" type="button" onclick="window.navigatePortal('admin')" class="hidden min-h-[40px] px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white text-xs font-semibold items-center gap-1.5 transition">
+                <i data-lucide="layout-dashboard" aria-hidden="true" class="w-3.5 h-3.5 text-sky-300"></i>
                 <span class="hidden sm:inline">Dapur Redaksi</span>
               </button>
             </div>
