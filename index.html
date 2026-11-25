@@ -765,6 +765,9 @@
           <button type="button" id="admin-tab-stats" onclick="window.switchAdminTab('stats')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
             <i data-lucide="bar-chart-3" aria-hidden="true" class="w-3.5 h-3.5"></i> Statistik &amp; Pengunjung
           </button>
+          <button type="button" id="admin-tab-comments" onclick="window.switchAdminTab('comments')" class="min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 flex items-center justify-center sm:justify-start gap-1.5 transition">
+            <i data-lucide="message-square-reply" aria-hidden="true" class="w-3.5 h-3.5"></i> Komentar Pembaca
+          </button>
         </div>
 
         <!-- PANEL 1: DAFTAR BERITA -->
@@ -929,6 +932,21 @@
           </div>
         </div>
       </div>
+
+      <!-- PANEL 5: KELOLA & BALAS KOMENTAR PEMBACA OLEH ADMIN -->
+      <div id="admin-panel-comments" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Moderasi &amp; Balasan Komentar Pembaca</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Balasan redaksi akan tersimpan ke Supabase dan muncul di bawah komentar pembaca pada halaman artikel.</p>
+          </div>
+          <button type="button" onclick="window.loadAdminComments()" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+            <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan Komentar
+          </button>
+        </div>
+        <div id="admin-comments-list" class="space-y-3"></div>
+      </div>
+    </div>
 
       <!-- LEADERBOARD AD BANNER (SEBELUM FOOTER) -->
       <section id="leaderboard-ad-wrapper" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12 mb-10">
@@ -2868,7 +2886,7 @@
       try {
         const { data, error } = await supabase
           .from('comments')
-          .select('id,parent_id,author_name,author_avatar,provider,body,is_pinned,is_featured,likes_count,dislikes_count,created_at')
+          .select('id,parent_id,author_name,author_avatar,provider,body,admin_reply,admin_replied_at,is_pinned,is_featured,likes_count,dislikes_count,created_at')
           .eq('article_id', String(articleId))
           .eq('status', 'approved')
           .order('created_at', { ascending: false });
@@ -2890,6 +2908,8 @@
           avatar: r.author_avatar || '',
           provider: r.provider || '',
           text: r.body,
+          adminReply: r.admin_reply || '',
+          adminRepliedAt: r.admin_replied_at || null,
           likes: r.likes_count || 0,
           dislikes: r.dislikes_count || 0,
           reaction: mine[r.id] || null,
@@ -3143,6 +3163,18 @@
             </div>
           </div>
           <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${escapeHtml(c.text)}</p>
+          ${c.adminReply ? `
+            <div class="mt-2 p-3 rounded-xl bg-sky-50/90 border border-sky-200/80 space-y-1">
+              <div class="flex items-center justify-between gap-2 text-[11px]">
+                <span class="font-extrabold text-sky-800 inline-flex items-center gap-1">
+                  <i data-lucide="shield-check" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
+                  Balasan Redaksi KabarRaya
+                </span>
+                ${c.adminRepliedAt ? `<span class="text-[10px] text-sky-600/80">${escapeHtml(formatRelativeTime(c.adminRepliedAt))}</span>` : ''}
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">${escapeHtml(c.adminReply)}</p>
+            </div>
+          ` : ''}
           <div class="flex items-center gap-3 pt-1">
             <button type="button" onclick="window.toggleCommentReaction('${escapeHtml(c.id)}', 'like')" aria-label="Suka komentar dari ${escapeHtml(c.author)}" class="min-h-[36px] px-1.5 inline-flex items-center gap-1 text-[11px] font-bold ${c.reaction === 'like' ? 'text-sky-600' : 'text-slate-500 hover:text-sky-600'} transition">
               <i data-lucide="thumbs-up" aria-hidden="true" class="w-3.5 h-3.5"></i> (${c.likes || 0})
@@ -3439,7 +3471,7 @@
     };
 
     window.switchAdminTab = (tab) => {
-      ['articles', 'categories', 'ads', 'stats'].forEach(t => {
+      ['articles', 'categories', 'ads', 'stats', 'comments'].forEach(t => {
         document.getElementById('admin-panel-' + t)?.classList.toggle('hidden', t !== tab);
         const btn = document.getElementById('admin-tab-' + t);
         if (btn) {
@@ -3449,7 +3481,194 @@
         }
       });
       if (tab === 'stats') window.loadVisitorStats();
+      if (tab === 'comments') window.loadAdminComments();
       renderIcons();
+    };
+
+    // =========================================================================
+    // MODERASI & BALASAN KOMENTAR OLEH ADMIN DI HALAMAN EDITOR/ADMIN
+    // =========================================================================
+    window.loadAdminComments = async () => {
+      const box = document.getElementById('admin-comments-list');
+      if (!box) return;
+      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
+
+      const articleMap = Object.fromEntries(state.articles.map(a => [String(a.id), a.title]));
+      let rows = [];
+
+      if (USE_LOCAL_MODE || !supabase) {
+        const stored = cLoad(STORAGE_KEYS.comments, {}) || {};
+        Object.entries(stored).forEach(([artId, list]) => {
+          (list || []).forEach(c => {
+            rows.push({
+              id: c.id,
+              article_id: artId,
+              author_name: c.author || 'Pembaca',
+              author_email: '',
+              body: c.text || '',
+              status: 'approved',
+              admin_reply: c.adminReply || '',
+              admin_replied_at: c.adminRepliedAt || null,
+              created_at: c.created_at
+            });
+          });
+        });
+        rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else {
+        try {
+          const { data, error } = await supabase
+            .from('comments')
+            .select('id,article_id,author_name,author_email,body,status,admin_reply,admin_replied_at,created_at')
+            .order('created_at', { ascending: false })
+            .limit(100);
+          if (error) throw error;
+          rows = data || [];
+        } catch (err) {
+          box.innerHTML = `<div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-700 font-bold">Gagal memuat komentar: ${escapeHtml(err.message || 'Cek izin RLS Supabase')}</div>`;
+          return;
+        }
+      }
+
+      if (!rows.length) {
+        box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-xs text-slate-400">Belum ada komentar pembaca yang masuk.</div>`;
+        renderIcons();
+        return;
+      }
+
+      box.innerHTML = rows.map(r => {
+        const artTitle = articleMap[String(r.article_id)] || ('Artikel #' + String(r.article_id));
+        const isApproved = r.status === 'approved';
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 space-y-3">
+            <div class="flex flex-wrap items-start justify-between gap-2 pb-2.5 border-b border-slate-100">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-headline font-extrabold text-xs sm:text-sm text-brandSlate">${escapeHtml(r.author_name || 'Pembaca')}</span>
+                  ${r.author_email ? `<span class="text-[11px] text-slate-400">(${escapeHtml(r.author_email)})</span>` : ''}
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}">${escapeHtml(r.status || 'approved')}</span>
+                </div>
+                <div class="text-[11px] font-semibold text-sky-700 mt-0.5 line-clamp-1">Pada berita: ${escapeHtml(artTitle)}</div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 mr-1">${escapeHtml(formatRelativeTime(r.created_at))}</span>
+                ${!isApproved ? `<button type="button" onclick="window.handleAdminApproveComment('${escapeHtml(r.id)}')" class="min-h-[34px] px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold">Setujui</button>` : ''}
+                <button type="button" onclick="window.handleAdminDeleteComment('${escapeHtml(r.id)}', '${escapeHtml(r.article_id)}')" class="min-h-[34px] px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold">Hapus</button>
+              </div>
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">${escapeHtml(r.body)}</p>
+
+            <form onsubmit="window.handleSaveAdminReply(event, '${escapeHtml(r.id)}', '${escapeHtml(r.article_id)}')" class="space-y-2">
+              <label for="admin-reply-input-${escapeHtml(r.id)}" class="block text-[11px] font-extrabold uppercase tracking-wider text-sky-700">Balasan Redaksi / Admin</label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input
+                  id="admin-reply-input-${escapeHtml(r.id)}"
+                  type="text"
+                  maxlength="1000"
+                  value="${escapeHtml(r.admin_reply || '')}"
+                  placeholder="Tulis balasan resmi redaksi untuk komentar ini..."
+                  class="flex-1 min-h-[42px] px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <button type="submit" class="min-h-[42px] px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shrink-0 transition">
+                  Simpan Balasan
+                </button>
+              </div>
+              ${r.admin_replied_at ? `<div class="text-[10px] text-slate-400">Terakhir dibalas: ${escapeHtml(formatRelativeTime(r.admin_replied_at))}</div>` : ''}
+            </form>
+          </div>
+        `;
+      }).join('');
+
+      renderIcons();
+    };
+
+    window.handleSaveAdminReply = async (e, commentId, articleId) => {
+      e.preventDefault();
+      const input = document.getElementById('admin-reply-input-' + commentId);
+      if (!input) return;
+      const replyText = input.value.trim();
+      const repliedAt = replyText ? new Date().toISOString() : null;
+
+      if (USE_LOCAL_MODE || !supabase) {
+        const stored = cLoad(STORAGE_KEYS.comments, {}) || {};
+        const list = stored[articleId] || [];
+        const found = list.find(c => c.id === commentId);
+        if (found) {
+          found.adminReply = replyText;
+          found.adminRepliedAt = repliedAt;
+          cSave(STORAGE_KEYS.comments, stored);
+        }
+        if (state.commentsMap[articleId]) {
+          const mem = state.commentsMap[articleId].find(c => c.id === commentId);
+          if (mem) {
+            mem.adminReply = replyText;
+            mem.adminRepliedAt = repliedAt;
+          }
+        }
+        showToast(replyText ? 'Balasan admin tersimpan!' : 'Balasan admin dihapus.', 'success');
+        await window.loadAdminComments();
+        if (state.activeArticleId === articleId) renderArticleComments();
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('comments')
+          .update({ admin_reply: replyText || null, admin_replied_at: repliedAt, status: 'approved' })
+          .eq('id', commentId);
+        if (error) throw error;
+        showToast(replyText ? 'Balasan admin berhasil disimpan ke Supabase!' : 'Balasan admin dihapus.', 'success');
+        await window.loadAdminComments();
+        if (state.activeArticleId === articleId) {
+          await window.loadArticleComments(articleId);
+        }
+      } catch (err) {
+        showToast('Gagal menyimpan balasan: ' + (err.message || 'Cek policy UPDATE admin di Supabase'), 'error');
+      }
+    };
+
+    window.handleAdminApproveComment = async (commentId) => {
+      if (USE_LOCAL_MODE || !supabase) return;
+      try {
+        const { error } = await supabase.from('comments').update({ status: 'approved' }).eq('id', commentId);
+        if (error) throw error;
+        showToast('Komentar disetujui.', 'success');
+        await window.loadAdminComments();
+      } catch (err) {
+        showToast('Gagal menyetujui komentar: ' + err.message, 'error');
+      }
+    };
+
+    window.handleAdminDeleteComment = async (commentId, articleId) => {
+      const ok = await openConfirmModal('Hapus Komentar Pembaca?', 'Komentar ini akan dihapus secara permanen.');
+      if (!ok) return;
+
+      if (USE_LOCAL_MODE || !supabase) {
+        const stored = cLoad(STORAGE_KEYS.comments, {}) || {};
+        if (stored[articleId]) {
+          stored[articleId] = stored[articleId].filter(c => c.id !== commentId);
+          cSave(STORAGE_KEYS.comments, stored);
+        }
+        if (state.commentsMap[articleId]) {
+          state.commentsMap[articleId] = state.commentsMap[articleId].filter(c => c.id !== commentId);
+        }
+        showToast('Komentar dihapus.', 'info');
+        await window.loadAdminComments();
+        if (state.activeArticleId === articleId) renderArticleComments();
+        return;
+      }
+
+      try {
+        const { error } = await supabase.from('comments').delete().eq('id', commentId);
+        if (error) throw error;
+        showToast('Komentar berhasil dihapus.', 'info');
+        await window.loadAdminComments();
+        if (state.activeArticleId === articleId) {
+          await window.loadArticleComments(articleId);
+        }
+      } catch (err) {
+        showToast('Gagal menghapus komentar: ' + err.message, 'error');
+      }
     };
 
     function renderAdminPanel() {
