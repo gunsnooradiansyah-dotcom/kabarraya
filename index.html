@@ -650,11 +650,11 @@
 
           <!-- 5 Tab Filter Komentar -->
           <div id="comment-filter-tabs" role="group" aria-label="Filter Komentar Pembaca" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-            <button type="button" data-cfilter="newest" onclick="window.setCommentFilter('newest')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0">Terbaru</button>
-            <button type="button" data-cfilter="featured" onclick="window.setCommentFilter('featured')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpilih</button>
-            <button type="button" data-cfilter="popular" onclick="window.setCommentFilter('popular')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Terpopuler</button>
-            <button type="button" data-cfilter="discussed" onclick="window.setCommentFilter('discussed')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Teramai</button>
-            <button type="button" data-cfilter="pinned" onclick="window.setCommentFilter('pinned')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">Komentar yang disematkan</button>
+            <button type="button" data-cfilter="newest" onclick="window.setCommentFilter('newest')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0" style="background-color:#0f172a;color:#ffffff;">Terbaru</button>
+            <button type="button" data-cfilter="featured" onclick="window.setCommentFilter('featured')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0" style="background-color:#f1f5f9;color:#334155;">Terpilih</button>
+            <button type="button" data-cfilter="popular" onclick="window.setCommentFilter('popular')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0" style="background-color:#f1f5f9;color:#334155;">Terpopuler</button>
+            <button type="button" data-cfilter="discussed" onclick="window.setCommentFilter('discussed')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0" style="background-color:#f1f5f9;color:#334155;">Teramai</button>
+            <button type="button" data-cfilter="pinned" onclick="window.setCommentFilter('pinned')" class="comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0" style="background-color:#f1f5f9;color:#334155;">Komentar yang disematkan</button>
           </div>
 
           <div id="comments-list-container" class="space-y-3"></div>
@@ -2573,7 +2573,7 @@
 
       state.activeArticleId = art.id;
       state.activeCommentFilter = 'newest';
-
+      window.setCommentFilter('newest');
       art.views_count = (art.views_count || 0) + 1;
       if (USE_LOCAL_MODE || !supabase) {
         safeSetStorage(STORAGE_KEYS.articles, state.articles);
@@ -3049,8 +3049,11 @@
       document.querySelectorAll('.comment-tab-btn').forEach(btn => {
         const active = btn.getAttribute('data-cfilter') === filter;
         btn.className = active
-          ? 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shrink-0'
-          : 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0';
+          ? 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs shrink-0 transition'
+          : 'comment-tab-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition';
+        btn.style.backgroundColor = active ? '#0f172a' : '#f1f5f9';
+        btn.style.color = active ? '#ffffff' : '#334155';
+        btn.style.border = active ? '1px solid #0f172a' : '1px solid #e2e8f0';
       });
       renderArticleComments();
     };
