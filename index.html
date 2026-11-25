@@ -583,16 +583,40 @@
             </h2>
           </div>
 
-          <form onsubmit="window.handleSubmitComment(event)" class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-            <div class="grid sm:grid-cols-2 gap-3">
-              <div>
-                <label for="comment-author-input" class="sr-only">Nama Anda</label>
-                <input id="comment-author-input" type="text" minlength="2" maxlength="60" required autocomplete="name" placeholder="Nama Anda (wajib)" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          <!-- PANEL MASUK GOOGLE / FACEBOOK (TAMPIL JIKA PENGUNJUNG BELUM LOGIN) -->
+          <div id="comment-auth-gate" class="bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-200/80 text-center space-y-4">
+            <div class="space-y-1">
+              <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Ikut Berdiskusi di KabarRaya</h3>
+              <p class="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                Masuk dengan akun Google atau Facebook untuk menulis komentar. Komentar Anda akan langsung masuk dan tampil secara otomatis.
+              </p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-md mx-auto">
+              <button type="button" onclick="window.loginCommentSocial('google')" class="w-full sm:w-auto flex-1 min-h-[44px] px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 text-xs font-extrabold shadow-xs transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/></svg>
+                <span>Masuk dengan Google</span>
+              </button>
+              <button type="button" onclick="window.loginCommentSocial('facebook')" class="w-full sm:w-auto flex-1 min-h-[44px] px-4 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white text-xs font-extrabold shadow-xs transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073Z"/></svg>
+                <span>Masuk dengan Facebook</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FORM KOMENTAR AKTIF (OTOMATIS TAMPIL SETELAH LOGIN GOOGLE/FACEBOOK) -->
+          <form id="comment-form-box" onsubmit="window.handleSubmitComment(event)" class="hidden space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-200/70">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <img id="comment-user-avatar" src="" alt="" class="hidden w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0" />
+                <span id="comment-user-initial" class="w-8 h-8 rounded-full bg-sky-600 text-white font-headline font-extrabold text-xs flex items-center justify-center shrink-0">P</span>
+                <div class="min-w-0">
+                  <div id="comment-user-name" class="text-xs font-extrabold text-brandSlate truncate">Pembaca KabarRaya</div>
+                  <div id="comment-user-provider" class="text-[10px] font-semibold text-emerald-600">Terhubung via Akun Sosial</div>
+                </div>
               </div>
-              <div>
-                <label for="comment-email-input" class="sr-only">Email Anda</label>
-                <input id="comment-email-input" type="email" maxlength="120" required autocomplete="email" placeholder="Email (wajib, tidak ditampilkan)" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-              </div>
+              <button type="button" onclick="window.logoutCommentSocial()" class="min-h-[36px] px-3 py-1 rounded-lg bg-white hover:bg-rose-50 border border-slate-200 text-[11px] font-bold text-slate-600 hover:text-rose-600 transition shrink-0">
+                Keluar Akun
+              </button>
             </div>
             <div>
               <label for="comment-text-input" class="sr-only">Tulis tanggapan Anda</label>
@@ -614,13 +638,12 @@
             </div>
             <label class="flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed">
               <input id="comment-agree-input" type="checkbox" required class="mt-0.5 w-4 h-4 rounded border-slate-300 accent-sky-600 shrink-0" />
-              <span>Saya setuju komentar saya sopan, tanpa SARA, ujaran kebencian, iklan, atau link. Redaksi berhak menyunting atau menghapus komentar yang melanggar.</span>
+              <span>Saya setuju komentar saya sopan, tanpa SARA, ujaran kebencian, iklan, atau link.</span>
             </label>
-            <p class="text-[11px] text-slate-500">Komentar akan tampil setelah disetujui redaksi.</p>
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span id="comment-char-counter" class="text-xs font-semibold text-slate-500">1000 Karakter tersisa</span>
               <button id="comment-submit-btn" type="submit" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 disabled:opacity-60 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5">
-                <i data-lucide="send" aria-hidden="true" class="w-3.5 h-3.5"></i> Kirim Tanggapan
+                <i data-lucide="send" aria-hidden="true" class="w-3.5 h-3.5"></i> Kirim Komentar
               </button>
             </div>
           </form>
@@ -1294,6 +1317,7 @@
     const IS_PREVIEW = false;
     const SUPABASE_URL = "https://xfxpvlbeszszmtugssgz.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_TvGP3IkFfI2VDerktGolbg_AY_cvtlg";
+    const ADMIN_EMAIL = "guns.nooradiansyah@gmail.com";
 
     const currentHost = (window.location.hostname || '').toLowerCase();
     const currentProtocol = (window.location.protocol || '').toLowerCase();
@@ -1453,6 +1477,7 @@
       heroHoverPaused: false,
       heroTimer: null,
       adminUser: null,
+      commentUser: null,
       logoClickCount: 0,
       logoClickTimer: null,
       confirmResolver: null
@@ -1617,9 +1642,24 @@
         const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
         supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const { data } = await supabase.auth.getSession();
-        if (data && data.session && data.session.user) {
-          state.adminUser = data.session.user;
+        const user = data?.session?.user || null;
+        if (user) {
+          if ((user.email || '').toLowerCase() === ADMIN_EMAIL) {
+            state.adminUser = user;
+          } else {
+            state.commentUser = user;
+          }
         }
+        supabase.auth.onAuthStateChange((_event, session) => {
+          const u = session?.user || null;
+          if (u && (u.email || '').toLowerCase() === ADMIN_EMAIL) {
+            state.adminUser = u;
+          } else {
+            state.commentUser = u;
+          }
+          updateHeaderMeta();
+          updateCommentAuthUI();
+        });
         return supabase;
       } catch (err) {
         console.warn('Supabase tidak dapat dimuat, beralih ke mode lokal:', err);
@@ -2660,21 +2700,18 @@
     };
 
     // =========================================================================
-    // SISTEM KOMENTAR LENGKAP (1000 KARAKTER, 5 FILTER, LIKE/DISLIKE & BALAS)
+    // SISTEM KOMENTAR LENGKAP (LOGIN GOOGLE & FACEBOOK + LANGSUNG TAMPIL)
     // =========================================================================
-    // Aturan: nama & email wajib, 10-1000 karakter, setuju aturan, tanpa link,
-    // anti-spam (honeypot + jeda), tampil setelah disetujui redaksi (tabel Supabase: comments).
     const COMMENT_MIN = 10;
     const COMMENT_MAX = 1000;
-    const COMMENT_COOLDOWN_MS = 30000;
+    const COMMENT_COOLDOWN_MS = 15000;
     const COMMENT_KEYS = {
-      identity: 'kr_comment_identity_v1',
       voter: 'kr_comment_voter_v1',
       reactions: 'kr_comment_my_reactions_v1',
-      lastSent: 'kr_comment_last_sent_v1'
+      lastSent: 'kr_comment_last_sent_v1',
+      localUser: 'kr_comment_social_user_v1'
     };
     const COMMENT_LINK_RE = /(https?:\/\/|www\.)/i;
-    const COMMENT_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     function cLoad(key, fallback) {
       try {
@@ -2685,10 +2722,6 @@
     function cSave(key, val) {
       try { localStorage.setItem(key, JSON.stringify(val)); } catch (err) {}
     }
-    function commentIdentity() {
-      const i = cLoad(COMMENT_KEYS.identity, {}) || {};
-      return { name: String(i.name || ''), email: String(i.email || '') };
-    }
     function getCommentVoterId() {
       let v = cLoad(COMMENT_KEYS.voter, null);
       if (!v) {
@@ -2697,15 +2730,105 @@
       }
       return v;
     }
+    function getActiveCommentProfile() {
+      const u = state.commentUser || state.adminUser || ((USE_LOCAL_MODE || !supabase) ? cLoad(COMMENT_KEYS.localUser, null) : null);
+      if (!u) return null;
+      const meta = u.user_metadata || {};
+      const appMeta = u.app_metadata || {};
+      const providerRaw = (appMeta.provider || u.provider || 'google').toLowerCase();
+      return {
+        id: u.id,
+        name: meta.full_name || meta.name || (u.email ? u.email.split('@')[0] : 'Pembaca KabarRaya'),
+        email: u.email || 'pembaca@kabarraya.id',
+        avatar: meta.avatar_url || meta.picture || '',
+        providerLabel: providerRaw === 'facebook' ? 'Facebook' : 'Google'
+      };
+    }
+    function updateCommentAuthUI() {
+      const gate = document.getElementById('comment-auth-gate');
+      const formBox = document.getElementById('comment-form-box');
+      if (!gate || !formBox) return;
+
+      const profile = getActiveCommentProfile();
+      if (!profile) {
+        gate.classList.remove('hidden');
+        formBox.classList.add('hidden');
+        return;
+      }
+
+      gate.classList.add('hidden');
+      formBox.classList.remove('hidden');
+
+      const nameEl = document.getElementById('comment-user-name');
+      const provEl = document.getElementById('comment-user-provider');
+      const avatarEl = document.getElementById('comment-user-avatar');
+      const initEl = document.getElementById('comment-user-initial');
+
+      if (nameEl) nameEl.textContent = profile.name;
+      if (provEl) provEl.textContent = `Terhubung via ${profile.providerLabel}`;
+      if (avatarEl && initEl) {
+        if (profile.avatar) {
+          avatarEl.src = profile.avatar;
+          avatarEl.classList.remove('hidden');
+          initEl.classList.add('hidden');
+          avatarEl.onerror = () => {
+            avatarEl.classList.add('hidden');
+            initEl.classList.remove('hidden');
+          };
+        } else {
+          avatarEl.classList.add('hidden');
+          initEl.classList.remove('hidden');
+          initEl.textContent = profile.name.charAt(0).toUpperCase();
+        }
+      }
+    }
+
+    window.loginCommentSocial = async (provider) => {
+      if (USE_LOCAL_MODE || !supabase) {
+        const mockUser = {
+          id: 'local-' + provider,
+          email: `pembaca.${provider}@kabarraya.id`,
+          provider,
+          user_metadata: { full_name: provider === 'facebook' ? 'Pembaca Facebook' : 'Pembaca Google' }
+        };
+        state.commentUser = mockUser;
+        cSave(COMMENT_KEYS.localUser, mockUser);
+        updateCommentAuthUI();
+        renderArticleComments();
+        showToast(`Berhasil masuk dengan ${provider === 'facebook' ? 'Facebook' : 'Google'} (Mode Pratinjau).`, 'success');
+        return;
+      }
+
+      try {
+        const redirectUrl = `${window.location.origin}${window.location.pathname}?article=${encodeURIComponent(state.activeArticleId || '')}#article-comments-section`;
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: redirectUrl }
+        });
+        if (error) throw error;
+      } catch (err) {
+        showToast('Gagal menghubungkan akun: ' + (err.message || 'Coba lagi'), 'error');
+      }
+    };
+
+    window.logoutCommentSocial = async () => {
+      if (!USE_LOCAL_MODE && supabase) {
+        try { await supabase.auth.signOut(); } catch (e) {}
+      }
+      state.commentUser = null;
+      cSave(COMMENT_KEYS.localUser, null);
+      updateCommentAuthUI();
+      renderArticleComments();
+      showToast('Anda telah keluar dari akun komentar.', 'info');
+    };
+
     function commentErrorMessage(err) {
       const m = String((err && err.message) || '');
       const hit = m.match(/KR:\s*(.*)$/);
       if (hit) return hit[1];
-      return 'Komentar belum dapat dikirim. Periksa isian Anda lalu coba lagi.';
+      return 'Komentar belum dapat dikirim. Periksa koneksi Anda lalu coba lagi.';
     }
-    function validateCommentFields(name, email, text, agreed) {
-      if (name.length < 2) return 'Nama wajib diisi (minimal 2 karakter).';
-      if (!COMMENT_EMAIL_RE.test(email)) return 'Masukkan alamat email yang valid.';
+    function validateCommentFields(text, agreed) {
       if (text.length < COMMENT_MIN) return `Komentar minimal ${COMMENT_MIN} karakter.`;
       if (text.length > COMMENT_MAX) return `Komentar maksimal ${COMMENT_MAX} karakter.`;
       if (COMMENT_LINK_RE.test(text)) return 'Komentar tidak boleh berisi link atau alamat situs.';
@@ -2721,16 +2844,8 @@
       return state.commentsMap[articleId] || [];
     }
 
-    function prefillCommentIdentity() {
-      const ident = commentIdentity();
-      const n = document.getElementById('comment-author-input');
-      const m = document.getElementById('comment-email-input');
-      if (n && !n.value) n.value = ident.name;
-      if (m && !m.value) m.value = ident.email;
-    }
-
     window.loadArticleComments = async (articleId) => {
-      prefillCommentIdentity();
+      updateCommentAuthUI();
       if (USE_LOCAL_MODE || !supabase) {
         renderArticleComments();
         return;
@@ -2738,7 +2853,7 @@
       try {
         const { data, error } = await supabase
           .from('comments')
-          .select('id,parent_id,author_name,body,is_pinned,is_featured,likes_count,dislikes_count,created_at')
+          .select('id,parent_id,author_name,author_avatar,provider,body,is_pinned,is_featured,likes_count,dislikes_count,created_at')
           .eq('article_id', String(articleId))
           .eq('status', 'approved')
           .order('created_at', { ascending: false });
@@ -2757,6 +2872,8 @@
         state.commentsMap[articleId] = tops.map(r => ({
           id: r.id,
           author: r.author_name,
+          avatar: r.author_avatar || '',
+          provider: r.provider || '',
           text: r.body,
           likes: r.likes_count || 0,
           dislikes: r.dislikes_count || 0,
@@ -2765,12 +2882,11 @@
           featured: !!r.is_featured,
           created_at: r.created_at,
           replies: (repliesByParent[r.id] || []).slice().reverse().map(x => ({
-            id: x.id, author: x.author_name, text: x.body, created_at: x.created_at
+            id: x.id, author: x.author_name, avatar: x.author_avatar || '', text: x.body, created_at: x.created_at
           }))
         }));
       } catch (err) {
         state.commentsMap[articleId] = state.commentsMap[articleId] || [];
-        showToast('Komentar belum dapat dimuat. Coba lagi nanti.', 'error');
       }
       if (state.activeArticleId === articleId) renderArticleComments();
     };
@@ -2793,54 +2909,54 @@
       window.updateCommentCharCount();
     }
 
-    // Kirim komentar / balasan. Supabase: status awal 'pending'. Mode lokal (demo): langsung tampil.
-    async function submitCommentCore({ parentId, name, email, text }) {
+    async function submitCommentCore({ parentId, text }) {
       const articleId = state.activeArticleId;
+      const profile = getActiveCommentProfile();
+      if (!profile) throw new Error('KR: Silakan masuk dengan Google atau Facebook terlebih dahulu.');
+
       if (USE_LOCAL_MODE || !supabase) {
         const list = getArticleComments(articleId).slice();
         if (parentId) {
           const parent = list.find(c => c.id === parentId);
           if (!parent) throw new Error('KR: Komentar yang dibalas tidak ditemukan.');
           parent.replies = parent.replies || [];
-          parent.replies.push({ id: 'rep-' + Date.now(), author: name, text, created_at: new Date().toISOString() });
+          parent.replies.push({ id: 'rep-' + Date.now(), author: profile.name, avatar: profile.avatar, text, created_at: new Date().toISOString() });
         } else {
           list.unshift({
-            id: 'cm-' + Date.now(), author: name, text, likes: 0, dislikes: 0, reaction: null,
+            id: 'cm-' + Date.now(), author: profile.name, avatar: profile.avatar, provider: profile.providerLabel,
+            text, likes: 0, dislikes: 0, reaction: null,
             pinned: false, featured: text.length > 40, created_at: new Date().toISOString(), replies: []
           });
         }
         state.commentsMap[articleId] = list;
         safeSetStorage(STORAGE_KEYS.comments, state.commentsMap);
-        return 'shown';
+        return;
       }
+
       const { error } = await supabase.from('comments').insert([{
         article_id: String(articleId),
         parent_id: parentId || null,
-        author_name: name,
-        author_email: email,
+        author_name: profile.name,
+        author_email: profile.email,
         body: text
       }]);
       if (error) throw error;
-      return 'pending';
+      await window.loadArticleComments(articleId);
     }
 
     window.handleSubmitComment = async (e) => {
       e.preventDefault();
       if (!state.activeArticleId) return;
       const val = (id) => (document.getElementById(id)?.value || '').trim();
-      const name = val('comment-author-input');
-      const email = val('comment-email-input');
       const text = val('comment-text-input');
       const agreed = !!document.getElementById('comment-agree-input')?.checked;
       const btn = document.getElementById('comment-submit-btn');
 
-      // Honeypot: bot mengisi kolom tersembunyi -> pura-pura berhasil, tidak dikirim
       if (val('comment-website-input')) {
         resetCommentForm();
-        showToast('Komentar terkirim. Akan tampil setelah disetujui redaksi.', 'success');
         return;
       }
-      const problem = validateCommentFields(name, email, text, agreed);
+      const problem = validateCommentFields(text, agreed);
       if (problem) { showToast(problem, 'error'); return; }
       const wait = commentCooldownLeft();
       if (wait > 0) {
@@ -2850,15 +2966,11 @@
 
       if (btn) btn.disabled = true;
       try {
-        const result = await submitCommentCore({ parentId: null, name, email, text });
+        await submitCommentCore({ parentId: null, text });
         cSave(COMMENT_KEYS.lastSent, Date.now());
-        cSave(COMMENT_KEYS.identity, { name, email });
         resetCommentForm();
         renderArticleComments();
-        showToast(
-          result === 'pending' ? 'Komentar terkirim. Akan tampil setelah disetujui redaksi.' : 'Komentar Anda berhasil dikirim.',
-          'success'
-        );
+        showToast('Komentar Anda langsung diterbitkan!', 'success');
       } catch (err) {
         showToast(commentErrorMessage(err), 'error');
       } finally {
@@ -2923,6 +3035,11 @@
     };
 
     window.toggleReplyForm = (commentId) => {
+      if (!getActiveCommentProfile()) {
+        showToast('Masuk dengan Google atau Facebook untuk membalas komentar.', 'info');
+        document.getElementById('comment-auth-gate')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
       const form = document.getElementById('reply-form-' + commentId);
       if (form) {
         form.classList.toggle('hidden');
@@ -2936,17 +3053,14 @@
       e.preventDefault();
       const form = e.target;
       const val = (f) => (form.querySelector('[data-f="' + f + '"]')?.value || '').trim();
-      const name = val('name');
-      const email = val('email');
       const text = val('text');
       const btn = form.querySelector('button[type="submit"]');
 
       if (val('hp')) {
         form.classList.add('hidden');
-        showToast('Balasan terkirim. Akan tampil setelah disetujui redaksi.', 'success');
         return;
       }
-      const problem = validateCommentFields(name, email, text, true);
+      const problem = validateCommentFields(text, true);
       if (problem) { showToast(problem, 'error'); return; }
       const wait = commentCooldownLeft();
       if (wait > 0) {
@@ -2956,14 +3070,10 @@
 
       if (btn) btn.disabled = true;
       try {
-        const result = await submitCommentCore({ parentId: commentId, name, email, text });
+        await submitCommentCore({ parentId: commentId, text });
         cSave(COMMENT_KEYS.lastSent, Date.now());
-        cSave(COMMENT_KEYS.identity, { name, email });
         renderArticleComments();
-        showToast(
-          result === 'pending' ? 'Balasan terkirim. Akan tampil setelah disetujui redaksi.' : 'Balasan komentar dikirim.',
-          'success'
-        );
+        showToast('Balasan komentar langsung diterbitkan!', 'success');
       } catch (err) {
         showToast(commentErrorMessage(err), 'error');
       } finally {
@@ -3004,9 +3114,10 @@
         <div class="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 font-headline font-extrabold text-xs flex items-center justify-center">
-                ${escapeHtml((c.author || 'P').charAt(0).toUpperCase())}
-              </span>
+              ${c.avatar
+                ? `<img src="${escapeHtml(c.avatar)}" alt="" class="w-7 h-7 rounded-full object-cover border border-slate-200 shrink-0" />`
+                : `<span class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 font-headline font-extrabold text-xs flex items-center justify-center shrink-0">${escapeHtml((c.author || 'P').charAt(0).toUpperCase())}</span>`
+              }
               <div>
                 <div class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
                   ${escapeHtml(c.author)}
@@ -3030,14 +3141,10 @@
           </div>
 
           <form id="reply-form-${escapeHtml(c.id)}" onsubmit="window.handleSubmitReply(event, '${escapeHtml(c.id)}')" class="hidden pt-2 flex flex-col gap-2">
-            <div class="grid sm:grid-cols-2 gap-2">
-              <input data-f="name" type="text" required minlength="2" maxlength="60" autocomplete="name" value="${escapeHtml(commentIdentity().name)}" aria-label="Nama Anda" placeholder="Nama Anda (wajib)" class="min-h-[40px] px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
-              <input data-f="email" type="email" required maxlength="120" autocomplete="email" value="${escapeHtml(commentIdentity().email)}" aria-label="Email Anda" placeholder="Email (wajib, tidak ditampilkan)" class="min-h-[40px] px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
-            </div>
-            <input id="reply-input-${escapeHtml(c.id)}" data-f="text" type="text" required minlength="10" maxlength="500" aria-label="Tulis balasan komentar" placeholder="Tulis balasan (minimal 10 karakter, tanpa link)..." class="min-h-[40px] px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            <input id="reply-input-${escapeHtml(c.id)}" data-f="text" type="text" required minlength="10" maxlength="500" aria-label="Tulis balasan komentar" placeholder="Tulis balasan Anda (minimal 10 karakter, tanpa link)..." class="min-h-[40px] px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
             <input data-f="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;" />
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[10px] text-slate-400">Dengan membalas, Anda setuju pada aturan komentar. Tampil setelah disetujui redaksi.</span>
+              <span class="text-[10px] text-slate-400">Balasan langsung tampil dengan identitas akun Anda.</span>
               <button type="submit" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-brandSlate disabled:opacity-60 text-white text-xs font-bold shrink-0">Kirim Balasan</button>
             </div>
           </form>
@@ -3440,13 +3547,21 @@
         reader.onload = (ev) => {
           const img = new Image();
           img.onload = () => {
-            const ratio = Math.min(1, maxW / img.width);
+            const ratio = img.width > maxW ? (maxW / img.width) : 1;
+            const w = Math.round(img.width * ratio);
+            const h = Math.round(img.height * ratio);
             const canvas = document.createElement('canvas');
-            canvas.width = Math.round(img.width * ratio);
-            canvas.height = Math.round(img.height * ratio);
+            canvas.width = w;
+            canvas.height = h;
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/webp', quality));
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error('Gagal memproses gambar'));
+                return;
+              }
+              resolve({ blob, dataUrl: canvas.toDataURL('image/webp', quality) });
+            }, 'image/webp', quality);
           };
           img.onerror = reject;
           img.src = ev.target.result;
@@ -3456,12 +3571,58 @@
       });
     }
 
-    window.syncArticleImagePreview = (urlVal) => {
+    async function uploadCompressedImage(file, folderPrefix) {
+      const { blob, dataUrl } = await compressImageToWebp(file, 1200, 0.78);
+      if (USE_LOCAL_MODE || !supabase) {
+        return dataUrl;
+      }
+      const fileName = `${folderPrefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
+      const { error: upErr } = await supabase.storage
+        .from('news-images')
+        .upload(fileName, blob, { contentType: 'image/webp', upsert: false });
+
+      if (upErr) {
+        console.warn('Storage upload fallback ke dataUrl:', upErr.message);
+        return dataUrl;
+      }
+      const { data: pubData } = supabase.storage.from('news-images').getPublicUrl(fileName);
+      return pubData?.publicUrl || dataUrl;
+    }
+
+    window.handleArticlePhotoUpload = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const lbl = document.getElementById('art-upload-label');
+      if (lbl) lbl.textContent = 'Mengompres WebP...';
+      try {
+        const url = await uploadCompressedImage(file, 'berita');
+        document.getElementById('art-image-input').value = url;
+        window.syncArticleImagePreview(url);
+        showToast('Foto berhasil dikompres ke WebP & siap dipakai!', 'success');
+      } catch (err) {
+        showToast('Gagal mengunggah foto: ' + err.message, 'error');
+      } finally {
+        if (lbl) lbl.textContent = 'Pilih Foto dari HP/PC';
+      }
+    };
+
+    window.handleAdImageUpload = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const url = await uploadCompressedImage(file, 'iklan');
+        document.getElementById('ad-image-input').value = url;
+        showToast('Banner iklan berhasil dikompres & siap diterbitkan!', 'success');
+      } catch (err) {
+        showToast('Gagal mengunggah banner: ' + err.message, 'error');
+      }
+    };
+
+    window.syncArticleImagePreview = (url) => {
       const prev = document.getElementById('art-image-preview');
       const placeholder = document.getElementById('art-image-placeholder');
-      const cleanUrl = String(urlVal || '').trim();
       if (!prev) return;
-
+      const cleanUrl = String(url || '').trim();
       if (cleanUrl) {
         prev.src = cleanUrl;
         prev.classList.remove('hidden');
@@ -3471,23 +3632,28 @@
           if (placeholder) placeholder.classList.remove('hidden');
         };
       } else {
-        prev.src = '';
         prev.classList.add('hidden');
         if (placeholder) placeholder.classList.remove('hidden');
       }
     };
 
     window.updateEditorStats = () => {
-      const titleVal = (document.getElementById('art-title-input')?.value || '');
-      const contentVal = (document.getElementById('art-content-input')?.value || '').trim();
+      const titleVal = document.getElementById('art-title-input')?.value || '';
+      const contentVal = document.getElementById('art-content-input')?.value || '';
 
       const titleCounter = document.getElementById('art-title-counter');
       if (titleCounter) {
-        titleCounter.textContent = `${titleVal.length} / 120 karakter (ideal 55 sampai 85)`;
+        const len = titleVal.trim().length;
+        titleCounter.textContent = `${len} / 120 karakter (ideal 55 sampai 85)`;
+        titleCounter.className = len > 110
+          ? 'text-[11px] font-bold text-amber-600'
+          : 'text-[11px] font-semibold text-slate-400';
       }
 
-      const words = contentVal ? contentVal.split(/\s+/).filter(Boolean).length : 0;
-      const paragraphs = contentVal ? contentVal.split(/\n+/).map(p => p.trim()).filter(Boolean).length : 0;
+      const words = contentVal.trim() ? contentVal.trim().split(/\s+/).length : 0;
+      const paragraphs = contentVal.trim()
+        ? contentVal.trim().split(/\n\s*\n/).filter(p => p.trim().length > 0).length
+        : 0;
       const readMins = Math.max(1, Math.ceil(words / 200));
 
       const topCount = document.getElementById('editor-word-count');
@@ -3501,85 +3667,40 @@
     };
 
     window.insertEditorSnippet = (type) => {
-      const textarea = document.getElementById('art-content-input');
-      if (!textarea) return;
-      const start = textarea.selectionStart ?? textarea.value.length;
-      const end = textarea.selectionEnd ?? textarea.value.length;
-      const before = textarea.value.slice(0, start);
-      const after = textarea.value.slice(end);
-      const prefix = before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : '';
+      const area = document.getElementById('art-content-input');
+      if (!area) return;
 
-      let snippet = '\n\n';
-      if (type === 'quote') {
-        snippet = `${prefix}"Tulis kutipan langsung narasumber di sini," ujar Narasumber dalam keterangannya.\n\n`;
-      } else if (type === 'subhead') {
-        snippet = `${prefix}## Subjudul Bagian Berita\n\n`;
-      } else {
-        snippet = before.endsWith('\n') ? '\n' : '\n\n';
-      }
+      const snippets = {
+        paragraph: '\n\nTulis lanjutan uraian berita di paragraf baru ini...\n',
+        subhead: '\n\n## Subjudul Bagian Berita\n\nUraikan detail informasi pada bagian ini...\n',
+        quote: '\n\n"Tulis kutipan langsung dari narasumber resmi di sini," ujar Narasumber dalam keterangan resminya.\n'
+      };
+      const textToInsert = snippets[type] || '\n\n';
+      const start = area.selectionStart ?? area.value.length;
+      const end = area.selectionEnd ?? area.value.length;
+      const before = area.value.slice(0, start);
+      const after = area.value.slice(end);
 
-      textarea.value = before + snippet + after;
-      const nextCursor = before.length + snippet.length;
-      textarea.focus();
-      textarea.setSelectionRange(nextCursor, nextCursor);
+      area.value = before + textToInsert + after;
+      area.focus();
+      const cursor = before.length + textToInsert.length;
+      area.setSelectionRange(cursor, cursor);
       window.updateEditorStats();
     };
 
     window.cleanEditorSpacing = () => {
-      const textarea = document.getElementById('art-content-input');
-      if (!textarea) return;
-      const normalized = textarea.value
-        .split(/\r?\n/)
-        .map(line => line.replace(/[ \t]+/g, ' ').trim())
-        .filter(Boolean)
-        .join('\n\n');
-      textarea.value = normalized;
+      const area = document.getElementById('art-content-input');
+      if (!area) return;
+      const cleaned = area.value
+        .replace(/\r\n/g, '\n')
+        .split('\n')
+        .map(line => line.trim())
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+      area.value = cleaned;
       window.updateEditorStats();
       showToast('Spasi dan jarak antarparagraf berhasil dirapikan.', 'info');
-    };
-
-    window.handleArticlePhotoUpload = async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const lbl = document.getElementById('art-upload-label');
-      if (lbl) lbl.textContent = 'Mengunggah...';
-
-      try {
-        if (!USE_LOCAL_MODE && supabase) {
-          const ext = (file.name.split('.').pop() || 'webp').toLowerCase();
-          const path = `artikel-${Date.now()}.${ext}`;
-          const { error } = await supabase.storage.from('news-images').upload(path, file, { upsert: true });
-          if (!error) {
-            const { data } = supabase.storage.from('news-images').getPublicUrl(path);
-            if (data?.publicUrl) {
-              document.getElementById('art-image-input').value = data.publicUrl;
-              window.syncArticleImagePreview(data.publicUrl);
-              showToast('Foto berhasil diunggah ke Supabase Storage!', 'success');
-              return;
-            }
-          }
-        }
-        const webpData = await compressImageToWebp(file, 1100, 0.76);
-        document.getElementById('art-image-input').value = webpData;
-        window.syncArticleImagePreview(webpData);
-        showToast('Foto siap diterbitkan (format WebP ringan).', 'success');
-      } catch (err) {
-        showToast('Gagal memproses foto: ' + err.message, 'error');
-      } finally {
-        if (lbl) lbl.textContent = 'Pilih Foto dari HP/PC';
-      }
-    };
-
-    window.handleAdImageUpload = async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      try {
-        const webpData = await compressImageToWebp(file, 900, 0.75);
-        document.getElementById('ad-image-input').value = webpData;
-        showToast('Banner iklan siap diterbitkan.', 'success');
-      } catch (err) {
-        showToast('Gagal memuat gambar banner.', 'error');
-      }
     };
 
     window.openArticleModal = (editId = null) => {
@@ -3587,13 +3708,14 @@
       if (catSelect) {
         catSelect.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
       }
-      const saveBtnSpan = document.querySelector('#art-save-btn span');
 
+      const modalTitle = document.getElementById('modal-article-title');
+      const saveBtn = document.getElementById('art-save-btn');
       if (editId) {
         const art = state.articles.find(a => a.id === editId);
         if (!art) return;
-        document.getElementById('modal-article-title').textContent = 'Sunting Berita';
-        if (saveBtnSpan) saveBtnSpan.textContent = 'Simpan Perubahan';
+        if (modalTitle) modalTitle.textContent = 'Sunting Berita';
+        if (saveBtn) saveBtn.innerHTML = '<i data-lucide="check" aria-hidden="true" class="w-4 h-4"></i><span>Simpan Perubahan</span>';
         document.getElementById('art-id-input').value = art.id;
         document.getElementById('art-title-input').value = art.title || '';
         document.getElementById('art-category-input').value = art.category_id || (state.categories[0]?.id || '');
@@ -3606,13 +3728,14 @@
         document.getElementById('art-trending-input').checked = Boolean(art.is_trending);
         window.syncArticleImagePreview(art.image_url || '');
       } else {
-        document.getElementById('modal-article-title').textContent = 'Tulis Berita Baru';
-        if (saveBtnSpan) saveBtnSpan.textContent = 'Terbitkan Berita';
-        document.getElementById('article-editor-form').reset();
+        if (modalTitle) modalTitle.textContent = 'Tulis Berita Baru';
+        if (saveBtn) saveBtn.innerHTML = '<i data-lucide="send" aria-hidden="true" class="w-4 h-4"></i><span>Terbitkan Berita</span>';
+        document.getElementById('article-editor-form')?.reset();
         document.getElementById('art-id-input').value = '';
         document.getElementById('art-author-input').value = 'Tim Redaksi KabarRaya';
         window.syncArticleImagePreview('');
       }
+
       window.updateEditorStats();
       openModal('modal-article');
       setTimeout(() => {
@@ -3622,54 +3745,114 @@
 
     window.handleSaveArticle = async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('art-save-btn');
-      const btnSpan = btn?.querySelector('span');
-      const prevBtnText = btnSpan ? btnSpan.textContent : 'Terbitkan Berita';
-      if (btn) { btn.disabled = true; }
-      if (btnSpan) { btnSpan.textContent = 'Menyimpan...'; }
+      const saveBtn = document.getElementById('art-save-btn');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>Menyimpan...</span>';
+      }
 
       const editId = document.getElementById('art-id-input').value.trim();
-      const rawCatId = document.getElementById('art-category-input').value;
-      const payload = {
-        title: document.getElementById('art-title-input').value.trim(),
-        slug: slugify(document.getElementById('art-title-input').value.trim()),
-        summary: document.getElementById('art-summary-input').value.trim(),
-        content: document.getElementById('art-content-input').value.trim(),
-        image_url: document.getElementById('art-image-input').value.trim() || null,
-        category_id: (!USE_LOCAL_MODE && !isValidUuid(rawCatId)) ? null : rawCatId,
-        author_name: document.getElementById('art-author-input').value.trim() || 'Tim Redaksi KabarRaya',
-        search_keywords: document.getElementById('art-keywords-input').value.trim(),
-        is_headline: document.getElementById('art-headline-input').checked,
-        is_trending: document.getElementById('art-trending-input').checked
-      };
+      const title = document.getElementById('art-title-input').value.trim();
+      let categoryId = document.getElementById('art-category-input').value;
+      const authorName = document.getElementById('art-author-input').value.trim() || 'Tim Redaksi KabarRaya';
+      const imageUrl = document.getElementById('art-image-input').value.trim();
+      const summary = document.getElementById('art-summary-input').value.trim();
+      const content = document.getElementById('art-content-input').value.trim();
+      const keywords = document.getElementById('art-keywords-input').value.trim();
+      const isHeadline = document.getElementById('art-headline-input').checked;
+      const isTrending = document.getElementById('art-trending-input').checked;
 
       try {
         if (USE_LOCAL_MODE || !supabase) {
           if (editId) {
             const idx = state.articles.findIndex(a => a.id === editId);
-            if (idx >= 0) state.articles[idx] = { ...state.articles[idx], ...payload };
+            if (idx >= 0) {
+              state.articles[idx] = {
+                ...state.articles[idx],
+                title,
+                slug: slugify(title),
+                category_id: categoryId,
+                author_name: authorName,
+                image_url: imageUrl,
+                summary,
+                content,
+                search_keywords: keywords,
+                is_headline: isHeadline,
+                is_trending: isTrending
+              };
+            }
           } else {
-            state.articles.unshift({ id: 'art-' + Date.now(), views_count: 0, created_at: new Date().toISOString(), ...payload });
+            state.articles.unshift({
+              id: 'art-' + Date.now(),
+              title,
+              slug: slugify(title),
+              category_id: categoryId,
+              author_name: authorName,
+              image_url: imageUrl,
+              summary,
+              content,
+              search_keywords: keywords,
+              is_headline: isHeadline,
+              is_trending: isTrending,
+              views_count: 1,
+              created_at: new Date().toISOString()
+            });
           }
           safeSetStorage(STORAGE_KEYS.articles, state.articles);
         } else {
-          if (editId) {
-            const { error } = await supabase.from('articles').update(payload).eq('id', editId);
-            if (error) throw error;
-          } else {
-            const { error } = await supabase.from('articles').insert([payload]);
-            if (error) throw error;
+          if (!isValidUuid(categoryId)) {
+            const selectedCat = state.categories.find(c => c.id === categoryId) || state.categories[0];
+            if (selectedCat) {
+              const catCheck = await supabase.from('categories').select('id').eq('slug', selectedCat.slug).limit(1);
+              if (catCheck.data && catCheck.data.length > 0) {
+                categoryId = catCheck.data[0].id;
+              } else {
+                const catIns = await supabase.from('categories').insert([{ name: selectedCat.name, slug: selectedCat.slug }]).select();
+                if (catIns.error) throw catIns.error;
+                categoryId = catIns.data[0].id;
+              }
+            }
           }
+
+          const payload = {
+            title,
+            slug: slugify(title) + '-' + String(Date.now()).slice(-4),
+            category_id: categoryId,
+            author_name: authorName,
+            image_url: imageUrl,
+            summary,
+            content,
+            search_keywords: keywords,
+            is_headline: isHeadline,
+            is_trending: isTrending
+          };
+
+          if (editId) {
+            delete payload.slug;
+            const updRes = await supabase.from('articles').update(payload).eq('id', editId);
+            if (updRes.error) throw updRes.error;
+          } else {
+            payload.views_count = 1;
+            const insRes = await supabase.from('articles').insert([payload]);
+            if (insRes.error) throw insRes.error;
+          }
+
           await loadAllData();
         }
+
         window.closeModal('modal-article');
         renderAdminPanel();
+        renderAllPortalViews();
         showToast(editId ? 'Berita berhasil diperbarui!' : 'Berita baru berhasil diterbitkan!', 'success');
       } catch (err) {
-        showToast('Gagal menyimpan berita: ' + (err.message || 'Cek izin RLS Supabase'), 'error');
+        console.error('Gagal menyimpan berita:', err);
+        showToast('Gagal menyimpan berita: ' + (err.message || 'Periksa kolom database'), 'error');
       } finally {
-        if (btn) { btn.disabled = false; }
-        if (btnSpan) { btnSpan.textContent = prevBtnText; }
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i data-lucide="send" aria-hidden="true" class="w-4 h-4"></i><span>Terbitkan Berita</span>';
+          renderIcons();
+        }
       }
     };
 
@@ -3682,35 +3865,40 @@
       if (USE_LOCAL_MODE || !supabase) {
         safeSetStorage(STORAGE_KEYS.articles, state.articles);
       } else {
-        const { error } = await supabase.from('articles').update({ [field]: nextVal }).eq('id', id);
-        if (error) {
+        try {
+          const { error } = await supabase.from('articles').update({ [field]: nextVal }).eq('id', id);
+          if (error) throw error;
+        } catch (err) {
           art[field] = !nextVal;
-          showToast('Gagal mengubah status: ' + error.message, 'error');
+          showToast('Gagal memperbarui status: ' + err.message, 'error');
           return;
         }
       }
       renderAdminPanel();
-      showToast('Status berita diperbarui.', 'success');
+      renderAllPortalViews();
+      showToast('Status penayangan berita diperbarui.', 'success');
     };
 
     window.handleDeleteArticle = async (id) => {
-      const ok = await openConfirmModal('Hapus Berita', 'Berita yang dihapus tidak dapat dikembalikan. Lanjutkan?');
+      const ok = await openConfirmModal('Hapus Berita?', 'Berita yang dihapus tidak dapat dikembalikan. Lanjutkan?');
       if (!ok) return;
 
-      try {
-        if (USE_LOCAL_MODE || !supabase) {
-          state.articles = state.articles.filter(a => a.id !== id);
-          safeSetStorage(STORAGE_KEYS.articles, state.articles);
-        } else {
+      if (USE_LOCAL_MODE || !supabase) {
+        state.articles = state.articles.filter(a => a.id !== id);
+        safeSetStorage(STORAGE_KEYS.articles, state.articles);
+      } else {
+        try {
           const { error } = await supabase.from('articles').delete().eq('id', id);
           if (error) throw error;
           await loadAllData();
+        } catch (err) {
+          showToast('Gagal menghapus berita: ' + err.message, 'error');
+          return;
         }
-        renderAdminPanel();
-        showToast('Berita berhasil dihapus.', 'info');
-      } catch (err) {
-        showToast('Gagal menghapus berita: ' + err.message, 'error');
       }
+      renderAdminPanel();
+      renderAllPortalViews();
+      showToast('Berita telah dihapus.', 'info');
     };
 
     window.handleSaveCategory = async (e) => {
@@ -3718,99 +3906,105 @@
       const input = document.getElementById('cat-name-input');
       const name = input.value.trim();
       if (!name) return;
-      const payload = { name, slug: slugify(name) };
+      const slug = slugify(name);
 
-      try {
-        if (USE_LOCAL_MODE || !supabase) {
-          state.categories.push({ id: 'cat-' + Date.now(), ...payload });
-          safeSetStorage(STORAGE_KEYS.categories, state.categories);
-        } else {
-          const { error } = await supabase.from('categories').insert([payload]);
+      if (USE_LOCAL_MODE || !supabase) {
+        state.categories.push({ id: 'cat-' + Date.now(), name, slug });
+        safeSetStorage(STORAGE_KEYS.categories, state.categories);
+      } else {
+        try {
+          const { error } = await supabase.from('categories').insert([{ name, slug }]);
           if (error) throw error;
           await loadAllData();
+        } catch (err) {
+          showToast('Gagal menambah kanal: ' + err.message, 'error');
+          return;
         }
-        input.value = '';
-        renderAdminPanel();
-        renderChannelBars();
-        showToast('Kanal baru berhasil ditambahkan.', 'success');
-      } catch (err) {
-        showToast('Gagal menambah kanal: ' + err.message, 'error');
       }
+      input.value = '';
+      renderAdminPanel();
+      renderChannelBars();
+      showToast('Kanal baru berhasil ditambahkan!', 'success');
     };
 
     window.handleDeleteCategory = async (id) => {
-      const ok = await openConfirmModal('Hapus Kanal', 'Yakin ingin menghapus kanal berita ini?');
+      const ok = await openConfirmModal('Hapus Kanal Berita?', 'Pastikan tidak ada berita penting yang bergantung pada kanal ini.');
       if (!ok) return;
-      try {
-        if (USE_LOCAL_MODE || !supabase) {
-          state.categories = state.categories.filter(c => c.id !== id);
-          safeSetStorage(STORAGE_KEYS.categories, state.categories);
-        } else {
+
+      if (USE_LOCAL_MODE || !supabase) {
+        state.categories = state.categories.filter(c => c.id !== id);
+        safeSetStorage(STORAGE_KEYS.categories, state.categories);
+      } else {
+        try {
           const { error } = await supabase.from('categories').delete().eq('id', id);
           if (error) throw error;
           await loadAllData();
+        } catch (err) {
+          showToast('Gagal menghapus kanal: ' + err.message, 'error');
+          return;
         }
-        renderAdminPanel();
-        renderChannelBars();
-        showToast('Kanal dihapus.', 'info');
-      } catch (err) {
-        showToast('Gagal menghapus kanal: ' + err.message, 'error');
       }
+      renderAdminPanel();
+      renderChannelBars();
+      showToast('Kanal dihapus.', 'info');
     };
 
     window.handleSaveAd = async (e) => {
       e.preventDefault();
-      const payload = {
-        title: document.getElementById('ad-title-input').value.trim(),
-        slot: document.getElementById('ad-slot-input').value,
-        image_url: document.getElementById('ad-image-input').value.trim(),
-        link_url: document.getElementById('ad-link-input').value.trim()
-      };
+      const title = document.getElementById('ad-title-input').value.trim();
+      const slot = document.getElementById('ad-slot-input').value;
+      const imageUrl = document.getElementById('ad-image-input').value.trim();
+      const linkUrl = document.getElementById('ad-link-input').value.trim();
 
-      try {
-        if (USE_LOCAL_MODE || !supabase) {
-          state.ads.unshift({ id: 'ad-' + Date.now(), created_at: new Date().toISOString(), ...payload });
-          safeSetStorage(STORAGE_KEYS.ads, state.ads);
-        } else {
-          const { error } = await supabase.from('ads').insert([payload]);
+      if (USE_LOCAL_MODE || !supabase) {
+        state.ads.unshift({ id: 'ad-' + Date.now(), title, slot, image_url: imageUrl, link_url: linkUrl, created_at: new Date().toISOString() });
+        safeSetStorage(STORAGE_KEYS.ads, state.ads);
+      } else {
+        try {
+          const { error } = await supabase.from('ads').insert([{ title, slot, image_url: imageUrl, link_url: linkUrl }]);
           if (error) throw error;
           await loadAllData();
+        } catch (err) {
+          showToast('Gagal menyimpan iklan: ' + err.message, 'error');
+          return;
         }
-        e.target.reset();
-        renderAdminPanel();
-        renderAdSlots();
-        showToast('Iklan mandiri berhasil diterbitkan!', 'success');
-      } catch (err) {
-        showToast('Gagal menyimpan iklan: ' + (err.message || 'Pastikan tabel ads tersedia di Supabase'), 'error');
       }
+
+      e.target.reset();
+      renderAdminPanel();
+      renderAdSlots();
+      showToast('Banner iklan mandiri berhasil diterbitkan!', 'success');
     };
 
     window.handleDeleteAd = async (id) => {
-      const ok = await openConfirmModal('Hapus Iklan', 'Hapus banner iklan sponsor ini?');
+      const ok = await openConfirmModal('Hapus Banner Iklan?', 'Banner iklan ini akan ditarik dari halaman portal.');
       if (!ok) return;
-      try {
-        if (USE_LOCAL_MODE || !supabase) {
-          state.ads = state.ads.filter(a => a.id !== id);
-          safeSetStorage(STORAGE_KEYS.ads, state.ads);
-        } else {
+
+      if (USE_LOCAL_MODE || !supabase) {
+        state.ads = state.ads.filter(a => a.id !== id);
+        safeSetStorage(STORAGE_KEYS.ads, state.ads);
+      } else {
+        try {
           const { error } = await supabase.from('ads').delete().eq('id', id);
           if (error) throw error;
           await loadAllData();
+        } catch (err) {
+          showToast('Gagal menghapus iklan: ' + err.message, 'error');
+          return;
         }
-        renderAdminPanel();
-        renderAdSlots();
-        showToast('Iklan dihapus.', 'info');
-      } catch (err) {
-        showToast('Gagal menghapus iklan: ' + err.message, 'error');
       }
+      renderAdminPanel();
+      renderAdSlots();
+      showToast('Banner iklan dihapus.', 'info');
     };
 
     // =========================================================================
-    // STATISTIK PENGUNJUNG & 4 GRAFIK MULTI-WARNA (page_visits)
+    // STATISTIK PENGUNJUNG (GRAFIK 7 HARI, SUMBER UTM, NEGARA/WILAYAH, PERANGKAT)
     // =========================================================================
     window.loadVisitorStats = async () => {
+      let visits = [];
       if (USE_LOCAL_MODE || !supabase) {
-        state.visits = safeGetStorage(STORAGE_KEYS.visits, SEED_VISITS);
+        visits = safeGetStorage(STORAGE_KEYS.visits, SEED_VISITS);
       } else {
         try {
           const { data, error } = await supabase
@@ -3818,117 +4012,100 @@
             .select('*')
             .order('created_at', { ascending: false })
             .limit(300);
-          if (!error && data) state.visits = data;
+          if (!error && data) {
+            visits = data;
+          } else {
+            visits = SEED_VISITS;
+          }
         } catch (err) {
-          showToast('Tabel page_visits belum tersedia di Supabase.', 'error');
+          visits = SEED_VISITS;
         }
       }
-      renderVisitorStats();
-    };
 
-    function renderMultiColorBars(containerId, countsMap, total, palette) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      const entries = Object.entries(countsMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
-      if (!entries.length) {
-        el.innerHTML = `<div class="text-slate-400 text-xs py-3">Belum ada data kunjungan.</div>`;
-        return;
-      }
-      el.innerHTML = entries.map(([label, count], idx) => {
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        const barColor = palette[idx % palette.length];
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between font-semibold text-slate-700">
-              <span class="truncate pr-2">${escapeHtml(label)}</span>
-              <span class="text-slate-500 shrink-0">${count} (${pct}%)</span>
-            </div>
-            <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-              <div class="h-full rounded-full ${barColor}" style="width: ${Math.max(4, pct)}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayCount = visits.filter(v => String(v.created_at || '').startsWith(todayStr)).length;
 
-    function renderVisitorStats() {
-      const logs = state.visits || [];
-      const total = logs.length;
-      const todayKey = new Date().toDateString();
-      const todayCount = logs.filter(v => new Date(v.created_at).toDateString() === todayKey).length;
+      const countBy = (arr, keyFn) => {
+        const map = {};
+        arr.forEach(item => {
+          const k = keyFn(item) || 'Lainnya';
+          map[k] = (map[k] || 0) + 1;
+        });
+        return Object.entries(map).sort((a, b) => b[1] - a[1]);
+      };
 
-      const sourceCounts = {};
-      const regionCounts = {};
-      const deviceCounts = {};
+      const byRegion = countBy(visits, v => v.region || v.country);
+      const bySource = countBy(visits, v => v.source);
+      const byDevice = countBy(visits, v => v.device);
 
-      logs.forEach(v => {
-        const src = v.source || 'Akses Langsung (Direct)';
-        const reg = v.region || v.country || 'Indonesia Barat (WIB)';
-        const dev = v.device || 'HP Android';
-        sourceCounts[src] = (sourceCounts[src] || 0) + 1;
-        regionCounts[reg] = (regionCounts[reg] || 0) + 1;
-        deviceCounts[dev] = (deviceCounts[dev] || 0) + 1;
-      });
-
-      const topRegion = Object.entries(regionCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-      const topSource = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
-
-      document.getElementById('stat-total-visits').textContent = formatNumber(total);
+      document.getElementById('stat-total-visits').textContent = formatNumber(visits.length);
       document.getElementById('stat-today-visits').textContent = formatNumber(todayCount);
-      document.getElementById('stat-top-region').textContent = topRegion;
-      document.getElementById('stat-top-source').textContent = topSource;
+      document.getElementById('stat-top-region').textContent = byRegion[0] ? `${byRegion[0][0]} (${byRegion[0][1]})` : '-';
+      document.getElementById('stat-top-source').textContent = bySource[0] ? `${bySource[0][0]} (${bySource[0][1]})` : '-';
 
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000);
+        const isoDay = d.toISOString().slice(0, 10);
+        const label = d.toLocaleDateString('id-ID', { weekday: 'short' });
+        const cnt = visits.filter(v => String(v.created_at || '').startsWith(isoDay)).length;
+        days.push({ label, cnt });
+      }
+      const maxDay = Math.max(1, ...days.map(d => d.cnt));
       const chart7 = document.getElementById('stat-chart-7days');
       if (chart7) {
-        const days = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(Date.now() - i * 86400000);
-          const dStr = d.toDateString();
-          const count = logs.filter(v => new Date(v.created_at).toDateString() === dStr).length;
-          days.push({
-            label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
-            count
-          });
-        }
-        const maxVal = Math.max(1, ...days.map(d => d.count));
-        const dayColors = ['bg-sky-400', 'bg-teal-400', 'bg-indigo-400', 'bg-violet-400', 'bg-amber-400', 'bg-rose-400', 'bg-sky-600'];
-        chart7.innerHTML = days.map((d, idx) => {
-          const hPct = Math.max(8, Math.round((d.count / maxVal) * 100));
+        chart7.innerHTML = days.map(d => {
+          const pct = Math.max(8, Math.round((d.cnt / maxDay) * 100));
           return `
             <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-              <span class="text-[10px] font-extrabold text-slate-600">${d.count}</span>
-              <div class="w-full max-w-[36px] rounded-t-lg ${dayColors[idx % dayColors.length]} transition-all" style="height: ${hPct}%"></div>
+              <span class="text-[10px] font-extrabold text-slate-600">${d.cnt}</span>
+              <div class="w-full max-w-[34px] rounded-t-xl bg-gradient-to-t from-sky-600 to-teal-400 transition-all" style="height:${pct}%"></div>
               <span class="text-[10px] font-bold text-slate-400">${escapeHtml(d.label)}</span>
             </div>
           `;
         }).join('');
       }
 
-      renderMultiColorBars('stat-chart-sources', sourceCounts, total, ['bg-emerald-500', 'bg-sky-500', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500']);
-      renderMultiColorBars('stat-chart-regions', regionCounts, total, ['bg-violet-500', 'bg-sky-500', 'bg-teal-500', 'bg-amber-500', 'bg-pink-500']);
-      renderMultiColorBars('stat-chart-devices', deviceCounts, total, ['bg-amber-500', 'bg-sky-600', 'bg-teal-600']);
+      const renderBarList = (elId, entries, colorClass) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const total = Math.max(1, visits.length);
+        el.innerHTML = entries.slice(0, 5).map(([label, cnt]) => {
+          const pct = Math.round((cnt / total) * 100);
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between font-bold text-slate-700">
+                <span class="truncate">${escapeHtml(label)}</span>
+                <span class="text-slate-500">${cnt} (${pct}%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-full ${colorClass} rounded-full" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('') || `<div class="text-slate-400">Belum ada data tercatat.</div>`;
+      };
 
-      const tbody = document.getElementById('stat-recent-tbody');
-      if (tbody) {
-        if (!logs.length) {
-          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada riwayat kunjungan tercatat.</td></tr>`;
-        } else {
-          tbody.innerHTML = logs.slice(0, 35).map(v => `
-            <tr class="hover:bg-slate-50/80">
-              <td class="py-2.5 px-4 font-bold text-slate-800 max-w-[230px] truncate">${escapeHtml(v.page_title || 'Beranda Utama')}</td>
-              <td class="py-2.5 px-4 text-slate-600">${escapeHtml(v.region || v.country || 'Indonesia')}</td>
-              <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold text-[11px]">${escapeHtml(v.source || 'Direct')}</span></td>
-              <td class="py-2.5 px-4 text-slate-600">${escapeHtml(v.device || '-')}</td>
-              <td class="py-2.5 px-4 text-right text-slate-500 whitespace-nowrap">${escapeHtml(formatRelativeTime(v.created_at))}</td>
-            </tr>
-          `).join('');
-        }
+      renderBarList('stat-chart-sources', bySource, 'bg-emerald-500');
+      renderBarList('stat-chart-regions', byRegion, 'bg-violet-500');
+      renderBarList('stat-chart-devices', byDevice, 'bg-amber-500');
+
+      const recentTbody = document.getElementById('stat-recent-tbody');
+      if (recentTbody) {
+        recentTbody.innerHTML = visits.slice(0, 12).map(v => `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-4 font-bold text-slate-800 max-w-xs truncate">${escapeHtml(v.page_title || 'Beranda Utama')}</td>
+            <td class="py-2.5 px-4 text-slate-600">${escapeHtml(v.region || v.country || '-')}</td>
+            <td class="py-2.5 px-4"><span class="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 font-bold text-[10px]">${escapeHtml(v.source || '-')}</span></td>
+            <td class="py-2.5 px-4 text-slate-600">${escapeHtml(v.device || '-')}</td>
+            <td class="py-2.5 px-4 text-right text-slate-400">${escapeHtml(formatRelativeTime(v.created_at))}</td>
+          </tr>
+        `).join('');
       }
-      renderIcons();
-    }
+    };
 
     // =========================================================================
-    // RENDER GABUNGAN & INISIALISASI ANTI-GAGAL
+    // RENDER KESELURUHAN & STARTUP
     // =========================================================================
     function renderAllPortalViews() {
       renderChannelBars();
@@ -3941,23 +4118,27 @@
       renderIcons();
     }
 
-    function bindGlobalEvents() {
-      const heroSurface = document.getElementById('hero-stage-surface');
-      if (heroSurface) {
-        heroSurface.addEventListener('mouseenter', () => {
-          state.heroHoverPaused = true;
-          document.getElementById('hero-progress-bar')?.classList.add('hero-progress-paused');
-        });
-        heroSurface.addEventListener('mouseleave', () => {
-          state.heroHoverPaused = false;
-          if (!state.heroAutoplayPaused) {
-            document.getElementById('hero-progress-bar')?.classList.remove('hero-progress-paused');
-          }
-        });
-      }
+    function bindHeroHoverPause() {
+      const surface = document.getElementById('hero-stage-surface');
+      if (!surface) return;
+      surface.addEventListener('mouseenter', () => {
+        state.heroHoverPaused = true;
+        document.getElementById('hero-progress-bar')?.classList.add('hero-progress-paused');
+      });
+      surface.addEventListener('mouseleave', () => {
+        state.heroHoverPaused = false;
+        if (!state.heroAutoplayPaused) {
+          document.getElementById('hero-progress-bar')?.classList.remove('hero-progress-paused');
+        }
+      });
+    }
 
+    async function bootstrapApp() {
+      await initSupabaseClient();
+      await loadAllData();
+      bindHeroHoverPause();
       window.addEventListener('scroll', updateReadingProgressBar, { passive: true });
-
+      window.addEventListener('resize', updateReadingProgressBar, { passive: true });
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           window.closeMobileDrawer();
@@ -3967,28 +4148,21 @@
           window.closeConfirmModal(false);
         }
       });
-    }
-
-    async function initPortal() {
-      bindGlobalEvents();
-      await initSupabaseClient();
-      await loadAllData();
-      renderAllPortalViews();
 
       const params = new URLSearchParams(window.location.search);
-      const articleParam = params.get('article');
-      if (articleParam && state.articles.some(a => a.id === articleParam)) {
-        window.openArticleDetail(articleParam);
+      const sharedArticleId = params.get('article');
+
+      if (sharedArticleId && state.articles.some(a => a.id === sharedArticleId)) {
+        renderChannelBars();
+        updateHeaderMeta();
+        await window.openArticleDetail(sharedArticleId);
       } else {
+        renderAllPortalViews();
         trackPageVisit('Beranda Utama');
       }
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initPortal);
-    } else {
-      initPortal();
-    }
+    bootstrapApp();
   </script>
 </body>
 </html>
