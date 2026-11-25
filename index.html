@@ -948,17 +948,17 @@
             <!-- Filter Cepat (Kiri) & Pencarian Komentar (Kanan) -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3.5 border-t border-slate-100">
               <div id="admin-comment-filter-bar" role="group" aria-label="Filter Status Balasan Komentar" class="flex flex-wrap items-center gap-2 shrink-0">
-                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Semua</span>
-                  <span id="admin-cfilter-count-all" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20">0</span>
+                  <span id="admin-cfilter-count-all" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white">0</span>
                 </button>
-                <button type="button" data-acfilter="unreplied" data-cfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="unreplied" data-cfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Belum Dibalas</span>
-                  <span id="admin-cfilter-count-unreplied" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">0</span>
+                  <span id="admin-cfilter-count-unreplied" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200/70 text-amber-900">0</span>
                 </button>
-                <button type="button" data-acfilter="replied" data-cfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="replied" data-cfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Sudah Dibalas</span>
-                  <span id="admin-cfilter-count-replied" class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold">0</span>
+                  <span id="admin-cfilter-count-replied" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-200/70 text-emerald-900">0</span>
                 </button>
               </div>
 
@@ -3526,6 +3526,29 @@
     // =========================================================================
     // MODERASI & BALASAN KOMENTAR OLEH ADMIN DI HALAMAN EDITOR/ADMIN
     // =========================================================================
+    function normalizeAdminCommentsCache(rows) {
+      if (!Array.isArray(rows)) return [];
+      return rows
+        .filter(item => item && typeof item === 'object')
+        .map(item => ({
+          ...item,
+          id: String(item.id ?? ''),
+          article_id: String(item.article_id ?? ''),
+          author_name: String(item.author_name ?? 'Pembaca'),
+          author_email: String(item.author_email ?? ''),
+          body: String(item.body ?? ''),
+          status: String(item.status ?? 'approved'),
+          admin_reply: String(item.admin_reply ?? ''),
+          admin_replied_at: item.admin_replied_at || null,
+          created_at: item.created_at || new Date().toISOString()
+        }));
+    }
+
+    function setAdminCommentsCacheSafe(rows) {
+      state.adminCommentsCache = normalizeAdminCommentsCache(rows);
+      return state.adminCommentsCache;
+    }
+
     function getAdminCommentFilterKey(btn) {
       if (!btn) return 'all';
       return (btn.getAttribute('data-acfilter') || btn.getAttribute('data-cfilter') || 'all').toLowerCase();
@@ -3542,30 +3565,30 @@
 
         if (type === 'all') {
           btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70 transition inline-flex items-center gap-1.5 shrink-0';
+            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70 transition inline-flex items-center gap-1.5 shrink-0';
           if (badge) {
             badge.className = isActive
-              ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
-              : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-200/80 text-slate-700';
+              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
+              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-200/80 text-slate-700';
           }
         } else if (type === 'unreplied') {
           btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0';
+            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0';
           if (badge) {
             badge.className = isActive
-              ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
-              : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-200/70 text-amber-900';
+              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
+              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200/70 text-amber-900';
           }
         } else {
           btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0';
+            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0';
           if (badge) {
             badge.className = isActive
-              ? 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/20 text-white'
-              : 'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-200/70 text-emerald-900';
+              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
+              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-200/70 text-emerald-900';
           }
         }
       });
@@ -3585,27 +3608,42 @@
       if (cRep) cRep.textContent = String(repliedCount);
     }
 
+    function ensureAdminCommentsContainerVisible() {
+      let box = document.getElementById('admin-comments-list');
+      if (!box) {
+        const panel = document.getElementById('admin-panel-comments');
+        if (!panel) return null;
+        box = document.createElement('div');
+        box.id = 'admin-comments-list';
+        box.className = 'w-full space-y-4';
+        panel.appendChild(box);
+      }
+      box.classList.remove('hidden');
+      box.style.display = 'block';
+      box.style.visibility = 'visible';
+      box.style.opacity = '1';
+      return box;
+    }
+
     function renderAdminCommentsList() {
-      const box = document.getElementById('admin-comments-list');
+      const box = ensureAdminCommentsContainerVisible();
       if (!box) return;
 
-      box.classList.remove('hidden');
-      box.style.display = '';
-      box.style.opacity = '1';
-
-      const activeFilter = String(state.adminCommentFilter || 'all').toLowerCase();
+      const rawFilter = String(state.adminCommentFilter || 'all').toLowerCase();
+      const activeFilter = (rawFilter === 'unreplied' || rawFilter === 'replied') ? rawFilter : 'all';
+      state.adminCommentFilter = activeFilter;
       syncAdminCommentFilterStyles();
 
       try {
         const articleMap = Object.fromEntries(
-          (state.articles || []).map(a => [String(a.id), String(a.title || '')])
+          (Array.isArray(state.articles) ? state.articles : []).map(a => [String(a.id), String(a.title || '')])
         );
-        const allRows = Array.isArray(state.adminCommentsCache) ? state.adminCommentsCache : [];
+        const allRows = normalizeAdminCommentsCache(state.adminCommentsCache);
+        state.adminCommentsCache = allRows;
         updateAdminCommentCounts(allRows);
 
         const q = String(state.adminCommentSearch || '').trim().toLowerCase();
         const filtered = allRows.filter(r => {
-          if (!r || typeof r !== 'object') return false;
           const hasReply = Boolean(String(r.admin_reply || '').trim());
           if (activeFilter === 'unreplied' && hasReply) return false;
           if (activeFilter === 'replied' && !hasReply) return false;
@@ -3632,7 +3670,7 @@
 
         box.innerHTML = filtered.map(r => {
           const artIdStr = String(r.article_id || '');
-          const artExists = (state.articles || []).some(a => String(a.id) === artIdStr);
+          const artExists = (Array.isArray(state.articles) ? state.articles : []).some(a => String(a.id) === artIdStr);
           const artTitle = articleMap[artIdStr] || (artIdStr ? ('Artikel #' + artIdStr) : 'Artikel Portal');
           const statusRaw = String(r.status || 'approved').toLowerCase();
           const statusUpper = statusRaw.toUpperCase();
@@ -3729,14 +3767,80 @@
     }
 
     window.setAdminCommentFilter = (filter) => {
-      const normalized = String(filter || 'all').toLowerCase();
-      state.adminCommentFilter = (normalized === 'unreplied' || normalized === 'replied') ? normalized : 'all';
-      syncAdminCommentFilterStyles();
+      try {
+        const normalized = String(filter || 'all').trim().toLowerCase();
+        state.adminCommentFilter = (normalized === 'unreplied' || normalized === 'replied') ? normalized : 'all';
+        ensureAdminCommentsContainerVisible();
+        syncAdminCommentFilterStyles();
 
-      if (!Array.isArray(state.adminCommentsCache) || state.adminCommentsCache.length === 0) {
+        const cache = normalizeAdminCommentsCache(state.adminCommentsCache);
+        state.adminCommentsCache = cache;
+
+        if (cache.length > 0) {
+          renderAdminCommentsList();
+        } else {
+          window.loadAdminComments();
+        }
+      } catch (err) {
+        console.error('Gagal mengganti filter komentar admin:', err);
         window.loadAdminComments();
-        return;
       }
+    };
+
+    window.handleAdminCommentSearch = (val) => {
+      try {
+        state.adminCommentSearch = String(val || '');
+        ensureAdminCommentsContainerVisible();
+        renderAdminCommentsList();
+      } catch (err) {
+        console.error('Gagal menyaring pencarian komentar admin:', err);
+      }
+    };
+
+    window.loadAdminComments = async () => {
+      const box = ensureAdminCommentsContainerVisible();
+      if (!box) return;
+      syncAdminCommentFilterStyles();
+      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
+
+      let rows = [];
+
+      if (USE_LOCAL_MODE || !supabase) {
+        const stored = cLoad(STORAGE_KEYS.comments, {}) || {};
+        Object.entries(stored).forEach(([artId, list]) => {
+          (Array.isArray(list) ? list : []).forEach(c => {
+            if (!c || typeof c !== 'object') return;
+            rows.push({
+              id: String(c.id ?? ''),
+              article_id: String(artId ?? ''),
+              author_name: String(c.author || 'Pembaca'),
+              author_email: String(c.email || ''),
+              body: String(c.text || ''),
+              status: String(c.status || 'approved'),
+              admin_reply: String(c.adminReply || ''),
+              admin_replied_at: c.adminRepliedAt || null,
+              created_at: c.created_at || new Date().toISOString()
+            });
+          });
+        });
+        rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else {
+        try {
+          const { data, error } = await supabase
+            .from('comments')
+            .select('id,article_id,author_name,author_email,body,status,admin_reply,admin_replied_at,created_at')
+            .order('created_at', { ascending: false })
+            .limit(100);
+          if (error) throw error;
+          rows = Array.isArray(data) ? data : [];
+        } catch (err) {
+          setAdminCommentsCacheSafe([]);
+          box.innerHTML = `<div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-700 font-bold">Gagal memuat komentar: ${escapeHtml(err.message || 'Cek izin RLS Supabase')}</div>`;
+          return;
+        }
+      }
+
+      setAdminCommentsCacheSafe(rows);
       renderAdminCommentsList();
     };
 
