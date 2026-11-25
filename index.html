@@ -948,7 +948,7 @@
             <!-- Filter Cepat (Kiri) & Pencarian Komentar (Kanan) -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3.5 border-t border-slate-100">
               <div id="admin-comment-filter-bar" role="group" aria-label="Filter Status Balasan Komentar" class="flex flex-wrap items-center gap-2 shrink-0">
-                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white border border-slate-900 shadow-xs transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Semua</span>
                   <span id="admin-cfilter-count-all" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white">0</span>
                 </button>
@@ -3565,14 +3565,26 @@
 
         if (type === 'all') {
           btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-brandSlate text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70 transition inline-flex items-center gap-1.5 shrink-0';
+            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white border border-slate-900 shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/80 transition inline-flex items-center gap-1.5 shrink-0';
+          btn.style.backgroundColor = isActive ? '#0F172A' : '#F1F5F9';
+          btn.style.color = isActive ? '#FFFFFF' : '#334155';
+          btn.style.borderColor = isActive ? '#0F172A' : '#E2E8F0';
           if (badge) {
             badge.className = isActive
               ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
-              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-200/80 text-slate-700';
+              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-200 text-slate-800';
+            badge.style.backgroundColor = isActive ? 'rgba(255,255,255,0.2)' : '#E2E8F0';
+            badge.style.color = isActive ? '#FFFFFF' : '#1E293B';
           }
         } else if (type === 'unreplied') {
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          if (badge) {
+            badge.style.backgroundColor = '';
+            badge.style.color = '';
+          }
           btn.className = isActive
             ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
             : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0';
@@ -3582,6 +3594,13 @@
               : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200/70 text-amber-900';
           }
         } else {
+          btn.style.backgroundColor = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          if (badge) {
+            badge.style.backgroundColor = '';
+            badge.style.color = '';
+          }
           btn.className = isActive
             ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
             : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0';
