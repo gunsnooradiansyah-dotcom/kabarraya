@@ -1641,15 +1641,8 @@
       try {
         const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
         supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const { data } = await supabase.auth.getSession();
-        const user = data?.session?.user || null;
-        if (user) {
-          if ((user.email || '').toLowerCase() === ADMIN_EMAIL) {
-            state.adminUser = user;
-          } else {
-            state.commentUser = user;
-          }
-        }
+
+        // Daftarkan listener perubahan sesi terlebih dahulu agar token OAuth dari URL langsung tertangkap
         supabase.auth.onAuthStateChange((_event, session) => {
           const u = session?.user || null;
           if (u && (u.email || '').toLowerCase() === ADMIN_EMAIL) {
@@ -1659,7 +1652,20 @@
           }
           updateHeaderMeta();
           updateCommentAuthUI();
+          if (state.activeArticleId) {
+            renderArticleComments();
+          }
         });
+
+        const { data } = await supabase.auth.getSession();
+        const user = data?.session?.user || null;
+        if (user) {
+          if ((user.email || '').toLowerCase() === ADMIN_EMAIL) {
+            state.adminUser = user;
+          } else {
+            state.commentUser = user;
+          }
+        }
         return supabase;
       } catch (err) {
         console.warn('Supabase tidak dapat dimuat, beralih ke mode lokal:', err);
@@ -2709,7 +2715,8 @@
       voter: 'kr_comment_voter_v1',
       reactions: 'kr_comment_my_reactions_v1',
       lastSent: 'kr_comment_last_sent_v1',
-      localUser: 'kr_comment_social_user_v1'
+      localUser: 'kr_comment_social_user_v1',
+      pendingArticle: 'kr_pending_comment_article_v1'
     };
     const COMMENT_LINK_RE = /(https?:\/\/|www\.)/i;
 
@@ -2800,7 +2807,15 @@
       }
 
       try {
-        const redirectUrl = `${window.location.origin}${window.location.pathname}?article=${encodeURIComponent(state.activeArticleId || '')}#article-comments-section`;
+        // Simpan ID artikel yang sedang dibuka sebagai cadangan saat kembali dari OAuth
+        if (state.activeArticleId) {
+          cSave(COMMENT_KEYS.pendingArticle, state.activeArticleId);
+        }
+        // Gunakan URL bersih tanpa hash agar tidak bentrok dengan #access_token OAuth
+        const redirectUrl = state.activeArticleId
+          ? `${window.location.origin}${window.location.pathname}?article=${encodeURIComponent(state.activeArticleId)}`
+          : `${window.location.origin}${window.location.pathname}`;
+
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
           options: { redirectTo: redirectUrl }
@@ -4150,12 +4165,26 @@
       });
 
       const params = new URLSearchParams(window.location.search);
-      const sharedArticleId = params.get('article');
+      const pendingArticleId = cLoad(COMMENT_KEYS.pendingArticle, null);
+      const targetArticleId = params.get('article') || pendingArticleId;
+      const isReturningFromOAuth =
+        Boolean(pendingArticleId) ||
+        window.location.hash.includes('access_token') ||
+        params.has('code');
 
-      if (sharedArticleId && state.articles.some(a => a.id === sharedArticleId)) {
+      if (targetArticleId && state.articles.some(a => a.id === targetArticleId)) {
+        if (pendingArticleId) cSave(COMMENT_KEYS.pendingArticle, null);
         renderChannelBars();
         updateHeaderMeta();
-        await window.openArticleDetail(sharedArticleId);
+        await window.openArticleDetail(targetArticleId);
+        updateCommentAuthUI();
+
+        if (isReturningFromOAuth) {
+          setTimeout(() => {
+            updateCommentAuthUI();
+            document.getElementById('article-comments-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 350);
+        }
       } else {
         renderAllPortalViews();
         trackPageVisit('Beranda Utama');
