@@ -933,37 +933,33 @@
         </div>
 
         <!-- PANEL 5: KELOLA & BALAS KOMENTAR PEMBACA OLEH ADMIN -->
-        <div id="admin-panel-comments" class="hidden space-y-4 w-full">
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-6 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Moderasi &amp; Balasan Komentar Pembaca</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Balasan redaksi akan tersimpan ke Supabase dan muncul di bawah komentar pembaca pada halaman artikel.</p>
-              </div>
-              <button type="button" onclick="window.loadAdminComments()" class="min-h-[40px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition self-start sm:self-auto shrink-0">
-                <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan Komentar
+        <div id="admin-panel-comments" class="hidden space-y-3.5 w-full">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 space-y-3.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate">Komentar Pembaca &amp; Balasan Redaksi</h3>
+              <button type="button" onclick="window.loadAdminComments()" class="min-h-[38px] px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition shrink-0">
+                <i data-lucide="refresh-cw" aria-hidden="true" class="w-3.5 h-3.5"></i> Segarkan
               </button>
             </div>
 
-            <!-- Filter Cepat (Kiri) & Pencarian Komentar (Kanan) -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3.5 border-t border-slate-100">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t border-slate-100">
               <div id="admin-comment-filter-bar" role="group" aria-label="Filter Status Balasan Komentar" class="flex flex-wrap items-center gap-2 shrink-0">
-                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white border border-slate-900 shadow-xs transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="all" data-cfilter="all" onclick="window.setAdminCommentFilter('all')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Semua</span>
-                  <span id="admin-cfilter-count-all" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white">0</span>
+                  <span id="admin-cfilter-count-all" class="px-1.5 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
                 </button>
-                <button type="button" data-acfilter="unreplied" data-cfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="unreplied" data-cfilter="unreplied" onclick="window.setAdminCommentFilter('unreplied')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Belum Dibalas</span>
-                  <span id="admin-cfilter-count-unreplied" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200/70 text-amber-900">0</span>
+                  <span id="admin-cfilter-count-unreplied" class="px-1.5 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
                 </button>
-                <button type="button" data-acfilter="replied" data-cfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0">
+                <button type="button" data-acfilter="replied" data-cfilter="replied" onclick="window.setAdminCommentFilter('replied')" class="admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold transition inline-flex items-center gap-1.5 shrink-0">
                   <span>Sudah Dibalas</span>
-                  <span id="admin-cfilter-count-replied" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-200/70 text-emerald-900">0</span>
+                  <span id="admin-cfilter-count-replied" class="px-1.5 py-0.5 rounded-full text-[11px] font-extrabold">0</span>
                 </button>
               </div>
 
-              <div class="relative w-full md:w-72 lg:w-80 shrink-0">
-                <label for="admin-comment-search-input" class="sr-only">Cari komentar, nama pembaca, atau judul berita</label>
+              <div class="relative w-full md:w-72 shrink-0">
+                <label for="admin-comment-search-input" class="sr-only">Cari komentar, pembaca, atau judul berita</label>
                 <input
                   id="admin-comment-search-input"
                   type="search"
@@ -976,7 +972,7 @@
             </div>
           </div>
 
-          <div id="admin-comments-list" class="w-full space-y-4"></div>
+          <div id="admin-comments-list" class="w-full space-y-3"></div>
         </div>
       </div>
 
@@ -3565,49 +3561,37 @@
 
         if (type === 'all') {
           btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white border border-slate-900 shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/80 transition inline-flex items-center gap-1.5 shrink-0';
+            ? 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white border border-slate-900 shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
+            : 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition inline-flex items-center gap-1.5 shrink-0';
           btn.style.backgroundColor = isActive ? '#0F172A' : '#F1F5F9';
           btn.style.color = isActive ? '#FFFFFF' : '#334155';
           btn.style.borderColor = isActive ? '#0F172A' : '#E2E8F0';
           if (badge) {
             badge.className = isActive
-              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
-              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-200 text-slate-800';
+              ? 'px-1.5 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
+              : 'px-1.5 py-0.5 rounded-full text-[11px] font-extrabold bg-slate-200 text-slate-800';
             badge.style.backgroundColor = isActive ? 'rgba(255,255,255,0.2)' : '#E2E8F0';
             badge.style.color = isActive ? '#FFFFFF' : '#1E293B';
           }
         } else if (type === 'unreplied') {
-          btn.style.backgroundColor = '';
-          btn.style.color = '';
-          btn.style.borderColor = '';
+          btn.style.backgroundColor = isActive ? '#D97706' : '#FFFBEB';
+          btn.style.color = isActive ? '#FFFFFF' : '#92400E';
+          btn.style.borderColor = isActive ? '#D97706' : '#FDE68A';
+          btn.className = 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold border transition inline-flex items-center gap-1.5 shrink-0';
           if (badge) {
-            badge.style.backgroundColor = '';
-            badge.style.color = '';
-          }
-          btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition inline-flex items-center gap-1.5 shrink-0';
-          if (badge) {
-            badge.className = isActive
-              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
-              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-200/70 text-amber-900';
+            badge.style.backgroundColor = isActive ? 'rgba(255,255,255,0.22)' : '#FDE68A';
+            badge.style.color = isActive ? '#FFFFFF' : '#78350F';
+            badge.className = 'px-1.5 py-0.5 rounded-full text-[11px] font-extrabold';
           }
         } else {
-          btn.style.backgroundColor = '';
-          btn.style.color = '';
-          btn.style.borderColor = '';
+          btn.style.backgroundColor = isActive ? '#059669' : '#ECFDF5';
+          btn.style.color = isActive ? '#FFFFFF' : '#065F46';
+          btn.style.borderColor = isActive ? '#059669' : '#A7F3D0';
+          btn.className = 'admin-cfilter-btn min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold border transition inline-flex items-center gap-1.5 shrink-0';
           if (badge) {
-            badge.style.backgroundColor = '';
-            badge.style.color = '';
-          }
-          btn.className = isActive
-            ? 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs transition inline-flex items-center gap-1.5 shrink-0'
-            : 'admin-cfilter-btn min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition inline-flex items-center gap-1.5 shrink-0';
-          if (badge) {
-            badge.className = isActive
-              ? 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-white/20 text-white'
-              : 'px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-200/70 text-emerald-900';
+            badge.style.backgroundColor = isActive ? 'rgba(255,255,255,0.22)' : '#A7F3D0';
+            badge.style.color = isActive ? '#FFFFFF' : '#064E3B';
+            badge.className = 'px-1.5 py-0.5 rounded-full text-[11px] font-extrabold';
           }
         }
       });
@@ -3634,7 +3618,7 @@
         if (!panel) return null;
         box = document.createElement('div');
         box.id = 'admin-comments-list';
-        box.className = 'w-full space-y-4';
+        box.className = 'w-full space-y-3';
         panel.appendChild(box);
       }
       box.classList.remove('hidden');
@@ -3654,9 +3638,8 @@
       syncAdminCommentFilterStyles();
 
       try {
-        const articleMap = Object.fromEntries(
-          (Array.isArray(state.articles) ? state.articles : []).map(a => [String(a.id), String(a.title || '')])
-        );
+        const articlesList = Array.isArray(state.articles) ? state.articles : [];
+        const articleMap = Object.fromEntries(articlesList.map(a => [String(a.id), String(a.title || '')]));
         const allRows = normalizeAdminCommentsCache(state.adminCommentsCache);
         state.adminCommentsCache = allRows;
         updateAdminCommentCounts(allRows);
@@ -3682,95 +3665,63 @@
         });
 
         if (!filtered.length) {
-          box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-8 text-center text-xs text-slate-500">Tidak ada komentar yang sesuai dengan filter atau pencarian saat ini.</div>`;
+          box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-6 text-center text-xs text-slate-500">Tidak ada komentar yang cocok dengan filter atau pencarian.</div>`;
           renderIcons();
           return;
         }
 
         box.innerHTML = filtered.map(r => {
           const artIdStr = String(r.article_id || '');
-          const artExists = (Array.isArray(state.articles) ? state.articles : []).some(a => String(a.id) === artIdStr);
+          const artExists = articlesList.some(a => String(a.id) === artIdStr);
           const artTitle = articleMap[artIdStr] || (artIdStr ? ('Artikel #' + artIdStr) : 'Artikel Portal');
-          const statusRaw = String(r.status || 'approved').toLowerCase();
-          const statusUpper = statusRaw.toUpperCase();
-          const isApproved = statusRaw === 'approved';
           const replyText = String(r.admin_reply || '').trim();
           const isReplied = Boolean(replyText);
-          const authorInitial = String(r.author_name || 'P').trim().charAt(0).toUpperCase() || 'P';
 
           return `
-            <div class="w-full bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-6 space-y-3.5">
-              <!-- Header Kartu Komentar -->
-              <div class="flex flex-wrap items-start justify-between gap-2.5 pb-3 border-b border-slate-100">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <span class="w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-headline font-extrabold text-xs flex items-center justify-center shrink-0">
-                    ${escapeHtml(authorInitial)}
+            <div class="w-full bg-white rounded-2xl border border-slate-200/80 shadow-card p-4 sm:p-5 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="font-headline font-extrabold text-brandSlate">${escapeHtml(r.author_name || 'Pembaca')}</span>
+                    ${r.author_email ? `<span class="text-slate-400 truncate">&bull; ${escapeHtml(r.author_email)}</span>` : ''}
+                    <span class="text-slate-400">&bull; ${escapeHtml(formatRelativeTime(r.created_at))}</span>
+                  </div>
+                  <div class="text-xs text-slate-600 mt-0.5 flex flex-wrap items-center gap-1.5">
+                    <span class="text-slate-400">Berita:</span>
+                    ${artExists
+                      ? `<button type="button" onclick="window.openArticleDetail('${escapeHtml(artIdStr)}')" class="font-bold text-sky-700 hover:text-sky-800 hover:underline text-left inline-flex items-center gap-1">${escapeHtml(artTitle)} <i data-lucide="external-link" aria-hidden="true" class="w-3 h-3 inline shrink-0"></i></button>`
+                      : `<span class="font-semibold text-slate-700">${escapeHtml(artTitle)}</span>`
+                    }
+                  </div>
+                </div>
+
+                <button type="button" onclick="window.handleAdminDeleteComment('${escapeHtml(r.id)}', '${escapeHtml(artIdStr)}')" class="min-h-[34px] px-3 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition shrink-0">
+                  Hapus
+                </button>
+              </div>
+
+              <p class="text-xs sm:text-sm text-slate-700 bg-slate-50 px-3.5 py-2.5 rounded-xl border-l-2 border-slate-300 leading-relaxed">
+                ${escapeHtml(r.body || '')}
+              </p>
+
+              <form onsubmit="window.handleSaveAdminReply(event, '${escapeHtml(r.id)}', '${escapeHtml(artIdStr)}')" class="space-y-1.5">
+                <div class="flex items-center justify-between gap-2 text-[11px]">
+                  <label for="admin-reply-input-${escapeHtml(r.id)}" class="font-bold text-slate-600">Balasan Redaksi</label>
+                  <span class="font-semibold ${isReplied ? 'text-emerald-700' : 'text-amber-700'}">
+                    ${isReplied ? 'Sudah Dibalas' : 'Belum Dibalas'}${r.admin_replied_at ? ` • ${escapeHtml(formatRelativeTime(r.admin_replied_at))}` : ''}
                   </span>
-                  <div class="min-w-0">
-                    <div class="flex flex-wrap items-center gap-1.5">
-                      <span class="font-headline font-extrabold text-xs sm:text-sm text-brandSlate truncate">${escapeHtml(r.author_name || 'Pembaca')}</span>
-                      ${r.author_email ? `<span class="text-[11px] text-slate-400 truncate">&bull; ${escapeHtml(r.author_email)}</span>` : ''}
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${isApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}">${escapeHtml(statusUpper)}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(formatRelativeTime(r.created_at))}</div>
-                  </div>
                 </div>
-
-                <div class="flex items-center gap-1.5 shrink-0">
-                  ${!isApproved ? `<button type="button" onclick="window.handleAdminApproveComment('${escapeHtml(r.id)}')" class="min-h-[36px] px-3 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/70 text-[11px] font-bold transition">Setujui</button>` : ''}
-                  <button type="button" onclick="window.handleAdminDeleteComment('${escapeHtml(r.id)}', '${escapeHtml(artIdStr)}')" class="min-h-[36px] px-3 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/70 text-[11px] font-bold transition">Hapus</button>
-                </div>
-              </div>
-
-              <!-- Baris Konteks Berita yang Dikomentari -->
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-sky-50/70 border border-sky-200/60">
-                <div class="flex items-start sm:items-center gap-2 min-w-0">
-                  <i data-lucide="newspaper" aria-hidden="true" class="w-4 h-4 text-sky-600 shrink-0 mt-0.5 sm:mt-0"></i>
-                  <div class="min-w-0 text-xs">
-                    <span class="text-slate-500 font-semibold">Berita dikomentari: </span>
-                    <span class="font-bold text-slate-800">${escapeHtml(artTitle)}</span>
-                  </div>
-                </div>
-                ${artExists ? `
-                  <button type="button" onclick="window.openArticleDetail('${escapeHtml(artIdStr)}')" class="min-h-[34px] px-3 py-1 rounded-lg bg-white hover:bg-sky-600 text-sky-700 hover:text-white border border-sky-200 hover:border-sky-600 text-[11px] font-extrabold inline-flex items-center gap-1 shrink-0 self-start sm:self-auto transition">
-                    <span>Buka Artikel</span>
-                    <i data-lucide="external-link" aria-hidden="true" class="w-3 h-3"></i>
-                  </button>
-                ` : `<span class="text-[11px] font-semibold text-slate-400 shrink-0">Artikel tidak tersedia</span>`}
-              </div>
-
-              <!-- Kotak Kutipan Komentar Pembaca -->
-              <blockquote class="text-xs sm:text-sm text-slate-700 bg-slate-50 px-4 py-3 rounded-xl border-l-4 border-slate-300 leading-relaxed">
-                &ldquo;${escapeHtml(r.body || '')}&rdquo;
-              </blockquote>
-
-              <!-- Area Balasan Redaksi / Admin -->
-              <form onsubmit="window.handleSaveAdminReply(event, '${escapeHtml(r.id)}', '${escapeHtml(artIdStr)}')" class="space-y-2.5 pt-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <label for="admin-reply-input-${escapeHtml(r.id)}" class="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 inline-flex items-center gap-1.5">
-                    <i data-lucide="shield-check" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
-                    Balasan Redaksi / Admin
-                  </label>
-                  <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${isReplied ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-800'}">
-                      ${isReplied ? 'Sudah Dibalas' : 'Belum Dibalas'}
-                    </span>
-                    ${r.admin_replied_at ? `<span class="text-[10px] text-slate-400">Terakhir dibalas: ${escapeHtml(formatRelativeTime(r.admin_replied_at))}</span>` : ''}
-                  </div>
-                </div>
-
                 <div class="flex flex-col sm:flex-row gap-2">
                   <input
                     id="admin-reply-input-${escapeHtml(r.id)}"
                     type="text"
                     maxlength="1000"
                     value="${escapeHtml(replyText)}"
-                    placeholder="Tulis balasan resmi redaksi untuk komentar ini..."
-                    class="flex-1 min-h-[42px] px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    placeholder="Tulis balasan redaksi..."
+                    class="flex-1 min-h-[40px] px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
                   />
-                  <button type="submit" class="min-h-[42px] px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shrink-0 transition flex items-center justify-center gap-1.5">
-                    <i data-lucide="send" aria-hidden="true" class="w-3.5 h-3.5"></i>
-                    <span>Simpan Balasan</span>
+                  <button type="submit" class="min-h-[40px] px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-extrabold shrink-0 transition">
+                    Simpan Balasan
                   </button>
                 </div>
               </form>
@@ -3781,7 +3732,7 @@
         renderIcons();
       } catch (err) {
         console.error('Gagal merender daftar komentar admin:', err);
-        box.innerHTML = `<div class="bg-white rounded-2xl border border-rose-200 shadow-card p-6 text-center text-xs text-rose-600 font-bold">Terjadi kendala saat menampilkan komentar. Klik "Segarkan Komentar" untuk memuat ulang.</div>`;
+        box.innerHTML = `<div class="bg-white rounded-2xl border border-rose-200 shadow-card p-5 text-center text-xs text-rose-600 font-bold">Gagal menampilkan komentar. Klik Segarkan untuk memuat ulang.</div>`;
       }
     }
 
@@ -3820,7 +3771,7 @@
       const box = ensureAdminCommentsContainerVisible();
       if (!box) return;
       syncAdminCommentFilterStyles();
-      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
+      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
 
       let rows = [];
 
@@ -3860,58 +3811,6 @@
       }
 
       setAdminCommentsCacheSafe(rows);
-      renderAdminCommentsList();
-    };
-
-    window.handleAdminCommentSearch = (val) => {
-      state.adminCommentSearch = String(val || '');
-      renderAdminCommentsList();
-    };
-
-    window.loadAdminComments = async () => {
-      const box = document.getElementById('admin-comments-list');
-      if (!box) return;
-      box.classList.remove('hidden');
-      box.style.display = '';
-      syncAdminCommentFilterStyles();
-      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-6 text-center text-xs text-slate-500">Memuat daftar komentar...</div>`;
-
-      let rows = [];
-
-      if (USE_LOCAL_MODE || !supabase) {
-        const stored = cLoad(STORAGE_KEYS.comments, {}) || {};
-        Object.entries(stored).forEach(([artId, list]) => {
-          (list || []).forEach(c => {
-            rows.push({
-              id: c.id,
-              article_id: artId,
-              author_name: c.author || 'Pembaca',
-              author_email: '',
-              body: c.text || '',
-              status: 'approved',
-              admin_reply: c.adminReply || '',
-              admin_replied_at: c.adminRepliedAt || null,
-              created_at: c.created_at
-            });
-          });
-        });
-        rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      } else {
-        try {
-          const { data, error } = await supabase
-            .from('comments')
-            .select('id,article_id,author_name,author_email,body,status,admin_reply,admin_replied_at,created_at')
-            .order('created_at', { ascending: false })
-            .limit(100);
-          if (error) throw error;
-          rows = data || [];
-        } catch (err) {
-          box.innerHTML = `<div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-700 font-bold">Gagal memuat komentar: ${escapeHtml(err.message || 'Cek izin RLS Supabase')}</div>`;
-          return;
-        }
-      }
-
-      state.adminCommentsCache = rows;
       renderAdminCommentsList();
     };
 
