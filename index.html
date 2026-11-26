@@ -18,8 +18,6 @@
     window.tailwind.config = {
       theme: {
         extend: {
-          // Mode desktop di browser HP lebarnya sekitar 980px, jadi layout desktop dimulai dari 960px
-          screens: { lg: '960px' },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
             headline: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif']
@@ -40,6 +38,13 @@
     };
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Harus ditulis SETELAH script CDN agar terbaca.
+    // Mode desktop di browser HP lebarnya sekitar 980px, jadi layout desktop dimulai dari 960px.
+    if (window.tailwind) {
+      window.tailwind.config = { theme: { extend: { screens: { lg: '960px' } } } };
+    }
+  </script>
 
   <!-- Lucide Icons v0.469.0 -->
   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
