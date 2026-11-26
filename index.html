@@ -438,6 +438,11 @@
     .kr-ad-box>a{position:relative;min-height:250px}
     .kr-ad-box>a>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     @media (min-width:1024px){.kr-ad-fill-in{max-height:640px}.kr-ad-fill-in>.kr-ad-box{flex:1}}
+    /* Banner sidebar: tampil utuh sesuai rasio aslinya (tidak dipotong) */
+    .kr-ad-nat{min-height:0!important}
+    .kr-ad-nat>a,.kr-ad-nat>div{position:relative;display:block;min-height:0!important;flex:none!important}
+    .kr-ad-nat>a>img,.kr-ad-nat>div>img{position:static!important;display:block;width:100%;height:auto!important;max-height:640px;object-fit:cover}
+    @media (min-width:1024px){.kr-ad-fill-in>.kr-ad-box.kr-ad-nat{flex:none}}
     .kr-ad-hint{margin-top:6px;padding:8px 10px;border-radius:10px;background:#f0f9ff;border:1px solid #bae6fd;color:#075985;font-size:11px;line-height:1.5}
     .kr-ad-hint b{font-weight:800}
     html[data-theme="dark"] .kr-ad-hint{background:#0c1a2e;border-color:#0c4a6e;color:#7dd3fc}
@@ -3461,16 +3466,17 @@
     }
 
     function renderAdSlots() {
-      const renderSlot = (slotKey, elId, label, heightClass) => {
+      const renderSlot = (slotKey, elId, label, heightClass, natural) => {
         const el = document.getElementById(elId);
         if (!el) return;
         const ad = state.ads.find(a => a.slot === slotKey);
+        el.classList.toggle('kr-ad-nat', !!(natural && ad));
         if (!ad && adsenseOn(slotKey)) { renderAdsense(el, slotKey); return; }
         if (ad) {
           const safeLink = getSafeAdUrl(ad.link_url);
           const banner = `
             <span class="absolute top-2 right-2 z-10 px-2 py-0.5 rounded bg-slate-950/75 text-white text-[9px] font-bold uppercase tracking-wider">Sponsor</span>
-            <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="800" height="250" loading="lazy" class="w-full ${heightClass} object-cover ${safeLink ? 'group-hover:opacity-95 transition' : ''}" />
+            <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="${natural ? natural[0] : 800}" height="${natural ? natural[1] : 250}" loading="lazy" class="w-full ${natural ? 'h-auto' : heightClass} object-cover ${safeLink ? 'group-hover:opacity-95 transition' : ''}" />
           `;
           el.innerHTML = safeLink
             ? `<a href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="block relative group">${banner}</a>`
@@ -3486,8 +3492,8 @@
         }
       };
 
-      renderSlot('sidebar', 'ad-slot-sidebar', 'Sidebar', 'h-64');
-      renderSlot('sidebar_2', 'ad-slot-sidebar-2', 'Sidebar Bawah', 'h-[250px]');
+      renderSlot('sidebar', 'ad-slot-sidebar', 'Sidebar', 'h-64', [768, 512]);
+      renderSlot('sidebar_2', 'ad-slot-sidebar-2', 'Sidebar Bawah', 'h-[250px]', [768, 1000]);
       renderSlot('in_article', 'ad-slot-in-article', 'In-Article', 'h-32 sm:h-40');
       renderSlot('leaderboard', 'ad-slot-leaderboard', 'Leaderboard', 'h-28 sm:h-36');
       renderSlot('rail_left', 'ad-slot-rail-left', 'Samping Kiri 160x600', 'h-[600px]');
@@ -5058,8 +5064,8 @@
     };
 
     const KR_AD_SIZES = {
-      sidebar:     { up: '768 × 512 px', show: 'tampil ±384 × 256 px', note: 'Rasio 3:2.' },
-      sidebar_2:   { up: '768 × 1000 px', show: 'tampil ±384 × 250–640 px (mengikuti tinggi kolom berita)', note: 'Rasio ±3:4. Taruh teks/logo penting di tengah, tepi atas/bawah bisa terpotong.' },
+      sidebar:     { up: '768 × 512 px', show: 'tampil utuh ±312–384 × 208–256 px (rasio 3:2)', note: 'Gambar tampil penuh tanpa terpotong.' },
+      sidebar_2:   { up: '768 × 1000 px', show: 'tampil utuh ±312–384 × 406–500 px (rasio 3:4)', note: 'Gambar tampil penuh tanpa terpotong. Gunakan rasio 768×1000; jika lebih tinggi dari 640 px, tepi atas/bawah dipotong.' },
       leaderboard: { up: '1600 × 190 px', show: 'tampil ±1216 × 144 px (HP: tinggi 112 px)', note: 'Rasio ±8:1. Tepi kiri/kanan bisa terpotong di HP.' },
       in_article:  { up: '1600 × 320 px', show: 'tampil ±800 × 160 px (HP: tinggi 128 px)', note: 'Rasio 5:1. Tepi kiri/kanan bisa terpotong di HP.' },
       rail_left:   { up: '160 × 600 px', show: 'tampil 160 × 600 px (hanya layar ≥ 1600 px)', note: 'Ukuran pas, jangan diubah.' },
