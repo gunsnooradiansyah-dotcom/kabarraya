@@ -430,6 +430,32 @@
     html[data-theme="dark"] .kr-index-row::before{background:#0f172a}
   </style>
 
+  <style id="kr-modal-fix-css">
+    /* Tombol tutup (X): netral, berubah merah saat hover / fokus / ditekan */
+    .kr-x{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+    .kr-x:hover,.kr-x:focus-visible{background:#fef2f2;border-color:#fecaca;color:#dc2626;outline:none}
+    .kr-x:active{background:#dc2626;border-color:#dc2626;color:#fff}
+    .kr-x svg{width:16px;height:16px;pointer-events:none}
+    .kr-x-lite:hover,.kr-x-lite:focus-visible{background:#fef2f2;color:#dc2626;outline:none}.kr-x-lite:active{background:#dc2626;color:#fff}
+    .kr-x-dark:hover,.kr-x-dark:focus-visible{background:rgba(220,38,38,.25);color:#fca5a5;outline:none}.kr-x-dark:active{background:#dc2626;color:#fff}
+    /* Panel info harian: header bersih, X tidak menimpa konten */
+    .kr-info-panel{background:#fff}
+    .kr-info-bar{position:sticky;top:0;z-index:5;height:0}
+    .kr-info-bar .kr-x{position:absolute;top:12px;right:12px}
+    #kr-info-slot{padding:0 4px 4px}
+    #kr-info-slot>div{border:0!important;box-shadow:none!important;background:transparent!important}
+    #kr-info-slot #kr-market>div:first-child,#kr-info-slot #kr-services>div:first-child{padding-right:44px;min-height:34px}
+    #kr-info-slot #kr-svc-city{height:34px;padding:0 28px 0 10px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#0f172a;font-size:12px;font-weight:700;cursor:pointer}
+    #kr-info-slot #kr-svc-city:focus{outline:2px solid #38bdf8;outline-offset:1px}
+    html[data-theme="dark"] .kr-x{background:#1e293b;border-color:#334155;color:#94a3b8}
+    html[data-theme="dark"] .kr-x:hover{background:#450a0a;border-color:#7f1d1d;color:#f87171}
+    html[data-theme="dark"] .kr-info-panel{background:#0f172a}
+    html[data-theme="dark"] #kr-info-slot #kr-svc-city{background:#1e293b;border-color:#334155;color:#f1f5f9}
+    /* Newsletter */
+    .kr-nl-msg{min-height:16px;margin-top:8px;font-size:11px;font-weight:700}
+    .kr-nl-msg.ok{color:#6ee7b7}.kr-nl-msg.err{color:#fda4af}.kr-nl-msg.info{color:#bae6fd}
+  </style>
+
   <style id="kr-portal-extras-css-2">
     .kr-svc-tab{min-height:34px;border-radius:10px;font-size:12px;font-weight:800;color:#64748b;transition:.2s}
     .kr-svc-tab.is-on{background:#fff;color:#0ea5e9;box-shadow:0 2px 8px -2px rgba(15,23,42,.2)}
@@ -482,7 +508,7 @@
           <text class="kr-tag" x="105" y="74" font-family="system-ui, -apple-system, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif" font-weight="600" font-size="11.5" letter-spacing="1.4" fill="#7DD3FC">INFORMASI TERKINI &amp; TERPERCAYA</text>
         </svg>
       </button>
-      <button type="button" onclick="window.closeMobileDrawer()" aria-label="Tutup Menu Navigasi" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
+      <button type="button" onclick="window.closeMobileDrawer()" aria-label="Tutup Menu Navigasi" class="kr-x-dark min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition">
         <i data-lucide="x" aria-hidden="true" class="w-5 h-5"></i>
       </button>
     </div>
@@ -822,11 +848,12 @@
               <div class="rounded-2xl p-5 text-white shadow-card" style="background:linear-gradient(135deg,#0f172a,#0c4a6e)">
                 <h3 class="font-headline font-extrabold text-base flex items-center gap-2"><i data-lucide="mail" aria-hidden="true" class="w-4 h-4 text-sky-300"></i> Kabar Pilihan di Inbox Anda</h3>
                 <p class="text-xs text-slate-300 mt-1">Ringkasan berita terpenting, langsung ke email atau WhatsApp.</p>
-                <form onsubmit="window.subscribeNewsletter(event)" class="mt-3 flex gap-2">
+                <form onsubmit="window.subscribeNewsletter(event)" class="mt-3 flex gap-2" novalidate>
                   <label for="kr-nl-email" class="sr-only">Alamat email</label>
-                  <input id="kr-nl-email" type="email" required placeholder="nama@email.com" class="min-w-0 flex-1 min-h-[42px] px-3 rounded-xl text-xs font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-sky-400" />
-                  <button type="submit" class="min-h-[42px] px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs font-extrabold transition">Daftar</button>
+                  <input id="kr-nl-email" type="email" required autocomplete="email" inputmode="email" placeholder="nama@email.com" class="min-w-0 flex-1 min-h-[42px] px-3 rounded-xl text-xs font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-sky-400" />
+                  <button type="submit" id="kr-nl-btn" class="min-h-[42px] px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-xs font-extrabold transition disabled:opacity-60 disabled:cursor-wait">Daftar</button>
                 </form>
+                <div id="kr-nl-msg" class="kr-nl-msg" role="status" aria-live="polite"></div>
                 <button type="button" onclick="window.openWaChannel()" class="mt-2 w-full min-h-[42px] rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-extrabold flex items-center justify-center gap-2 transition"><i data-lucide="message-circle" aria-hidden="true" class="w-4 h-4"></i> Ikuti Saluran WhatsApp</button>
               </div>
 
@@ -1422,7 +1449,7 @@
       <div id="kr-info-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-3" role="dialog" aria-modal="true" aria-label="Detail info harian">
         <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="window.krInfoClose()"></div>
         <div class="kr-info-panel relative w-full max-w-[430px] max-h-[88vh] overflow-y-auto rounded-2xl">
-          <button type="button" onclick="window.krInfoClose()" aria-label="Tutup" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm font-bold">✕</button>
+          <div class="kr-info-bar"><button type="button" onclick="window.krInfoClose()" aria-label="Tutup" class="kr-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
           <div id="kr-info-slot"></div>
         </div>
       </div>
@@ -1508,7 +1535,7 @@
             <i data-lucide="align-left" aria-hidden="true" class="w-3.5 h-3.5 text-sky-600"></i>
             <span id="editor-word-count">0 kata • ~1 mnt baca</span>
           </span>
-          <button type="button" onclick="window.closeModal('modal-article')" aria-label="Tutup Ruang Editor" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition">
+          <button type="button" onclick="window.closeModal('modal-article')" aria-label="Tutup Ruang Editor" class="kr-x-lite min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-500 transition">
             <i data-lucide="x" aria-hidden="true" class="w-5 h-5"></i>
           </button>
         </div>
@@ -1718,7 +1745,7 @@
         <div aria-hidden="true" class="pointer-events-none absolute -top-24 -left-20 w-64 h-64 rounded-full bg-sky-500/20 blur-3xl"></div>
         <div aria-hidden="true" class="pointer-events-none absolute -bottom-28 -right-16 w-64 h-64 rounded-full bg-orange-500/15 blur-3xl"></div>
 
-        <button type="button" onclick="window.closeModal('modal-login')" aria-label="Tutup Jendela Masuk Redaksi" class="absolute top-3.5 right-3.5 z-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white transition">
+        <button type="button" onclick="window.closeModal('modal-login')" aria-label="Tutup Jendela Masuk Redaksi" class="kr-x-dark absolute top-3.5 right-3.5 z-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 transition">
           <i data-lucide="x" aria-hidden="true" class="w-4 h-4"></i>
         </button>
 
@@ -1785,7 +1812,7 @@
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
         <h3 id="modal-legal-title" class="font-headline font-extrabold text-base text-brandSlate">Informasi Redaksi</h3>
-        <button type="button" onclick="window.closeModal('modal-legal')" aria-label="Tutup Informasi Redaksi" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-slate-200 text-slate-500 transition">
+        <button type="button" onclick="window.closeModal('modal-legal')" aria-label="Tutup Informasi Redaksi" class="kr-x-lite min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-slate-500 transition">
           <i data-lucide="x" aria-hidden="true" class="w-4 h-4"></i>
         </button>
       </div>
@@ -2399,7 +2426,10 @@
         try {
           const adsRes = await supabase.from('ads').select('*').order('created_at', { ascending: false });
           if (!adsRes.error && adsRes.data) {
-            state.ads = adsRes.data;
+            // Petakan kolom database -> field yang dipakai UI; hanya iklan aktif
+            state.ads = adsRes.data.filter(a => a.is_active !== false).map(a => ({
+              ...a, title: a.sponsor_name || '', slot: a.position || '', link_url: a.target_url || ''
+            }));
           } else {
             state.ads = [];
           }
@@ -3213,17 +3243,29 @@
     window.openWaChannel = () => { if (KR_WA_CHANNEL_URL) window.open(KR_WA_CHANNEL_URL, '_blank', 'noopener'); else window.openLegalModal('contact'); };
     window.subscribeNewsletter = async (e) => {
       e.preventDefault();
-      const inp = document.getElementById('kr-nl-email'); const email = inp.value.trim().toLowerCase(); if (!email) return;
+      const inp = document.getElementById('kr-nl-email'), btn = document.getElementById('kr-nl-btn'), msg = document.getElementById('kr-nl-msg');
+      const say = (t, k) => { if (msg) { msg.textContent = t; msg.className = 'kr-nl-msg ' + k; } };
+      const email = inp.value.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say('Masukkan alamat email yang valid.', 'err'); inp.focus(); return; }
+      btn.disabled = true; const label = btn.textContent; btn.textContent = 'Mengirim…'; say('', '');
       try {
         if (USE_LOCAL_MODE || !supabase) {
           const list = safeGetStorage('kr_local_subscribers', []); if (!list.includes(email)) list.push(email); safeSetStorage('kr_local_subscribers', list);
         } else {
+          // id & created_at diisi otomatis oleh database. Tanpa .select() agar tidak butuh izin SELECT (RLS).
           const { error } = await supabase.from('subscribers').insert([{ email }]);
-          if (error && error.code === '23505') { showToast('Email ini sudah terdaftar. Terima kasih!', 'info'); inp.value = ''; return; }
+          if (error && (error.code === '23505' || /duplicate/i.test(error.message || ''))) { say('Email ini sudah terdaftar. Terima kasih!', 'info'); inp.value = ''; return; }
           if (error) throw error;
         }
-        showToast('Terima kasih! Email Anda sudah terdaftar.', 'success'); inp.value = '';
-      } catch (err) { showToast('Pendaftaran belum bisa diproses. Coba lagi nanti.', 'error'); }
+        say('Terima kasih! Email Anda sudah terdaftar.', 'ok'); showToast('Email Anda sudah terdaftar.', 'success'); inp.value = '';
+      } catch (err) {
+        console.error('[newsletter] gagal menyimpan ke tabel subscribers:', err);
+        const code = err && err.code;
+        say(code === '42501' ? 'Pendaftaran ditolak server (izin database belum diatur).'
+          : code === '42P01' ? 'Tabel pelanggan belum tersedia di database.'
+          : (err && /fetch|network/i.test(err.message || '')) ? 'Tidak ada koneksi ke server. Periksa internet Anda.'
+          : 'Pendaftaran belum bisa diproses. Coba lagi nanti.', 'err');
+      } finally { btn.disabled = false; btn.textContent = label; }
     };
 
     // ===== Band Info Harian =====
@@ -5304,7 +5346,7 @@
         safeSetStorage(STORAGE_KEYS.ads, state.ads);
       } else {
         try {
-          const { error } = await supabase.from('ads').insert([{ title, slot, image_url: imageUrl, link_url: linkUrl }]);
+          const { error } = await supabase.from('ads').insert([{ sponsor_name: title, position: slot, image_url: imageUrl, target_url: linkUrl, is_active: true }]);
           if (error) throw error;
           await loadAllData();
         } catch (err) {
