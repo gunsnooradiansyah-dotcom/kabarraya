@@ -3466,17 +3466,17 @@
     }
 
     function renderAdSlots() {
-      const renderSlot = (slotKey, elId, label, heightClass, natural) => {
+      const renderSlot = (slotKey, elId, label, heightClass, natural, responsive) => {
         const el = document.getElementById(elId);
         if (!el) return;
         const ad = state.ads.find(a => a.slot === slotKey);
-        el.classList.toggle('kr-ad-nat', !!(natural && ad));
+        el.classList.toggle('kr-ad-nat', !!(natural && ad && !responsive));
         if (!ad && adsenseOn(slotKey)) { renderAdsense(el, slotKey); return; }
         if (ad) {
           const safeLink = getSafeAdUrl(ad.link_url);
           const banner = `
             <span class="absolute top-2 right-2 z-10 px-2 py-0.5 rounded bg-slate-950/75 text-white text-[9px] font-bold uppercase tracking-wider">Sponsor</span>
-            <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="${natural ? natural[0] : 800}" height="${natural ? natural[1] : 250}" loading="lazy" class="w-full ${natural ? 'h-auto' : heightClass} object-cover ${safeLink ? 'group-hover:opacity-95 transition' : ''}" />
+            <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="${natural ? natural[0] : 800}" height="${natural ? natural[1] : 250}" loading="lazy" class="w-full ${natural && !responsive ? 'h-auto' : heightClass} object-cover ${safeLink ? 'group-hover:opacity-95 transition' : ''}" />
           `;
           el.innerHTML = safeLink
             ? `<a href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="block relative group">${banner}</a>`
@@ -3494,8 +3494,8 @@
 
       renderSlot('sidebar', 'ad-slot-sidebar', 'Sidebar', 'h-64', [768, 512]);
       renderSlot('sidebar_2', 'ad-slot-sidebar-2', 'Sidebar Bawah', 'h-[250px]', [768, 1000]);
-      renderSlot('in_article', 'ad-slot-in-article', 'In-Article', 'h-32 sm:h-40');
-      renderSlot('leaderboard', 'ad-slot-leaderboard', 'Leaderboard', 'h-28 sm:h-36');
+      renderSlot('in_article', 'ad-slot-in-article', 'In-Article', 'h-32 sm:h-auto', [1600, 320], true);
+      renderSlot('leaderboard', 'ad-slot-leaderboard', 'Leaderboard', 'h-28 sm:h-auto', [1600, 190], true);
       renderSlot('rail_left', 'ad-slot-rail-left', 'Samping Kiri 160x600', 'h-[600px]');
       renderSlot('rail_right', 'ad-slot-rail-right', 'Samping Kanan 160x600', 'h-[600px]');
       [['rail_left', 'ad-slot-rail-left'], ['rail_right', 'ad-slot-rail-right']].forEach(([k, id]) => {
@@ -5066,8 +5066,8 @@
     const KR_AD_SIZES = {
       sidebar:     { up: '768 × 512 px', show: 'tampil utuh ±312–384 × 208–256 px (rasio 3:2)', note: 'Gambar tampil penuh tanpa terpotong.' },
       sidebar_2:   { up: '768 × 1000 px', show: 'tampil utuh ±312–384 × 406–500 px (rasio 3:4)', note: 'Gambar tampil penuh tanpa terpotong. Gunakan rasio 768×1000; jika lebih tinggi dari 640 px, tepi atas/bawah dipotong.' },
-      leaderboard: { up: '1600 × 190 px', show: 'tampil ±1216 × 144 px (HP: tinggi 112 px)', note: 'Rasio ±8:1. Tepi kiri/kanan bisa terpotong di HP.' },
-      in_article:  { up: '1600 × 320 px', show: 'tampil ±800 × 160 px (HP: tinggi 128 px)', note: 'Rasio 5:1. Tepi kiri/kanan bisa terpotong di HP.' },
+      leaderboard: { up: '1600 × 190 px', show: 'tampil utuh di tablet/PC (tinggi ±120–145 px, rasio ±8.4:1)', note: 'Di HP tinggi dikunci 112 px, jadi tepi kiri/kanan bisa terpotong. Taruh teks/logo di tengah.' },
+      in_article:  { up: '1600 × 320 px', show: 'tampil utuh di tablet/PC (rasio 5:1, ±800 × 160 px)', note: 'Di HP tinggi dikunci 128 px, jadi tepi kiri/kanan bisa terpotong. Taruh teks/logo di tengah.' },
       rail_left:   { up: '160 × 600 px', show: 'tampil 160 × 600 px (hanya layar ≥ 1600 px)', note: 'Ukuran pas, jangan diubah.' },
       rail_right:  { up: '160 × 600 px', show: 'tampil 160 × 600 px (hanya layar ≥ 1600 px)', note: 'Ukuran pas, jangan diubah.' }
     };
@@ -5083,6 +5083,10 @@
       if (sel) { sel.addEventListener('change', window.updateAdSizeHint); window.updateAdSizeHint(); }
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', krInitAdHint); else krInitAdHint();
+    // Delegasi event: hint selalu ikut berubah walau form dirender ulang / dipulihkan browser
+    ['change', 'input', 'focusout', 'click'].forEach(ev => document.addEventListener(ev, e => {
+      if (e.target && e.target.id === 'ad-slot-input') setTimeout(window.updateAdSizeHint, 0);
+    }, true));
 
     window.handleAdImageUpload = async (e) => {
       const file = e.target.files?.[0];
