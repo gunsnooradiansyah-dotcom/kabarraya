@@ -435,6 +435,12 @@
     ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important}
     .kr-ad-box{min-height:250px;display:flex;flex-direction:column}
     .kr-ad-box>button,.kr-ad-box>a{flex:1}
+    .kr-ad-box>a{position:relative;min-height:250px}
+    .kr-ad-box>a>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    @media (min-width:1024px){.kr-ad-fill-in{max-height:640px}.kr-ad-fill-in>.kr-ad-box{flex:1}}
+    .kr-ad-hint{margin-top:6px;padding:8px 10px;border-radius:10px;background:#f0f9ff;border:1px solid #bae6fd;color:#075985;font-size:11px;line-height:1.5}
+    .kr-ad-hint b{font-weight:800}
+    html[data-theme="dark"] .kr-ad-hint{background:#0c1a2e;border-color:#0c4a6e;color:#7dd3fc}
     /* Tombol tutup (X): netral, berubah merah saat hover / fokus / ditekan */
     .kr-x{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
     .kr-x:hover,.kr-x:focus-visible{background:#fef2f2;border-color:#fecaca;color:#dc2626;outline:none}
@@ -824,7 +830,7 @@
             </div>
 
             <!-- KOLOM KANAN: SIDEBAR STICKY -->
-            <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6">
+            <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6 lg:self-stretch lg:flex lg:flex-col">
               
               
 
@@ -873,8 +879,10 @@
               </div>
 
               <!-- Widget 4: Slot Iklan Sidebar Bawah (ikut tergulir, mengisi ruang kosong) -->
-              <div class="lg:sticky lg:top-[136px]">
-                <div id="ad-slot-sidebar-2" class="kr-ad-box bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden"></div>
+              <div class="kr-ad-fill lg:flex-1 lg:flex lg:flex-col">
+                <div class="kr-ad-fill-in lg:sticky lg:top-[136px] lg:flex-1 lg:flex lg:flex-col">
+                  <div id="ad-slot-sidebar-2" class="kr-ad-box bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden"></div>
+                </div>
               </div>
             </aside>
           </div>
@@ -1234,13 +1242,14 @@
             <div>
               <label for="ad-slot-input" class="block text-xs font-bold text-slate-600 mb-1">Posisi Slot Iklan</label>
               <select id="ad-slot-input" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500">
-                <option value="sidebar">Sidebar Kanan (Beranda)</option>
-                <option value="sidebar_2">Sidebar Kanan Bawah (Beranda, ikut tergulir)</option>
-                <option value="leaderboard">Leaderboard Bawah (Sebelum Footer)</option>
-                <option value="in_article">Dalam Artikel (Halaman Baca)</option>
-                <option value="rail_left">Samping Kiri (Skyscraper 160x600)</option>
-                <option value="rail_right">Samping Kanan (Skyscraper 160x600)</option>
+                <option value="sidebar">Sidebar Kanan (Beranda) — 768×512 px</option>
+                <option value="sidebar_2">Sidebar Kanan Bawah (Beranda) — 768×1000 px</option>
+                <option value="leaderboard">Leaderboard Bawah (Sebelum Footer) — 1600×190 px</option>
+                <option value="in_article">Dalam Artikel (Halaman Baca) — 1600×320 px</option>
+                <option value="rail_left">Samping Kiri (Skyscraper) — 160×600 px</option>
+                <option value="rail_right">Samping Kanan (Skyscraper) — 160×600 px</option>
               </select>
+              <div id="ad-size-hint" class="kr-ad-hint" role="note"></div>
             </div>
             <div>
               <label for="ad-image-input" class="block text-xs font-bold text-slate-600 mb-1">URL Gambar Banner atau Upload File</label>
@@ -5027,6 +5036,27 @@
         if (lbl) lbl.textContent = 'Pilih Foto dari HP/PC';
       }
     };
+
+    const KR_AD_SIZES = {
+      sidebar:     { up: '768 × 512 px', show: 'tampil ±384 × 256 px', note: 'Rasio 3:2.' },
+      sidebar_2:   { up: '768 × 1000 px', show: 'tampil ±384 × 250–640 px (mengikuti tinggi kolom berita)', note: 'Rasio ±3:4. Taruh teks/logo penting di tengah, tepi atas/bawah bisa terpotong.' },
+      leaderboard: { up: '1600 × 190 px', show: 'tampil ±1216 × 144 px (HP: tinggi 112 px)', note: 'Rasio ±8:1. Tepi kiri/kanan bisa terpotong di HP.' },
+      in_article:  { up: '1600 × 320 px', show: 'tampil ±800 × 160 px (HP: tinggi 128 px)', note: 'Rasio 5:1. Tepi kiri/kanan bisa terpotong di HP.' },
+      rail_left:   { up: '160 × 600 px', show: 'tampil 160 × 600 px (hanya layar ≥ 1600 px)', note: 'Ukuran pas, jangan diubah.' },
+      rail_right:  { up: '160 × 600 px', show: 'tampil 160 × 600 px (hanya layar ≥ 1600 px)', note: 'Ukuran pas, jangan diubah.' }
+    };
+    window.updateAdSizeHint = () => {
+      const sel = document.getElementById('ad-slot-input'), box = document.getElementById('ad-size-hint');
+      if (!sel || !box) return;
+      const z = KR_AD_SIZES[sel.value];
+      if (!z) { box.textContent = ''; return; }
+      box.innerHTML = '📐 Ukuran gambar disarankan: <b>' + z.up + '</b><br>' + z.show + '. ' + z.note + ' Format JPG/PNG/WebP.';
+    };
+    const krInitAdHint = () => {
+      const sel = document.getElementById('ad-slot-input');
+      if (sel) { sel.addEventListener('change', window.updateAdSizeHint); window.updateAdSizeHint(); }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', krInitAdHint); else krInitAdHint();
 
     window.handleAdImageUpload = async (e) => {
       const file = e.target.files?.[0];
