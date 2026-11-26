@@ -377,6 +377,31 @@
     @keyframes krShine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
     @media (prefers-reduced-motion:reduce){.kr-login-card,.kr-login-btn::before{animation:none}}
   </style>
+
+  <style id="kr-admin-header-css">
+    .kr-adm-hero{background:linear-gradient(135deg,#0b1220 0%,#111c33 60%,#0f2a44 100%);border:1px solid rgba(148,163,184,.14)}
+    .kr-adm-glow{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
+    .kr-adm-glow::before{content:"";position:absolute;right:-60px;top:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.30),transparent 65%)}
+    .kr-adm-glow::after{content:"";position:absolute;left:-40px;bottom:-110px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.14),transparent 65%)}
+    .kr-adm-live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#34d399;margin-right:6px;vertical-align:middle;animation:kr-adm-pulse 2s infinite}
+    @keyframes kr-adm-pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6)}70%{box-shadow:0 0 0 6px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+    .kr-adm-dock{padding:6px;border-radius:9999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    .kr-adm-sep{width:1px;height:20px;background:rgba(255,255,255,.14);margin:0 2px}
+    .kr-adm-btn{position:relative;width:44px;height:44px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;color:#cbd5e1;background:transparent;border:0;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s,color .2s,box-shadow .2s}
+    .kr-adm-btn:hover,.kr-adm-btn:focus-visible{background:rgba(255,255,255,.12);color:#fff;transform:translateY(-2px);outline:none}
+    .kr-adm-btn:active{transform:scale(.94)}
+    .kr-adm-primary{color:#fff;background:linear-gradient(135deg,#0ea5e9,#2563eb);box-shadow:0 6px 18px -4px rgba(14,165,233,.6)}
+    .kr-adm-primary:hover,.kr-adm-primary:focus-visible{background:linear-gradient(135deg,#38bdf8,#3b82f6);box-shadow:0 10px 24px -4px rgba(14,165,233,.75)}
+    .kr-adm-danger:hover,.kr-adm-danger:focus-visible{background:rgba(244,63,94,.18);color:#fda4af}
+    .kr-adm-btn::after{content:attr(data-tip);position:absolute;top:calc(100% + 12px);left:50%;transform:translate(-50%,-4px);white-space:nowrap;padding:6px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.01em;color:#f8fafc;background:rgba(2,6,23,.94);border:1px solid rgba(148,163,184,.2);box-shadow:0 10px 24px -8px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:60}
+    .kr-adm-btn::before{content:"";position:absolute;top:calc(100% + 7px);left:50%;width:8px;height:8px;background:rgba(2,6,23,.94);border-left:1px solid rgba(148,163,184,.2);border-top:1px solid rgba(148,163,184,.2);transform:translateX(-50%) rotate(45deg);opacity:0;transition:opacity .18s;z-index:61;pointer-events:none}
+    .kr-adm-btn:hover::after,.kr-adm-btn:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+    .kr-adm-btn:hover::before,.kr-adm-btn:focus-visible::before{opacity:1}
+    .kr-adm-dock .kr-adm-btn:last-child::after{left:auto;right:0;transform:translate(0,-4px)}
+    .kr-adm-dock .kr-adm-btn:last-child:hover::after,.kr-adm-dock .kr-adm-btn:last-child:focus-visible::after{transform:translate(0,0)}
+    .kr-adm-dock .kr-adm-btn:last-child::before{left:calc(100% - 22px)}
+    @media (prefers-reduced-motion:reduce){.kr-adm-btn,.kr-adm-live::before{transition:none;animation:none}}
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-sky-200 selection:text-slate-900">
 
@@ -1020,24 +1045,26 @@
 
       <!-- SUBVIEW 5: DAPUR REDAKSI (#view-admin) -->
       <div id="view-admin" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-        <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card">
-          <div>
+        <div class="kr-adm-hero relative text-white rounded-3xl p-5 sm:p-6 flex flex-row items-center justify-between gap-4 shadow-card">
+          <div class="kr-adm-glow" aria-hidden="true"></div>
+          <div class="relative min-w-0">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] font-extrabold uppercase tracking-wider">Dapur Redaksi</span>
-              <span id="admin-mode-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold">Supabase Live</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-[10px] font-extrabold uppercase tracking-wider">Dapur Redaksi</span>
+              <span id="admin-mode-badge" class="kr-adm-live px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold">Supabase Live</span>
             </div>
-            <h1 class="font-headline font-extrabold text-xl sm:text-2xl mt-1.5">Panel Manajemen KabarRaya</h1>
-            <p id="admin-user-email" class="text-xs text-slate-300 mt-0.5">redaksi@kabarraya.id</p>
+            <h1 class="font-headline font-extrabold text-xl sm:text-2xl mt-1.5 truncate">Panel Manajemen KabarRaya</h1>
+            <p id="admin-user-email" class="text-xs text-slate-400 mt-0.5 truncate">redaksi@kabarraya.id</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="window.openArticleModal()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
-              <i data-lucide="plus" aria-hidden="true" class="w-4 h-4"></i> Tulis Berita Baru
+          <div class="kr-adm-dock relative flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="window.openArticleModal()" class="kr-adm-btn kr-adm-primary" data-tip="Tulis Berita Baru" aria-label="Tulis Berita Baru">
+              <i data-lucide="pen-line" aria-hidden="true" class="w-[18px] h-[18px]"></i>
             </button>
-            <button type="button" onclick="window.navigatePortal('home')" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
-              Buka Halaman Portal
+            <button type="button" onclick="window.navigatePortal('home')" class="kr-adm-btn" data-tip="Buka Halaman Portal" aria-label="Buka Halaman Portal">
+              <i data-lucide="globe" aria-hidden="true" class="w-[18px] h-[18px]"></i>
             </button>
-            <button type="button" onclick="window.handleAdminLogout()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-bold transition">
-              Keluar Sesi
+            <span class="kr-adm-sep" aria-hidden="true"></span>
+            <button type="button" onclick="window.handleAdminLogout()" class="kr-adm-btn kr-adm-danger" data-tip="Keluar Sesi" aria-label="Keluar Sesi">
+              <i data-lucide="log-out" aria-hidden="true" class="w-[18px] h-[18px]"></i>
             </button>
           </div>
         </div>
