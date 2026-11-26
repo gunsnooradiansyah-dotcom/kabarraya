@@ -2557,7 +2557,6 @@
         if (!items.length) return '';
 
         const lead = items[0];
-        const bullets = items.slice(1, 4);
         return `
           <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
             <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
@@ -2581,19 +2580,6 @@
                   ${escapeHtml(lead.title)}
                 </span>
               </button>
-
-              ${bullets.length ? `
-                <ul class="space-y-2 pt-2 border-t border-slate-100">
-                  ${bullets.map(b => `
-                    <li class="flex items-start gap-2">
-                      <span aria-hidden="true" class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0"></span>
-                      <button type="button" onclick="window.openArticleDetail('${escapeHtml(b.id)}')" class="min-h-[32px] text-left text-xs font-semibold text-slate-700 hover:text-sky-700 line-clamp-2 leading-snug transition">
-                        ${escapeHtml(b.title)}
-                      </button>
-                    </li>
-                  `).join('')}
-                </ul>
-              ` : ''}
             </div>
           </div>
         `;
