@@ -111,6 +111,115 @@
     .kr-live-dot.is-live{background:#10b981;animation:krPulse 1.8s ease-in-out infinite}
     .kr-live-dot.is-stale{background:#f59e0b}
     @keyframes krPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
+      .kr-sep{height:1px;background:#f1f5f9;margin:16px 0}
+    .kr-sec-label{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8}
+    .kr-seg{display:inline-flex;padding:2px;border-radius:9px;background:#f1f5f9;border:1px solid #e2e8f0}
+    .kr-seg button{font-size:11px;font-weight:700;padding:0 10px;min-height:28px;border-radius:7px;color:#64748b;transition:background .15s,color .15s}
+    .kr-seg button.is-on{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.14)}
+    .kr-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;font-size:11.5px;color:#64748b;border-top:1px solid #f1f5f9}
+    .kr-row:first-child{border-top:0}
+    .kr-row b{color:#1e293b;font-weight:700;font-variant-numeric:tabular-nums}
+    .kr-row small{font-size:10px;color:#94a3b8;margin-left:6px}
+    .kr-flag{width:24px;height:16px;border-radius:3px;box-shadow:0 0 0 1px rgba(15,23,42,.14);flex:none;display:block}
+    .kr-grid{stroke:#e2e8f0}
+    .kr-axis{fill:#94a3b8;font-size:9px}
+    .kr-tip{position:absolute;top:0;pointer-events:none;background:#0f172a;color:#fff;border:1px solid #334155;border-radius:8px;padding:5px 8px;font-size:11px;line-height:1.35;white-space:nowrap;transform:translateX(-50%);z-index:2}
+    .kr-tip span{display:block;color:#94a3b8;font-size:10px}
+    .kr-chart-msg{display:flex;align-items:center;justify-content:center;height:156px;font-size:11px;color:#94a3b8}
+    html[data-theme="dark"] .kr-sep,html[data-theme="dark"] .kr-row{border-color:#1e2a44}
+    html[data-theme="dark"] .kr-sep{background:#1e2a44}
+    html[data-theme="dark"] .kr-seg{background:#0c1424;border-color:#26324d}
+    html[data-theme="dark"] .kr-seg button{color:#94a3b8}
+    html[data-theme="dark"] .kr-seg button.is-on{background:#26324d;color:#f1f5f9;box-shadow:none}
+    html[data-theme="dark"] .kr-row{color:#94a3b8}
+    html[data-theme="dark"] .kr-row b{color:#e2e8f0}
+    html[data-theme="dark"] .kr-grid{stroke:#26324d}
+    html[data-theme="dark"] .kr-flag{box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+      /* KR-DARK-SWEEP: padanan mode malam untuk warna terang (hover, tint, border, teks) */
+    html[data-theme="dark"] .bg-amber-100{background-color:rgba(245,158,11,.24)}
+    html[data-theme="dark"] .bg-amber-50{background-color:rgba(245,158,11,.16)}
+    html[data-theme="dark"] .bg-amber-50\/60{background-color:rgba(245,158,11,.16)}
+    html[data-theme="dark"] .bg-emerald-50{background-color:rgba(16,185,129,.16)}
+    html[data-theme="dark"] .bg-rose-100{background-color:rgba(244,63,94,.24)}
+    html[data-theme="dark"] .bg-rose-50{background-color:rgba(244,63,94,.16)}
+    html[data-theme="dark"] .bg-rose-50\/60{background-color:rgba(244,63,94,.16)}
+    html[data-theme="dark"] .bg-sky-100{background-color:rgba(14,165,233,.24)}
+    html[data-theme="dark"] .bg-sky-50{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .bg-sky-50\/40{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .bg-sky-50\/70{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .bg-sky-50\/90{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .bg-slate-100{background-color:#1a2540}
+    html[data-theme="dark"] .bg-slate-200{background-color:#26324d}
+    html[data-theme="dark"] .bg-slate-200\/70{background-color:#26324d}
+    html[data-theme="dark"] .bg-slate-50{background-color:#0e1626}
+    html[data-theme="dark"] .bg-slate-50\/40{background-color:#0e1626}
+    html[data-theme="dark"] .bg-slate-50\/50{background-color:#0e1626}
+    html[data-theme="dark"] .bg-slate-50\/60{background-color:#0e1626}
+    html[data-theme="dark"] .bg-slate-50\/70{background-color:#0e1626}
+    html[data-theme="dark"] .bg-slate-50\/90{background-color:#0e1626}
+    html[data-theme="dark"] .bg-teal-50{background-color:rgba(20,184,166,.16)}
+    html[data-theme="dark"] .border-amber-200\/70{border-color:rgba(245,158,11,.38)}
+    html[data-theme="dark"] .border-amber-200\/80{border-color:rgba(245,158,11,.38)}
+    html[data-theme="dark"] .border-rose-200{border-color:rgba(244,63,94,.38)}
+    html[data-theme="dark"] .border-rose-200\/70{border-color:rgba(244,63,94,.38)}
+    html[data-theme="dark"] .border-sky-200{border-color:rgba(14,165,233,.38)}
+    html[data-theme="dark"] .border-sky-200\/80{border-color:rgba(14,165,233,.38)}
+    html[data-theme="dark"] .border-slate-100{border-color:#26324d}
+    html[data-theme="dark"] .border-slate-200{border-color:#26324d}
+    html[data-theme="dark"] .border-slate-200\/70{border-color:#26324d}
+    html[data-theme="dark"] .border-slate-200\/80{border-color:#26324d}
+    html[data-theme="dark"] .border-slate-200\/90{border-color:#26324d}
+    html[data-theme="dark"] .border-slate-300{border-color:#26324d}
+    html[data-theme="dark"] .divide-slate-100>:not([hidden])~:not([hidden]){border-color:#26324d}
+    html[data-theme="dark"] .divide-slate-200>:not([hidden])~:not([hidden]){border-color:#26324d}
+    html[data-theme="dark"] .from-amber-50\/70{--tw-gradient-from:rgba(245,158,11,.16) var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}
+    html[data-theme="dark"] .group:hover .group-hover\:text-amber-700{color:#fcd34d}
+    html[data-theme="dark"] .group:hover .group-hover\:text-sky-700{color:#7dd3fc}
+    html[data-theme="dark"] .hover\:bg-amber-50:hover{background-color:rgba(245,158,11,.16)}
+    html[data-theme="dark"] .hover\:bg-emerald-50:hover{background-color:rgba(16,185,129,.16)}
+    html[data-theme="dark"] .hover\:bg-rose-100:hover{background-color:rgba(244,63,94,.24)}
+    html[data-theme="dark"] .hover\:bg-rose-50:hover{background-color:rgba(244,63,94,.16)}
+    html[data-theme="dark"] .hover\:bg-sky-100:hover{background-color:rgba(14,165,233,.24)}
+    html[data-theme="dark"] .hover\:bg-sky-50:hover{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .hover\:bg-sky-50\/60:hover{background-color:rgba(14,165,233,.16)}
+    html[data-theme="dark"] .hover\:bg-slate-100:hover{background-color:#1a2540}
+    html[data-theme="dark"] .hover\:bg-slate-200:hover{background-color:#26324d}
+    html[data-theme="dark"] .hover\:bg-slate-50:hover{background-color:#0e1626}
+    html[data-theme="dark"] .hover\:bg-slate-50\/80:hover{background-color:#0e1626}
+    html[data-theme="dark"] .hover\:from-sky-50:hover{--tw-gradient-from:rgba(14,165,233,.16) var(--tw-gradient-from-position);--tw-gradient-to:rgba(14,165,233,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}
+    html[data-theme="dark"] .hover\:text-amber-600:hover{color:#fbbf24}
+    html[data-theme="dark"] .hover\:text-amber-700:hover{color:#fcd34d}
+    html[data-theme="dark"] .hover\:text-emerald-700:hover{color:#6ee7b7}
+    html[data-theme="dark"] .hover\:text-rose-600:hover{color:#fb7185}
+    html[data-theme="dark"] .hover\:text-rose-700:hover{color:#fda4af}
+    html[data-theme="dark"] .hover\:text-sky-600:hover{color:#38bdf8}
+    html[data-theme="dark"] .hover\:text-sky-700:hover{color:#7dd3fc}
+    html[data-theme="dark"] .hover\:text-sky-800:hover{color:#7dd3fc}
+    html[data-theme="dark"] .hover\:text-teal-600:hover{color:#2dd4bf}
+    html[data-theme="dark"] .hover\:to-teal-50\/60:hover{--tw-gradient-to:rgba(20,184,166,.16) var(--tw-gradient-to-position)}
+    html[data-theme="dark"] .text-amber-600{color:#fbbf24}
+    html[data-theme="dark"] .text-amber-700{color:#fcd34d}
+    html[data-theme="dark"] .text-amber-800{color:#fcd34d}
+    html[data-theme="dark"] .text-emerald-600{color:#34d399}
+    html[data-theme="dark"] .text-emerald-700{color:#6ee7b7}
+    html[data-theme="dark"] .text-rose-600{color:#fb7185}
+    html[data-theme="dark"] .text-rose-700{color:#fda4af}
+    html[data-theme="dark"] .text-sky-600{color:#38bdf8}
+    html[data-theme="dark"] .text-sky-600\/80{color:#38bdf8}
+    html[data-theme="dark"] .text-sky-700{color:#7dd3fc}
+    html[data-theme="dark"] .text-sky-800{color:#7dd3fc}
+    html[data-theme="dark"] .text-sky-900{color:#7dd3fc}
+    html[data-theme="dark"] .text-teal-600{color:#2dd4bf}
+    html[data-theme="dark"] .text-teal-700{color:#5eead4}
+    html[data-theme="dark"] .to-sky-50\/60{--tw-gradient-to:rgba(14,165,233,.16) var(--tw-gradient-to-position)}
+    html[data-theme="dark"] .hover\:text-slate-800:hover{color:#f8fafc}
+    html[data-theme="dark"] input:focus,html[data-theme="dark"] textarea:focus{background-color:#0e1626}
+    html[data-theme="dark"] .feed-pill:not(.is-active):hover{background:#26324d;color:#f1f5f9}
+    html[data-theme="dark"] #detail-like-btn:hover{background:#13304a !important}
+    html[data-theme="dark"] #detail-bookmark-btn:hover{background:rgba(245,158,11,.16)}
+    html[data-theme="dark"] .act-comment:hover{background:rgba(20,184,166,.16)}
+    html[data-theme="dark"] .act-btn{background:#121b2e;border-color:#26324d;color:#cbd5e1}
+    html[data-theme="dark"] .act-btn:focus-visible,html[data-theme="dark"] .feed-pill:focus-visible{box-shadow:0 0 0 2px #0a101d,0 0 0 4px #38bdf8}
   </style>
   <style>
     /* Pill filter beranda: warna aktif tidak bergantung pada Tailwind dinamis */
@@ -588,36 +697,53 @@
             </div>
 
             <!-- KOLOM KANAN: SIDEBAR STICKY -->
-            <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
+            <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6">
               <!-- Widget 0: Harga Emas & Kurs -->
               <div id="kr-market" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
-                <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                   <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2">
                     <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
                       <svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 3 14l3-3h12l3 3-3 6Z"/><path d="m10 11 2-6 2 6"/></svg>
                     </span>
-                    Emas &amp; Kurs Hari Ini
+                    Emas &amp; Kurs
                   </h3>
-                  <span class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400"><span id="kr-mkt-dot" class="kr-live-dot" aria-hidden="true"></span><span id="kr-mkt-date"></span></span>
+                  <span class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400"><span id="kr-mkt-dot" class="kr-live-dot" aria-hidden="true"></span><span id="kr-mkt-date">Memuat…</span></span>
                 </div>
-                <div class="flex items-end justify-between gap-3">
-                  <div>
-                    <div id="kr-mkt-label" class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Emas dunia / gram</div>
-                    <div id="kr-mkt-price" class="font-headline font-extrabold text-2xl text-brandSlate tabular-nums">-</div>
-                    <div id="kr-mkt-chg" class="text-[11px] font-bold tabular-nums"></div>
-                    <div id="kr-mkt-antam" class="hidden mt-1 text-[11px] text-slate-500"></div>
+
+                <div class="text-[11px] font-semibold text-slate-500">Emas 24K, per gram</div>
+                <div id="kr-mkt-price" class="font-headline font-extrabold text-[28px] leading-tight text-brandSlate tabular-nums">-</div>
+                <div id="kr-mkt-chg" class="text-[12px] font-bold tabular-nums min-h-[18px]"></div>
+                <div id="kr-mkt-meta" class="mt-2"></div>
+
+                <div class="kr-sep"></div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="kr-sec-label">Grafik harga</div>
+                  <div class="kr-seg" role="tablist" aria-label="Rentang grafik">
+                    <button type="button" role="tab" data-kr-range="d" class="is-on">Harian</button>
+                    <button type="button" role="tab" data-kr-range="m">Bulanan</button>
+                    <button type="button" role="tab" data-kr-range="y">Tahunan</button>
                   </div>
-                  <div class="text-right text-[11px] text-slate-500 leading-snug">
-                    <div>USD / troy oz</div><div id="kr-mkt-buy" class="font-bold text-slate-700 tabular-nums">-</div>
+                </div>
+                <div id="kr-mkt-chart" class="relative" style="min-height:156px"></div>
+                <div id="kr-mkt-cap" class="text-[10px] text-slate-400 mt-1"></div>
+                <div id="kr-mkt-stats" class="mt-2"></div>
+
+                <div class="kr-sep"></div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="kr-sec-label">Harga per berat</div>
+                  <div class="kr-seg" role="tablist" aria-label="Kadar emas">
+                    <button type="button" role="tab" data-kr-karat="1" class="is-on">24K</button>
+                    <button type="button" role="tab" data-kr-karat="0.916">22K</button>
+                    <button type="button" role="tab" data-kr-karat="0.75">18K</button>
                   </div>
                 </div>
-                <div class="mt-3"><div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Tren 7 hari</div><div id="kr-mkt-chart" class="h-24 text-amber-500"></div></div>
-                <div class="mt-3 overflow-hidden rounded-xl border border-slate-200/80">
-                  <table class="w-full text-[11px] tabular-nums"><thead class="bg-slate-50 text-slate-500"><tr><th class="text-left font-bold px-3 py-1.5">Berat</th><th class="text-right font-bold px-3 py-1.5">Harga (est.)</th></tr></thead><tbody id="kr-mkt-table" class="divide-y divide-slate-100"></tbody></table>
-                </div>
-                <div class="mt-4 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">Kurs Rupiah</div>
-                <div id="kr-mkt-kurs" class="grid grid-cols-2 gap-2"></div>
-                <p id="kr-mkt-note" class="mt-3 text-[10px] leading-snug text-slate-400"></p>
+                <div id="kr-mkt-table"></div>
+
+                <div class="kr-sep"></div>
+                <div class="kr-sec-label mb-1">Kurs rupiah</div>
+                <div id="kr-mkt-kurs"></div>
+
+                <p id="kr-mkt-note" class="mt-4 text-[10px] leading-snug text-slate-400"></p>
               </div>
 
               <!-- Widget 1: Top 5 Paling Banyak Dicari & Viral -->
@@ -1545,85 +1671,178 @@
 
   <!-- SKRIP UTAMA PORTAL BERITA KABARRAYA -->
   <script>
-    /* KR-MARKET: emas & kurs otomatis. Emas dunia (XAU/USD) x kurs USD/IDR -> Rp per gram, refresh tiap 60 dtk. */
+    /* KR-MARKET v3: emas dunia -> Rp/gram (live 60 dtk), grafik harian/bulanan/tahunan, kurs + bendera */
     (function(){
-      var $=function(i){return document.getElementById(i)};
-      var OZ=31.1035, today=function(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'})};
-      var bulan=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-      var rp=function(n){return 'Rp'+Math.round(n).toLocaleString('id-ID')};
-      var dlabel=function(s){var d=new Date(s+'T00:00:00');return d.getDate()+' '+bulan[d.getMonth()]};
-      var tlabel=function(t){return new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}).replace('.',':')};
+      var $=function(i){return document.getElementById(i)}, OZ=31.1035, TZ='Asia/Jakarta';
+      var BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
       var jget=function(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
       var jset=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+      var ymd=function(d){return d.toLocaleDateString('en-CA',{timeZone:TZ})};
+      var today=function(){return ymd(new Date())};
+      var addDays=function(s,n){var d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+      var P=function(s){var a=s.split('-');return{y:+a[0],m:+a[1]-1,d:+a[2]}};
+      var iso=function(y,m){var d=new Date(Date.UTC(y,m,1));return d.toISOString().slice(0,10)};
+      var fmtD=function(s,mode){var q=P(s);if(mode==='d')return q.d+' '+BLN[q.m];if(mode==='full')return q.d+' '+BLN[q.m]+' '+q.y;return BLN[q.m]+' '+String(q.y).slice(2)};
+      var num=function(n,dp){return n.toLocaleString('id-ID',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0})};
+      var rp=function(n){return 'Rp'+num(Math.round(n))};
+      var rpK=function(n){return n>=1e6?num(n/1e6,2)+' jt':num(n/1e3,0)+' rb'};
+      var pct=function(x){return(x>=0?'+':'−')+num(Math.abs(x),2)+'%'};
       var tf=function(u,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms||8000);return fetch(u,{signal:c.signal,cache:'no-store'}).then(function(r){clearTimeout(t);if(!r.ok)throw new Error(r.status);return r.json()},function(e){clearTimeout(t);throw e})};
-      var last=0, antam=null, antamTried=false;
 
+      var S={per:null,usd:null,kurs:null,kursY:null,prev:null,live:false,stale:false,sample:false,range:'d',karat:1,series:{},hx:jget('kr-hx',{}),antam:null,ch:null};
+      var last=0,antamTried=false,extrasTried=false;
+
+      /* ---------- bendera ---------- */
+      function star(cx,cy,R,f){var pts=[];for(var i=0;i<10;i++){var a=-Math.PI/2+i*Math.PI/5,r=i%2?R*0.382:R;pts.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2))}return'<polygon points="'+pts.join(' ')+'" fill="'+f+'"/>'}
+      function stripes(n,h,c1,c2,w){var o='<rect width="'+w+'" height="'+h+'" fill="'+c2+'"/>',sh=h/n;for(var i=0;i<n;i+=2)o+='<rect y="'+(i*sh).toFixed(3)+'" width="'+w+'" height="'+sh.toFixed(3)+'" fill="'+c1+'"/>';return o}
+      var FLAG={
+        USD:function(){var d='';for(var r=0;r<3;r++)for(var c=0;c<4;c++)d+='<circle cx="'+(1.6+c*2.4)+'" cy="'+(1.5+r*2.5)+'" r=".5" fill="#fff"/>';return stripes(13,16,'#b22234','#fff',24)+'<rect width="10.4" height="8.6" fill="#3c3b6e"/>'+d},
+        EUR:function(){return'<rect width="24" height="16" fill="#039"/><circle cx="12" cy="8" r="5" fill="none" stroke="#fc0" stroke-width="1.5" stroke-dasharray="0.01 2.618" stroke-linecap="round"/>'},
+        SGD:function(){var s='';for(var i=0;i<5;i++){var a=-Math.PI/2+i*2*Math.PI/5;s+=star(8.9+2.1*Math.cos(a),4+2.1*Math.sin(a),.75,'#fff')}return'<rect width="24" height="16" fill="#fff"/><rect width="24" height="8" fill="#ee2536"/><circle cx="5.2" cy="4" r="2.8" fill="#fff"/><circle cx="6.3" cy="4" r="2.5" fill="#ee2536"/>'+s},
+        MYR:function(){return stripes(14,16,'#c00','#fff',24)+'<rect width="12" height="8" fill="#010066"/><circle cx="5" cy="4" r="2.9" fill="#fc0"/><circle cx="5.9" cy="4" r="2.4" fill="#010066"/>'+star(8.7,4,1.7,'#fc0')},
+        SAR:function(){return'<rect width="24" height="16" fill="#006c35"/><rect x="6" y="5.4" width="12" height="2.4" rx="1" fill="#fff" opacity=".9"/><rect x="5" y="10.4" width="14" height="1.2" rx=".6" fill="#fff"/>'},
+        JPY:function(){return'<rect width="24" height="16" fill="#fff"/><circle cx="12" cy="8" r="4.6" fill="#bc002d"/>'},
+        AUD:function(){return'<rect width="24" height="16" fill="#012169"/><svg x="0" y="0" width="12" height="8" viewBox="0 0 12 8"><path d="M0 0L12 8M12 0L0 8" stroke="#fff" stroke-width="1.4"/><path d="M0 0L12 8M12 0L0 8" stroke="#c8102e" stroke-width=".6"/><rect x="5" width="2" height="8" fill="#fff"/><rect y="3" width="12" height="2" fill="#fff"/><rect x="5.5" width="1" height="8" fill="#c8102e"/><rect y="3.5" width="12" height="1" fill="#c8102e"/></svg>'+star(6,12.2,2.2,'#fff')+star(18,2.6,1.1,'#fff')+star(14.8,7,1.1,'#fff')+star(21.2,7,1.1,'#fff')+star(18,12.2,1.1,'#fff')},
+        GBP:function(){return'<rect width="24" height="16" fill="#012169"/><path d="M0 0L24 16M24 0L0 16" stroke="#fff" stroke-width="3"/><path d="M0 0L24 16M24 0L0 16" stroke="#c8102e" stroke-width="1"/><rect x="9.3" width="5.4" height="16" fill="#fff"/><rect y="5.3" width="24" height="5.4" fill="#fff"/><rect x="10.2" width="3.6" height="16" fill="#c8102e"/><rect y="6.2" width="24" height="3.6" fill="#c8102e"/>'},
+        CNY:function(){return'<rect width="24" height="16" fill="#de2910"/>'+star(4.6,4.2,2.6,'#ffde00')+star(9,1.9,.9,'#ffde00')+star(10.6,3.7,.9,'#ffde00')+star(10.6,6.2,.9,'#ffde00')+star(9,8,.9,'#ffde00')}
+      };
+      var flag=function(c){return'<svg class="kr-flag" viewBox="0 0 24 16" aria-hidden="true">'+FLAG[c]()+'</svg>'};
+      var CUR=[['USD','Dolar AS'],['EUR','Euro'],['SGD','Dolar Singapura'],['MYR','Ringgit Malaysia'],['SAR','Riyal Saudi'],['JPY','Yen Jepang'],['AUD','Dolar Australia'],['GBP','Poundsterling'],['CNY','Yuan China']];
+
+      /* ---------- data ---------- */
       function getFx(){
         var c=jget('kr-fx',null);
         if(c&&c.k&&Date.now()-c.t<3600000)return Promise.resolve(c.k);
-        var build=function(r){var k={USD:r.IDR};['EUR','SGD','SAR'].forEach(function(x){if(r[x])k[x]=r.IDR/r[x]});return k};
+        var build=function(r){var k={USD:r.IDR};CUR.forEach(function(x){var q=x[0];if(q!=='USD'&&r[q])k[q]=r.IDR/r[q]});return k};
         return tf('https://open.er-api.com/v6/latest/USD').then(function(j){if(!j.rates||!j.rates.IDR)throw 0;return build(j.rates)})
-          .catch(function(){return tf('https://api.frankfurter.dev/v1/latest?base=USD&symbols=IDR,EUR,SGD,SAR').then(function(j){if(!j.rates||!j.rates.IDR)throw 0;return build(j.rates)})})
+          .catch(function(){return tf('https://api.frankfurter.dev/v1/latest?base=USD&symbols=IDR,EUR,SGD,MYR,JPY,AUD,GBP,CNY').then(function(j){if(!j.rates||!j.rates.IDR)throw 0;return build(j.rates)})})
           .then(function(k){jset('kr-fx',{t:Date.now(),k:k});return k},function(){return c?c.k:null});
       }
       function getGold(){return tf('https://api.gold-api.com/price/XAU').then(function(j){if(!j||!j.price)throw 0;return +j.price})}
-      function getAntam(){
-        if(antamTried)return Promise.resolve(antam); antamTried=true;
-        return tf('harga-emas.json?d='+today(),4000).then(function(j){if(j&&j.antam&&j.antam.jual>0)antam=j;return antam},function(){return null});
+      function getAntam(){if(antamTried)return Promise.resolve(S.antam);antamTried=true;return tf('harga-emas.json?d='+today(),4000).then(function(j){if(j&&j.antam&&j.antam.jual>0)S.antam=j;return S.antam},function(){return null})}
+      function dayPrice(d){
+        if(S.hx[d])return Promise.resolve(S.hx[d]);
+        var u1='https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@'+d+'/v1/currencies/xau.min.json',u2='https://'+d+'.currency-api.pages.dev/v1/currencies/xau.json';
+        return tf(u1).catch(function(){return tf(u2)}).then(function(j){var v=j&&j.xau&&j.xau.idr;if(!v)throw 0;S.hx[d]=v/OZ;return S.hx[d]}).catch(function(){return null});
       }
-      function record(per){
-        var now=Date.now(),ticks=jget('kr-emas-ticks',[]),days=jget('kr-emas-days',{});
-        if(!ticks.length||now-ticks[ticks.length-1].t>300000)ticks.push({t:now,v:per}); else ticks[ticks.length-1]={t:now,v:per};
-        ticks=ticks.filter(function(x){return now-x.t<172800000}).slice(-300);
-        days[today()]=per; Object.keys(days).sort().slice(0,-14).forEach(function(k){delete days[k]});
-        jset('kr-emas-ticks',ticks);jset('kr-emas-days',days);
-        return {ticks:ticks,days:days};
+      function pool(items,fn,n){var res=new Array(items.length),i=0;function w(){if(i>=items.length)return Promise.resolve();var k=i++;return fn(items[k]).then(function(v){res[k]=v}).then(w)}var ws=[];for(var j=0;j<n;j++)ws.push(w());return Promise.all(ws).then(function(){return res})}
+      function datesFor(r){
+        var t=today(),o=[],q=P(t),i;
+        if(r==='d'){for(i=30;i>=1;i--)o.push(addDays(t,-i))}
+        else if(r==='m'){for(i=11;i>=0;i--){var d=iso(q.y,q.m-i);if(d<t)o.push(d)}}
+        else{var y=2024,m=3;while(true){var dd=iso(y,m);if(dd>=t)break;o.push(dd);m+=3;if(m>11){m-=12;y++}}}
+        return o;
       }
-      function sample(){
-        var b=[2431000,2438000,2436000,2442000,2447000,2445000,2452000],days={};
-        for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-(6-i));days[d.toLocaleDateString('en-CA')]=b[i]}
-        return {ticks:[],days:days};
+      function sampleSeries(r){
+        var ds=datesFor(r),seed=r==='d'?7:(r==='m'?11:13),end=2452000,n=ds.length;
+        var rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280-.5};
+        var tot=r==='d'?.03:(r==='m'?.14:.62);
+        return ds.map(function(d,i){return{d:d,v:Math.round(end*(1-tot*(n-i)/n+rnd()*(r==='y'?.05:.012)))}});
       }
-      function chart(h,mode){
-        var el=$('kr-mkt-chart'); if(!el)return;
-        if(h.length<2){el.innerHTML='<p class="text-[11px] text-slate-400 pt-8 text-center">Grafik terisi otomatis seiring waktu.</p>';return}
-        var W=300,H=96,p=6,vs=h.map(function(x){return x.v}),mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs),r=(mx-mn)||1;
-        var pts=h.map(function(x,i){return[p+i*(W-2*p)/(h.length-1),H-16-((x.v-mn)/r)*(H-32)]});
-        var line=pts.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join(' ');
-        var area='M'+pts[0][0]+','+(H-12)+' L'+line.replace(/ /g,' L')+' L'+pts[pts.length-1][0]+','+(H-12)+' Z';
-        var dots=h.length<=10?pts.map(function(q){return'<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="2.5" fill="currentColor"/>'}).join(''):'';
-        var a=mode==='days'?dlabel(h[0].k):tlabel(h[0].k), b=mode==='days'?dlabel(h[h.length-1].k):tlabel(h[h.length-1].k);
-        el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" class="w-full h-full" role="img" aria-label="Grafik harga emas"><path d="'+area+'" fill="currentColor" opacity=".12"/><polyline points="'+line+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+dots+'<text x="'+p+'" y="'+(H-1)+'" font-size="9" fill="#94a3b8">'+a+'</text><text x="'+(W-p)+'" y="'+(H-1)+'" font-size="9" fill="#94a3b8" text-anchor="end">'+b+'</text></svg>';
+      function loadSeries(r){
+        if(S.series[r])return Promise.resolve();
+        var ds=datesFor(r);
+        return pool(ds,dayPrice,6).then(function(v){
+          var pts=[];ds.forEach(function(d,i){if(v[i])pts.push({d:d,v:v[i]})});
+          var keys=Object.keys(S.hx).sort();keys.slice(0,-150).forEach(function(k){delete S.hx[k]});jset('kr-hx',S.hx);
+          if(pts.length>=2)S.series[r]=pts;else if(S.sample)S.series[r]=sampleSeries(r);
+        });
       }
-      function render(o){
-        var per=o.per,hist=o.hist,t=today();
-        var dk=Object.keys(hist.days).sort(), dh=dk.slice(-7).map(function(k){return{k:k,v:hist.days[k]}});
-        var prev=null; for(var i=dk.length-1;i>=0;i--){if(dk[i]<t){prev=hist.days[dk[i]];break}}
-        if(prev==null&&hist.ticks.length>1)prev=hist.ticks[0].v;
-        $('kr-mkt-date').textContent=o.live?('Live • '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}).replace('.',':')+' WIB'):(o.stale?'Data terakhir':'Data contoh');
-        $('kr-mkt-dot').className='kr-live-dot'+(o.live?' is-live':(o.stale?' is-stale':''));
-        $('kr-mkt-price').textContent=rp(per);
-        $('kr-mkt-buy').textContent=o.usd?'$'+o.usd.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'-';
-        var c=$('kr-mkt-chg');
-        if(prev){var d=per-prev;c.className='text-[11px] font-bold tabular-nums '+(d>=0?'kr-mkt-up text-emerald-600':'kr-mkt-down text-rose-600');c.textContent=(d>=0?'▲ +':'▼ ')+Math.round(d).toLocaleString('id-ID')+' ('+(d/prev*100).toFixed(2)+'%)'}else{c.textContent=''}
-        var an=$('kr-mkt-antam'); if(an){ if(antam){an.classList.remove('hidden');an.textContent='Antam'+(antam.updated?' ('+antam.updated+')':'')+': '+rp(antam.antam.jual)+'/g'}else an.classList.add('hidden') }
-        if(dh.length>=3)chart(dh,'days'); else chart(hist.ticks.map(function(x){return{k:x.t,v:x.v}}),'ticks');
-        $('kr-mkt-table').innerHTML=[1,2,5,10,25,100].map(function(w){return'<tr><td class="px-3 py-1.5 text-slate-600 font-semibold">'+w+' gram</td><td class="px-3 py-1.5 text-right font-bold text-slate-800">'+rp(per*w)+'</td></tr>'}).join('');
-        var k=o.kurs||{USD:16350,EUR:17820,SGD:12610,SAR:4360};
-        $('kr-mkt-kurs').innerHTML=['USD','EUR','SGD','SAR'].filter(function(x){return k[x]}).map(function(x){return'<div class="rounded-xl bg-slate-50 border border-slate-200/70 px-3 py-2"><div class="text-[10px] font-extrabold text-slate-400">'+x+' / IDR</div><div class="text-xs font-extrabold text-slate-800 tabular-nums">'+rp(k[x])+'</div></div>'}).join('');
-        $('kr-mkt-note').textContent=o.live?'Harga emas dunia (XAU/USD) dikonversi ke rupiah per gram, 24K murni, diperbarui otomatis tiap menit. Bukan harga resmi Antam atau toko emas.':(o.stale?'Gagal memuat data terbaru, menampilkan data terakhir tersimpan. Mencoba lagi otomatis.':'Data contoh. Harga asli tampil otomatis saat situs dibuka di domain sendiri dengan koneksi internet.');
+      function loadExtras(){
+        if(extrasTried)return;extrasTried=true;
+        var y=addDays(today(),-1);
+        dayPrice(y).then(function(v){if(v){S.prev=v;renderPrice()}});
+        var c=jget('kr-fxy-'+y,null);
+        var done=function(j){var u=j&&j.usd;if(!u||!u.idr)return;var k={USD:u.idr};CUR.forEach(function(x){var q=x[0],l=q.toLowerCase();if(q!=='USD'&&u[l])k[q]=u.idr/u[l]});S.kursY=k;renderKurs()};
+        if(c)return done(c);
+        tf('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@'+y+'/v1/currencies/usd.min.json').catch(function(){return tf('https://'+y+'.currency-api.pages.dev/v1/currencies/usd.json')}).then(function(j){jset('kr-fxy-'+y,j);done(j)}).catch(function(){});
       }
+
+      /* ---------- tampilan ---------- */
+      function renderPrice(){
+        if(S.per==null)return;
+        $('kr-mkt-date').textContent=S.live?('Live • '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:TZ}).replace('.',':')+' WIB'):(S.stale?'Data terakhir':'Data contoh');
+        $('kr-mkt-dot').className='kr-live-dot'+(S.live?' is-live':(S.stale?' is-stale':''));
+        $('kr-mkt-price').textContent=rp(S.per);
+        var c=$('kr-mkt-chg'),prev=S.prev;
+        if(prev){var d=S.per-prev;c.className='text-[12px] font-bold tabular-nums min-h-[18px] '+(d>=0?'kr-mkt-up text-emerald-600':'kr-mkt-down text-rose-600');c.textContent=(d>=0?'▲ +':'▼ −')+num(Math.abs(d))+' ('+pct(d/prev*100)+') dibanding kemarin'}else{c.textContent=''}
+        var rows='<div class="kr-row"><span>Harga dunia</span><b>'+(S.usd?'$'+num(S.usd,2)+' / troy oz':'-')+'</b></div>';
+        if(prev)rows+='<div class="kr-row"><span>Kemarin</span><b>'+rp(prev)+'</b></div>';
+        if(S.kurs&&S.kurs.USD)rows+='<div class="kr-row"><span>Kurs USD</span><b>'+rp(S.kurs.USD)+'</b></div>';
+        if(S.antam)rows+='<div class="kr-row"><span>Antam'+(S.antam.updated?' <small>'+S.antam.updated+'</small>':'')+'</span><b>'+rp(S.antam.antam.jual)+'</b></div>';
+        $('kr-mkt-meta').innerHTML=rows;
+        renderTable();renderChart();
+        $('kr-mkt-note').textContent=S.live?'Harga emas dunia (XAU/USD) dikonversi ke rupiah, 24K murni, diperbarui tiap menit. Bukan harga resmi Antam atau toko emas. Sumber: gold-api.com, open.er-api.com, currency-api.':(S.stale?'Gagal memuat data terbaru, menampilkan data terakhir tersimpan. Mencoba lagi otomatis.':'Data contoh. Data asli tampil otomatis saat situs berjalan di domain sendiri dengan koneksi internet.');
+      }
+      function renderTable(){
+        if(S.per==null)return;
+        $('kr-mkt-table').innerHTML=[1,2,5,10,25,50,100].map(function(w){return'<div class="kr-row"><span>'+w+' gram</span><b>'+rp(S.per*w*S.karat)+'</b></div>'}).join('');
+      }
+      function renderKurs(){
+        var k=S.kurs||{USD:16350,EUR:17820,SGD:12610,MYR:3870,SAR:4360,JPY:106.5,AUD:10650,GBP:20760,CNY:2290},y=S.kursY;
+        $('kr-mkt-kurs').innerHTML=CUR.filter(function(x){return k[x[0]]}).map(function(x){
+          var c=x[0],v=k[c],big=v>=1000,t=big?rp(v):'Rp'+num(v,2),ch='';
+          if(y&&y[c]){var d=v-y[c];if(Math.abs(d)>=(big?1:.005))ch='<small class="'+(d>=0?'kr-mkt-up text-emerald-600':'kr-mkt-down text-rose-600')+'">'+(d>=0?'▲':'▼')+' '+(big?num(Math.abs(d)):num(Math.abs(d),2))+'</small>'}
+          return'<div class="kr-row"><span class="flex items-center gap-2.5">'+flag(c)+'<span><b>'+c+'</b><small>'+x[1]+'</small></span></span><span class="text-right"><b>'+t+'</b>'+ch+'</span></div>';
+        }).join('');
+      }
+      function renderChart(){
+        var el=$('kr-mkt-chart'),r=S.range,base=S.series[r];
+        if(!el)return;
+        if(!base){el.innerHTML='<div class="kr-chart-msg">Memuat grafik…</div>';return}
+        var pts=base.slice();if(S.per!=null&&(!pts.length||pts[pts.length-1].d!==today()))pts.push({d:today(),v:S.per,live:true});
+        if(pts.length<2){el.innerHTML='<div class="kr-chart-msg">Riwayat belum tersedia.</div>';return}
+        var W=320,H=156,L=46,R=10,T=10,B=22,n=pts.length,vs=pts.map(function(p){return p.v}),mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs),pad=((mx-mn)||mx*.01)*.14,lo=mn-pad,hi=mx+pad;
+        var X=function(i){return L+i*(W-L-R)/(n-1)},Y=function(v){return T+(1-(v-lo)/(hi-lo))*(H-T-B)};
+        var line=pts.map(function(p,i){return X(i).toFixed(1)+','+Y(p.v).toFixed(1)}).join(' ');
+        var area='M'+X(0).toFixed(1)+','+(H-B)+' L'+line.replace(/ /g,' L')+' L'+X(n-1).toFixed(1)+','+(H-B)+' Z';
+        var mode=r==='d'?'d':'m',g='';
+        [0,.5,1].forEach(function(f){var y=T+f*(H-T-B),v=hi-f*(hi-lo);g+='<line class="kr-grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke-width="1"/><text class="kr-axis" x="'+(L-6)+'" y="'+(y+3)+'" text-anchor="end">'+rpK(v)+'</text>'});
+        var xl='<text class="kr-axis" x="'+L+'" y="'+(H-6)+'">'+fmtD(pts[0].d,mode)+'</text><text class="kr-axis" x="'+((L+W-R)/2)+'" y="'+(H-6)+'" text-anchor="middle">'+fmtD(pts[Math.floor((n-1)/2)].d,mode)+'</text><text class="kr-axis" x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">'+fmtD(pts[n-1].d,mode)+'</text>';
+        var up=pts[n-1].v>=pts[0].v;
+        el.innerHTML='<svg id="kr-mkt-svg" viewBox="0 0 '+W+' '+H+'" class="w-full h-auto block text-amber-500" style="touch-action:pan-y" role="img" aria-label="Grafik harga emas per gram">'+g+'<path d="'+area+'" fill="currentColor" opacity=".09"/><polyline points="'+line+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(pts[n-1].v).toFixed(1)+'" r="3" fill="currentColor"/>'+xl+'<line id="kr-gl" y1="'+T+'" y2="'+(H-B)+'" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" style="display:none"/><circle id="kr-gd" r="4" fill="#fff" stroke="currentColor" stroke-width="2" style="display:none"/></svg><div id="kr-tip" class="kr-tip" style="display:none"></div>';
+        S.ch={pts:pts,X:X,Y:Y,W:W,L:L,R:R,n:n};
+        var svg=$('kr-mkt-svg');['pointermove','pointerdown'].forEach(function(ev){svg.addEventListener(ev,hover)});svg.addEventListener('pointerleave',unhover);
+        var hi_=pts.reduce(function(a,b){return b.v>a.v?b:a}),lo_=pts.reduce(function(a,b){return b.v<a.v?b:a}),avg=vs.reduce(function(a,b){return a+b},0)/n,chg=(pts[n-1].v-pts[0].v)/pts[0].v*100;
+        $('kr-mkt-cap').textContent=r==='d'?'30 hari terakhir, satu titik per hari':(r==='m'?'12 bulan terakhir, satu titik per bulan':'Satu titik per kuartal sejak 2024')+(S.sample?' • data contoh':'');
+        $('kr-mkt-stats').innerHTML='<div class="kr-row"><span>Tertinggi <small>'+fmtD(hi_.d,'full')+'</small></span><b>'+rp(hi_.v)+'</b></div><div class="kr-row"><span>Terendah <small>'+fmtD(lo_.d,'full')+'</small></span><b>'+rp(lo_.v)+'</b></div><div class="kr-row"><span>Rata-rata</span><b>'+rp(avg)+'</b></div><div class="kr-row"><span>Perubahan periode</span><b class="'+(up?'kr-mkt-up text-emerald-600':'kr-mkt-down text-rose-600')+'">'+pct(chg)+'</b></div>';
+      }
+      function hover(e){
+        var c=S.ch,svg=$('kr-mkt-svg');if(!c||!svg)return;
+        var r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*c.W,i=Math.round((x-c.L)/((c.W-c.L-c.R)/(c.n-1)));
+        i=Math.max(0,Math.min(c.n-1,i));var p=c.pts[i],px=c.X(i),py=c.Y(p.v);
+        var gl=$('kr-gl'),gd=$('kr-gd'),tip=$('kr-tip');
+        gl.setAttribute('x1',px);gl.setAttribute('x2',px);gl.style.display='';gd.setAttribute('cx',px);gd.setAttribute('cy',py);gd.style.display='';
+        tip.innerHTML='<span>'+fmtD(p.d,'full')+(p.live?' (sekarang)':'')+'</span><b>'+rp(p.v)+'</b>';tip.style.display='';
+        var w=r.width,left=px/c.W*w,tw=tip.offsetWidth/2;tip.style.left=Math.max(tw,Math.min(w-tw,left))+'px';
+      }
+      function unhover(){['kr-gl','kr-gd','kr-tip'].forEach(function(i){var e=$(i);if(e)e.style.display='none'})}
+      function setRange(r){
+        S.range=r;document.querySelectorAll('#kr-market [data-kr-range]').forEach(function(b){b.classList.toggle('is-on',b.getAttribute('data-kr-range')===r)});
+        renderChart();loadSeries(r).then(renderChart);
+      }
+      document.addEventListener('click',function(e){
+        var b=e.target.closest&&e.target.closest('#kr-market [data-kr-range],#kr-market [data-kr-karat]');if(!b)return;
+        if(b.hasAttribute('data-kr-range'))setRange(b.getAttribute('data-kr-range'));
+        else{S.karat=+b.getAttribute('data-kr-karat');document.querySelectorAll('#kr-market [data-kr-karat]').forEach(function(x){x.classList.toggle('is-on',x===b)});renderTable()}
+      });
+
+      /* ---------- siklus refresh ---------- */
       function refresh(){
         last=Date.now();
         return Promise.all([getFx(),getGold().catch(function(){return null}),getAntam()]).then(function(r){
-          var kurs=r[0],usd=r[1];
-          if(kurs&&usd){var per=usd/OZ*kurs.USD;render({per:per,usd:usd,kurs:kurs,hist:record(per),live:true});return}
-          var h={ticks:jget('kr-emas-ticks',[]),days:jget('kr-emas-days',{})};
-          if(h.ticks.length){render({per:h.ticks[h.ticks.length-1].v,kurs:kurs,hist:h,stale:true})}
-          else{var s=sample(),ks=Object.keys(s.days).sort();render({per:s.days[ks[ks.length-1]],kurs:kurs,hist:s})}
+          var kurs=r[0],usd=r[1];S.kurs=kurs||S.kurs;
+          if(kurs&&usd){S.usd=usd;S.per=usd/OZ*kurs.USD;S.live=true;S.stale=false;S.sample=false;
+            var days=jget('kr-emas-days',{});days[today()]=S.per;jset('kr-emas-days',days)}
+          else{S.live=false;var days2=jget('kr-emas-days',{}),k2=Object.keys(days2).sort();
+            if(k2.length){S.per=days2[k2[k2.length-1]];S.stale=true;S.sample=false}
+            else if(S.per==null||S.sample){S.sample=true;S.stale=false;var sm=sampleSeries('d');S.per=sm[sm.length-1].v;S.prev=sm[sm.length-2].v}}
+          renderKurs();renderPrice();
+          if(S.live)loadExtras();
+          if(!S.series[S.range])loadSeries(S.range).then(renderChart);
         });
       }
-      function start(){refresh();setInterval(function(){if(!document.hidden)refresh()},60000);
+      function start(){renderKurs();renderChart();refresh();setInterval(function(){if(!document.hidden)refresh()},60000);
         document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-last>30000)refresh()})}
       if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
     })();
