@@ -1269,7 +1269,8 @@
             </div>
             <div>
               <label for="ad-link-input" class="block text-xs font-bold text-slate-600 mb-1">Link Tujuan (WA / Web / IG)</label>
-              <input id="ad-link-input" type="text" required placeholder="https://wa.me/6282118062433" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <input id="ad-link-input" type="url" placeholder="https://wa.me/6282118062433 (opsional)" class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <p class="mt-1 text-[10px] text-slate-500">Kosongkan jika banner hanya ingin ditampilkan tanpa tautan. Gunakan alamat lengkap https:// untuk tautan tujuan.</p>
             </div>
             <button type="submit" class="w-full min-h-[44px] py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-extrabold transition">Terbitkan Banner Iklan</button>
           </form>
@@ -3450,6 +3451,15 @@
       el.innerHTML = '<span class="kr-ad-label">Iklan</span><ins class="adsbygoogle" style="' + (rail ? 'display:inline-block;width:160px;height:600px' : 'display:block') + '" data-ad-client="' + escapeHtml(KR_ADSENSE.client) + '" data-ad-slot="' + escapeHtml(KR_ADSENSE.slots[slotKey]) + '"' + (rail ? '' : ' data-ad-format="auto" data-full-width-responsive="true"') + '></ins>';
       try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { console.warn('[adsense]', e); }
     }
+    // Hanya izinkan tautan web aman untuk iklan mandiri. Link kosong/tidak valid
+    // ditampilkan sebagai banner biasa, bukan diarahkan ke URL placeholder (#).
+    function getSafeAdUrl(value) {
+      try {
+        const url = new URL(String(value || '').trim());
+        return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
+      } catch (e) { return ''; }
+    }
+
     function renderAdSlots() {
       const renderSlot = (slotKey, elId, label, heightClass) => {
         const el = document.getElementById(elId);
@@ -3457,12 +3467,14 @@
         const ad = state.ads.find(a => a.slot === slotKey);
         if (!ad && adsenseOn(slotKey)) { renderAdsense(el, slotKey); return; }
         if (ad) {
-          el.innerHTML = `
-            <a href="${escapeHtml(ad.link_url || '#')}" target="_blank" rel="noopener noreferrer" class="block relative group">
-              <span class="absolute top-2 right-2 z-10 px-2 py-0.5 rounded bg-slate-950/75 text-white text-[9px] font-bold uppercase tracking-wider">Sponsor</span>
-              <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="800" height="250" class="w-full ${heightClass} object-cover group-hover:opacity-95 transition" />
-            </a>
+          const safeLink = getSafeAdUrl(ad.link_url);
+          const banner = `
+            <span class="absolute top-2 right-2 z-10 px-2 py-0.5 rounded bg-slate-950/75 text-white text-[9px] font-bold uppercase tracking-wider">Sponsor</span>
+            <img src="${escapeHtml(ad.image_url)}" alt="${escapeHtml(ad.title)}" width="800" height="250" loading="lazy" class="w-full ${heightClass} object-cover ${safeLink ? 'group-hover:opacity-95 transition' : ''}" />
           `;
+          el.innerHTML = safeLink
+            ? `<a href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="block relative group">${banner}</a>`
+            : `<div class="relative">${banner}</div>`;
         } else {
           el.innerHTML = `
             <button type="button" onclick="window.openLegalModal('contact')" class="w-full p-5 text-center bg-gradient-to-br from-slate-50 to-sky-50/60 hover:from-sky-50 hover:to-teal-50/60 transition flex flex-col items-center justify-center gap-1.5 min-h-[110px]">
@@ -5423,6 +5435,10 @@
       const slot = document.getElementById('ad-slot-input').value;
       const imageUrl = document.getElementById('ad-image-input').value.trim();
       const linkUrl = document.getElementById('ad-link-input').value.trim();
+      if (linkUrl && !getSafeAdUrl(linkUrl)) {
+        showToast('Link iklan harus menggunakan alamat http:// atau https:// yang valid.', 'error');
+        return;
+      }
 
       if (USE_LOCAL_MODE || !supabase) {
         state.ads.unshift({ id: 'ad-' + Date.now(), title, slot, image_url: imageUrl, link_url: linkUrl, created_at: new Date().toISOString() });
