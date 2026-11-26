@@ -847,8 +847,6 @@
         <!-- SOROTAN PILIHAN KANAL -->
         <section id="kr-editorial" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12 space-y-12">
           <div id="kr-picks"></div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div id="kr-opini"></div><div id="kr-factcheck"></div></div>
-          <div id="kr-infographic"></div>
         </section>
 
         <section id="channel-highlights-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12">
@@ -2359,11 +2357,12 @@
       ['Daerah','daerah'],['Ekonomi','ekonomi'],['Gaya Hidup','gaya-hidup'],['Hiburan','hiburan'],
       ['Internasional','internasional'],['Nasional','nasional'],['Olahraga','olahraga'],['Otomotif','otomotif'],['Teknologi','teknologi']
     ];
-    const KR_EXTRA_CATEGORIES = [['Opini','opini'],['Cek Fakta','cek-fakta'],['Infografik','infografik']];
+    const KR_EXTRA_CATEGORIES = [];
+    const KR_DROPPED_SLUGS = ['opini', 'cek-fakta', 'infografik'];
     const KR_HIDDEN_SLUGS = KR_EXTRA_CATEGORIES.map(x => x[1]);
     const navCats = () => state.categories.filter(c => !KR_HIDDEN_SLUGS.includes((c.slug || '').toLowerCase()));
     function ensureCategories() {
-      const list = Array.isArray(state.categories) ? state.categories.slice() : [];
+      const list = (Array.isArray(state.categories) ? state.categories : []).filter(c => !(c.virtual && KR_DROPPED_SLUGS.includes((c.slug || '').toLowerCase())));
       const has = (slug, name) => list.some(c => (c.slug || '').toLowerCase() === slug || (c.name || '').toLowerCase() === name.toLowerCase());
       KR_CATEGORY_ORDER.concat(KR_EXTRA_CATEGORIES).forEach(([name, slug]) => { if (!has(slug, name)) list.push({ id: 'cat-' + slug, name, slug, virtual: true }); });
       const rank = c => { const i = KR_CATEGORY_ORDER.findIndex(([n, sl]) => sl === (c.slug || '').toLowerCase() || n.toLowerCase() === (c.name || '').toLowerCase()); return i < 0 ? 99 : i; };
@@ -3157,31 +3156,6 @@
           <span class="relative block aspect-[16/10] bg-slate-100 overflow-hidden">${img(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-extrabold">PILIHAN</span></span>
           <span class="p-3.5 space-y-1"><span class="block text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(catOf(a)?.name || 'Berita')}</span><span class="block font-headline font-extrabold text-sm leading-snug line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span></span>
         </button>`).join('')}</div>` : '');
-
-      // 2. Opini & Analisis
-      const op = inCat('opini').slice(0, 4);
-      set('kr-opini', head('Opini &amp; Analisis', 'Kolom penulis tamu dan editorial', 'pen-line') + (op.length ? `<ul class="space-y-3">${op.map(a => `
-        <li><button type="button" ${open(a)} class="group w-full text-left flex gap-3 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-card">
-          <span class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 text-white font-extrabold flex items-center justify-center">${escapeHtml((a.author_name || 'K').trim().charAt(0).toUpperCase())}</span>
-          <span class="min-w-0"><span class="block text-[11px] font-extrabold text-sky-600">${escapeHtml(a.author_name || 'Redaksi')}</span><span class="block font-headline font-extrabold text-sm leading-snug line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span></span>
-        </button></li>`).join('')}</ul>` : empty('Belum ada opini. Terbitkan berita dengan kategori <b>Opini</b>.')) || '');
-      if (!op.length && !state.adminUser) set('kr-opini', '');
-
-      // 3. Cek Fakta
-      const ff = inCat('cek-fakta').slice(0, 4);
-      const tone = v => /HOAKS|SALAH|DISINFORMASI|PALSU/.test(v) ? 'bg-rose-100 text-rose-700' : /FAKTA|BENAR|AKURAT/.test(v) && !/SEBAGIAN/.test(v) ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
-      set('kr-factcheck', head('Cek Fakta', 'Verifikasi klaim yang beredar', 'badge-check') + (ff.length ? `<ul class="space-y-3">${ff.map(a => {
-        const m = String(a.title).match(/^\s*\[([^\]]+)\]\s*/); const v = m ? m[1].toUpperCase() : 'CEK FAKTA'; const t = m ? String(a.title).replace(m[0], '') : a.title;
-        return `<li><button type="button" ${open(a)} class="group w-full text-left flex gap-3 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-card"><span class="shrink-0 self-start px-2 py-1 rounded-md text-[10px] font-extrabold ${tone(v)}">${escapeHtml(v)}</span><span class="font-headline font-extrabold text-sm leading-snug line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(t)}</span></button></li>`; }).join('')}</ul>` : empty('Belum ada cek fakta. Terbitkan berita dengan kategori <b>Cek Fakta</b>, judul diawali <b>[HOAKS]</b>, <b>[FAKTA]</b>, atau <b>[MENYESATKAN]</b>.')) || '');
-      if (!ff.length && !state.adminUser) set('kr-factcheck', '');
-
-      // 4. Infografik & Data
-      const ig = inCat('infografik').slice(0, 3);
-      set('kr-infographic', ig.length ? head('Infografik &amp; Data', 'Angka dan fakta yang mudah dipahami', 'bar-chart-3') + `<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${ig.map(a => `
-        <button type="button" ${open(a)} class="group text-left bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden">
-          <span class="block aspect-[4/3] bg-slate-100 overflow-hidden">${img(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}</span>
-          <span class="block p-3.5 font-headline font-extrabold text-sm leading-snug line-clamp-2 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span>
-        </button>`).join('')}</div>` : (state.adminUser ? head('Infografik &amp; Data', 'Angka dan fakta yang mudah dipahami', 'bar-chart-3') + empty('Belum ada infografik. Terbitkan berita dengan kategori <b>Infografik</b> (gambar sebagai visual utama).') : ''));
     }
 
     // ===== Layanan Harian: Salat, Cuaca, BBM =====
@@ -5292,6 +5266,11 @@
     };
 
     window.handleDeleteCategory = async (id) => {
+      const target = state.categories.find(c => c.id === id);
+      if (target && target.virtual) {
+        showToast('Kanal "' + target.name + '" adalah bagian menu utama portal, jadi tidak bisa dihapus.', 'info');
+        return;
+      }
       const ok = await openConfirmModal('Hapus Kanal Berita?', 'Pastikan tidak ada berita penting yang bergantung pada kanal ini.');
       if (!ok) return;
 
