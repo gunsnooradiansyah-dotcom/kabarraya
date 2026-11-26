@@ -431,6 +431,8 @@
   </style>
 
   <style id="kr-modal-fix-css">
+    .kr-ad-label{display:block;padding:4px 10px 0;font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8}
+    ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important}
     /* Tombol tutup (X): netral, berubah merah saat hover / fokus / ditekan */
     .kr-x{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
     .kr-x:hover,.kr-x:focus-visible{background:#fef2f2;border-color:#fecaca;color:#dc2626;outline:none}
@@ -3192,6 +3194,20 @@
     const KR_CITIES = [['Jakarta',-6.2088,106.8456],['Bandung',-6.9175,107.6191],['Semarang',-6.9667,110.4167],['Yogyakarta',-7.7956,110.3695],['Surabaya',-7.2575,112.7521],['Denpasar',-8.65,115.2167],['Medan',3.5952,98.6722],['Makassar',-5.1477,119.4327]];
     const KR_BBM_INFO = 'Pertamina, wilayah Jabodetabek. Berlaku November 2026.';
     const KR_BBM = [['Pertalite (RON 90)',10000],['Biosolar (subsidi)',6800],['Pertamax (RON 92)',15950],['Pertamax Green 95',19150],['Pertamax Turbo (RON 98)',19600],['Dexlite (CN 51)',23700],['Pertamina Dex (CN 53)',25200]];
+    // ===== GOOGLE ADSENSE =====
+    // Isi setelah akun AdSense disetujui (AdSense > Iklan > Berdasarkan unit iklan).
+    // client = ID penayang (ca-pub-xxxxxxxxxxxxxxxx). slots = ID unit iklan (angka) per posisi.
+    // Posisi yang dikosongkan tetap memakai iklan mandiri / ruang iklan seperti sebelumnya.
+    const KR_ADSENSE = {
+      client: '',                 // contoh: 'ca-pub-1234567890123456'
+      slots: {
+        sidebar: '',              // unit iklan responsif (sidebar kanan beranda)
+        in_article: '',           // unit iklan responsif (dalam artikel)
+        leaderboard: '',          // unit iklan responsif (sebelum footer)
+        rail_left: '',            // unit iklan 160x600 (hanya layar lebar)
+        rail_right: ''            // unit iklan 160x600 (hanya layar lebar)
+      }
+    };
     const KR_WA_CHANNEL_URL = '';  // isi dengan tautan Saluran WhatsApp KabarRaya, mis. https://whatsapp.com/channel/xxxx
     const svc = { tab: 'salat', city: 'Jakarta', cache: {} };
     try { const c = localStorage.getItem('kr_svc_city'); if (c && KR_CITIES.some(x => x[0] === c)) svc.city = c; } catch (e) {}
@@ -3390,11 +3406,30 @@
     // =========================================================================
     // SLOT IKLAN MANDIRI (SIDEBAR, IN-ARTICLE, LEADERBOARD)
     // =========================================================================
+    function adsenseOn(slotKey) {
+      if (!KR_ADSENSE.client || !KR_ADSENSE.slots[slotKey] || USE_LOCAL_MODE) return false;
+      if (!window.__krAdsLoaded) {
+        window.__krAdsLoaded = true;
+        const sc = document.createElement('script');
+        sc.async = true; sc.crossOrigin = 'anonymous';
+        sc.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(KR_ADSENSE.client);
+        document.head.appendChild(sc);
+        const mt = document.createElement('meta'); mt.name = 'google-adsense-account'; mt.content = KR_ADSENSE.client; document.head.appendChild(mt);
+      }
+      return true;
+    }
+    function renderAdsense(el, slotKey) {
+      if (el.querySelector('ins.adsbygoogle')) return; // sudah tayang, jangan dimuat ulang
+      const rail = slotKey === 'rail_left' || slotKey === 'rail_right';
+      el.innerHTML = '<span class="kr-ad-label">Iklan</span><ins class="adsbygoogle" style="' + (rail ? 'display:inline-block;width:160px;height:600px' : 'display:block') + '" data-ad-client="' + escapeHtml(KR_ADSENSE.client) + '" data-ad-slot="' + escapeHtml(KR_ADSENSE.slots[slotKey]) + '"' + (rail ? '' : ' data-ad-format="auto" data-full-width-responsive="true"') + '></ins>';
+      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { console.warn('[adsense]', e); }
+    }
     function renderAdSlots() {
       const renderSlot = (slotKey, elId, label, heightClass) => {
         const el = document.getElementById(elId);
         if (!el) return;
         const ad = state.ads.find(a => a.slot === slotKey);
+        if (!ad && adsenseOn(slotKey)) { renderAdsense(el, slotKey); return; }
         if (ad) {
           el.innerHTML = `
             <a href="${escapeHtml(ad.link_url || '#')}" target="_blank" rel="noopener noreferrer" class="block relative group">
@@ -3420,7 +3455,7 @@
       renderSlot('rail_right', 'ad-slot-rail-right', 'Samping Kanan 160x600', 'h-[600px]');
       [['rail_left', 'ad-slot-rail-left'], ['rail_right', 'ad-slot-rail-right']].forEach(([k, id]) => {
         const el = document.getElementById(id);
-        if (el && !state.ads.find(a => a.slot === k)) el.innerHTML = `<button type="button" onclick="window.openLegalModal('contact')" class="kr-rail-ph"><span class="kr-rail-tag">IKLAN</span><span class="em" aria-hidden="true">📣</span><b>Pasang Iklan Anda di Sini</b><small>160 × 600</small><i>Hubungi Redaksi →</i></button>`;
+        if (el && !state.ads.find(a => a.slot === k) && !adsenseOn(k)) el.innerHTML = `<button type="button" onclick="window.openLegalModal('contact')" class="kr-rail-ph"><span class="kr-rail-tag">IKLAN</span><span class="em" aria-hidden="true">📣</span><b>Pasang Iklan Anda di Sini</b><small>160 × 600</small><i>Hubungi Redaksi →</i></button>`;
       });
     }
 
