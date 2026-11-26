@@ -385,7 +385,7 @@
     html[data-theme="dark"] .kr-bar{--b-bg:#0f172a;--b-line:#1e293b;--b-ink:#f1f5f9;--b-mute:#94a3b8;--b-chip:#1e293b}
     .kr-bar h1{color:var(--b-ink)}
     .kr-bar-sub{color:var(--b-mute)}
-    .kr-bar-ava{width:40px;height:40px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#0ea5e9,#2563eb);box-shadow:0 6px 16px -6px rgba(14,165,233,.7)}
+    .kr-bar-ava{width:40px;height:40px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:0 6px 16px -6px rgba(14,165,233,.7)}
     .kr-bar-dot{width:7px;height:7px;border-radius:50%;background:#10b981;animation:kr-bar-p 2s infinite}
     @keyframes kr-bar-p{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 6px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
     .kr-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;color:var(--b-mute);background:var(--b-chip);white-space:nowrap}
@@ -1150,7 +1150,15 @@
       <div id="view-admin" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div class="kr-bar px-3 sm:px-4 py-3 flex items-center gap-x-4 gap-y-3 flex-wrap">
           <div class="order-1 flex items-center gap-3 min-w-0 flex-1 md:flex-none">
-            <div class="kr-bar-ava" aria-hidden="true"><i data-lucide="newspaper" class="w-5 h-5"></i></div>
+            <div class="kr-bar-ava" aria-hidden="true">
+              <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 128" fill="none" role="img">
+                <rect x="24" y="20" width="22" height="88" rx="4" fill="#38BDF8" />
+                <path d="M52 60L84 22C85.5 20.2 87.8 20 90 20H104C106.5 20 107.8 22.9 106.1 24.8L68 68L52 60Z" fill="#38BDF8" />
+                <path d="M68 62L106.5 103.2C108.2 105.1 106.9 108 104.3 108H89.5C87.3 108 85.2 107 83.7 105.3L52 70L68 62Z" fill="#F58220" />
+                <path d="M98 48C105.732 48 112 54.268 112 62" stroke="#F58220" stroke-width="7" stroke-linecap="round" />
+                <path d="M98 34C113.464 34 126 46.536 126 62" stroke="#F58220" stroke-width="7" stroke-linecap="round" />
+              </svg>
+            </div>
             <div class="min-w-0">
               <h1 class="font-headline font-extrabold text-[15px] sm:text-base leading-tight">Dapur Redaksi</h1>
               <div class="kr-bar-sub flex items-center gap-1.5 text-xs min-w-0">
