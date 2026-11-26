@@ -405,14 +405,21 @@
   </style>
 
   <style id="kr-portal-extras-css">
-    .kr-rail{display:none;position:absolute;top:0;bottom:0;width:160px;z-index:10;pointer-events:none}
-    .kr-rail-l{left:calc(50% - 656px - 160px)}.kr-rail-r{left:calc(50% + 656px)}
-    .kr-rail-in{position:sticky;top:132px;pointer-events:auto;padding-top:24px}
-    .kr-rail-box{height:600px;border-radius:16px;overflow:hidden;background:#fff;border:1px solid #e2e8f0;box-shadow:0 8px 24px -16px rgba(15,23,42,.3)}
-    .kr-rail-box>button{height:100%;width:100%}
+    .kr-rail{display:none;position:absolute;top:0;bottom:0;width:160px;pointer-events:none;z-index:5}
+    .kr-rail-l{left:-144px}.kr-rail-r{right:-144px}
+    .kr-rail-in{position:sticky;top:136px;pointer-events:auto}
+    .kr-rail-box{height:600px;border-radius:18px;overflow:hidden;background:#fff;border:1px solid #e2e8f0;box-shadow:0 10px 28px -18px rgba(15,23,42,.35)}
     .kr-rail-box img{width:100%;height:600px;object-fit:cover}
+    .kr-rail-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;padding:16px 12px;text-align:center;background:linear-gradient(180deg,#f8fafc,#f0f9ff);transition:.2s}
+    .kr-rail-ph:hover{background:linear-gradient(180deg,#f0f9ff,#ecfeff)}
+    .kr-rail-tag{font-size:9px;font-weight:800;letter-spacing:.16em;color:#94a3b8;border:1px solid #cbd5e1;border-radius:6px;padding:2px 7px}
+    .kr-rail-ph .em{font-size:30px;line-height:1}
+    .kr-rail-ph b{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;line-height:1.3;color:#0f172a}
+    .kr-rail-ph small{font-size:11px;font-weight:700;color:#94a3b8}
+    .kr-rail-ph i{font-style:normal;font-size:11px;font-weight:800;color:#0284c7}
     html[data-theme="dark"] .kr-rail-box{background:#0f172a;border-color:#1e293b}
-    @media (min-width:1700px){.kr-rail{display:block}}
+    html[data-theme="dark"] .kr-rail-ph{background:linear-gradient(180deg,#0f172a,#0c1a2e)}html[data-theme="dark"] .kr-rail-ph b{color:#f1f5f9}
+    @media (min-width:1600px){.kr-rail{display:block}}
     .kr-index{position:relative;margin:0;padding:0;list-style:none}
     .kr-index::before{content:"";position:absolute;left:34px;top:6px;bottom:6px;width:2px;background:#e2e8f0}
     .kr-index-row{display:flex;gap:14px;padding:9px 0;align-items:flex-start;position:relative}
@@ -431,6 +438,18 @@
     .kr-trust:hover{border-color:#0ea5e9;background:#f0f9ff;transform:translateY(-2px)}
     html[data-theme="dark"] .kr-svc-tab.is-on{background:#0f172a}
     html[data-theme="dark"] .kr-trust{background:#0f172a;border-color:#1e293b}html[data-theme="dark"] .kr-trust b{color:#f1f5f9}
+  </style>
+
+  <style id="kr-portal-extras-css-3">
+    .kr-tile{display:flex;flex-direction:column;gap:2px;text-align:left;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 6px 18px -14px rgba(15,23,42,.35);transition:transform .2s,border-color .2s,box-shadow .2s;min-height:44px;min-width:0}
+    .kr-tile:hover,.kr-tile:focus-visible{transform:translateY(-2px);border-color:#38bdf8;box-shadow:0 12px 24px -14px rgba(14,165,233,.5);outline:none}
+    .kr-tile-l{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kr-tile-v{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:17px;line-height:1.25;color:#0f172a;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .kr-tile-s{font-size:11px;font-weight:700;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    html[data-theme="dark"] .kr-tile{background:#0f172a;border-color:#1e293b}html[data-theme="dark"] .kr-tile-v{color:#f1f5f9}
+    .kr-info-panel{animation:kr-pop .22s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes kr-pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){.kr-info-panel,.kr-tile{animation:none;transition:none}}
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-sky-200 selection:text-slate-900">
@@ -701,9 +720,6 @@
 
       <!-- SUBVIEW 1: BERANDA UTAMA (#subview-home) -->
       <div id="subview-home" class="w-full relative">
-        <!-- IKLAN SAMPING KIRI & KANAN (Skyscraper 160x600, hanya layar lebar) -->
-        <div class="kr-rail kr-rail-l" aria-label="Ruang iklan kiri"><div class="kr-rail-in"><div id="ad-slot-rail-left" class="kr-rail-box"></div></div></div>
-        <div class="kr-rail kr-rail-r" aria-label="Ruang iklan kanan"><div class="kr-rail-in"><div id="ad-slot-rail-right" class="kr-rail-box"></div></div></div>
         <!-- BILAH PUTIH MELAYANG 4 KOLOM DENGAN THUMBNAIL GAMBAR -->
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-30 -mt-7 sm:-mt-9">
           <div id="hero-bottom-ticker" class="bg-white rounded-2xl shadow-float border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 overflow-hidden"></div>
@@ -722,8 +738,22 @@
           </div>
         </div>
 
+        <!-- BAND INFO HARIAN -->
+        <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-8 sm:mt-10" aria-label="Info Harian">
+          <div id="kr-band" class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            <button type="button" onclick="window.krInfoOpen('market')" class="kr-tile"><span class="kr-tile-l">Emas 24K / gram</span><span class="kr-tile-v" id="kr-bd-gold">…</span><span class="kr-tile-s" id="kr-bd-gold-s">&nbsp;</span></button>
+            <button type="button" onclick="window.krInfoOpen('market')" class="kr-tile"><span class="kr-tile-l">USD / IDR</span><span class="kr-tile-v" id="kr-bd-usd">…</span><span class="kr-tile-s">Kurs hari ini</span></button>
+            <button type="button" onclick="window.krInfoOpen('cuaca')" class="kr-tile"><span class="kr-tile-l" id="kr-bd-wx-l">Cuaca</span><span class="kr-tile-v" id="kr-bd-wx">…</span><span class="kr-tile-s" id="kr-bd-wx-s">&nbsp;</span></button>
+            <button type="button" onclick="window.krInfoOpen('salat')" class="kr-tile"><span class="kr-tile-l">Salat berikutnya</span><span class="kr-tile-v" id="kr-bd-salat">…</span><span class="kr-tile-s" id="kr-bd-salat-s">&nbsp;</span></button>
+            <button type="button" onclick="window.krInfoOpen('bbm')" class="kr-tile col-span-2 lg:col-span-1"><span class="kr-tile-l">BBM · Pertalite</span><span class="kr-tile-v" id="kr-bd-bbm">…</span><span class="kr-tile-s" id="kr-bd-bbm-s">&nbsp;</span></button>
+          </div>
+        </section>
+
         <!-- GRID FEED BERITA + SIDEBAR STICKY KANAN -->
-        <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-8 sm:mt-10">
+        <section class="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-8 sm:mt-10">
+          <!-- IKLAN SAMPING KIRI & KANAN (Skyscraper 160x600, layar >= 1600px) -->
+          <div class="kr-rail kr-rail-l" aria-label="Ruang iklan kiri"><div class="kr-rail-in"><div id="ad-slot-rail-left" class="kr-rail-box"></div></div></div>
+          <div class="kr-rail kr-rail-r" aria-label="Ruang iklan kanan"><div class="kr-rail-in"><div id="ad-slot-rail-right" class="kr-rail-box"></div></div></div>
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start">
 
             <!-- KOLOM KIRI: DAFTAR BERITA + PILL FILTER -->
@@ -765,53 +795,8 @@
 
             <!-- KOLOM KANAN: SIDEBAR STICKY -->
             <aside aria-label="Sorotan Populer dan Topik Hangat" class="lg:col-span-4 space-y-6">
-              <!-- Widget 0: Harga Emas & Kurs -->
-              <div id="kr-market" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
-                <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-                  <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 3 14l3-3h12l3 3-3 6Z"/><path d="m10 11 2-6 2 6"/></svg>
-                    </span>
-                    Emas &amp; Kurs
-                  </h3>
-                  <span class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400"><span id="kr-mkt-dot" class="kr-live-dot" aria-hidden="true"></span><span id="kr-mkt-date">Memuat…</span></span>
-                </div>
-
-                <div class="text-[11px] font-semibold text-slate-500">Emas 24K, per gram</div>
-                <div id="kr-mkt-price" class="font-headline font-extrabold text-[28px] leading-tight text-brandSlate tabular-nums">-</div>
-                <div id="kr-mkt-chg" class="text-[12px] font-bold tabular-nums min-h-[18px]"></div>
-                <div id="kr-mkt-meta" class="mt-2"></div>
-
-                <div class="kr-sep"></div>
-                <div class="flex items-center justify-between gap-2 mb-2">
-                  <div class="kr-sec-label">Grafik harga</div>
-                  <div class="kr-seg" role="tablist" aria-label="Rentang grafik">
-                    <button type="button" role="tab" data-kr-range="d" class="is-on">Harian</button>
-                    <button type="button" role="tab" data-kr-range="m">Bulanan</button>
-                    <button type="button" role="tab" data-kr-range="y">Tahunan</button>
-                  </div>
-                </div>
-                <div id="kr-mkt-chart" class="relative" style="min-height:156px"></div>
-                <div id="kr-mkt-cap" class="text-[10px] text-slate-400 mt-1"></div>
-                <div id="kr-mkt-stats" class="mt-2"></div>
-
-                <div class="kr-sep"></div>
-                <div class="flex items-center justify-between gap-2 mb-2">
-                  <div class="kr-sec-label">Harga per berat</div>
-                  <div class="kr-seg" role="tablist" aria-label="Kadar emas">
-                    <button type="button" role="tab" data-kr-karat="1" class="is-on">24K</button>
-                    <button type="button" role="tab" data-kr-karat="0.916">22K</button>
-                    <button type="button" role="tab" data-kr-karat="0.75">18K</button>
-                  </div>
-                </div>
-                <div id="kr-mkt-table"></div>
-
-                <div class="kr-sep"></div>
-                <div class="kr-sec-label mb-1">Kurs rupiah</div>
-                <div id="kr-mkt-kurs"></div>
-
-                <p id="kr-mkt-note" class="mt-4 text-[10px] leading-snug text-slate-400"></p>
-              </div>
+              
+              
 
               <!-- Widget 1: Top 5 Paling Banyak Dicari & Viral -->
               <div class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
@@ -830,19 +815,8 @@
               <!-- Widget 2: Slot Iklan Mandiri Sidebar -->
               <div id="ad-slot-sidebar" class="bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden"></div>
 
-              <!-- Widget: Layanan Harian -->
-              <div id="kr-services" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
-                <div class="flex items-center justify-between mb-3">
-                  <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2"><i data-lucide="layout-grid" aria-hidden="true" class="w-4 h-4 text-sky-500"></i> Layanan Harian</h3>
-                  <select id="kr-svc-city" onchange="window.svcSetCity(this.value)" aria-label="Pilih kota" class="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5"></select>
-                </div>
-                <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100 mb-3" role="tablist">
-                  <button type="button" id="kr-svc-t-salat" onclick="window.svcSetTab('salat')" class="kr-svc-tab">Salat</button>
-                  <button type="button" id="kr-svc-t-cuaca" onclick="window.svcSetTab('cuaca')" class="kr-svc-tab">Cuaca</button>
-                  <button type="button" id="kr-svc-t-bbm" onclick="window.svcSetTab('bbm')" class="kr-svc-tab">BBM</button>
-                </div>
-                <div id="kr-svc-body" class="text-sm min-h-[190px]"></div>
-              </div>
+              
+              
 
               <!-- Widget: Newsletter & WhatsApp -->
               <div class="rounded-2xl p-5 text-white shadow-card" style="background:linear-gradient(135deg,#0f172a,#0c4a6e)">
@@ -1389,6 +1363,71 @@
       <section id="leaderboard-ad-wrapper" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-12 mb-10">
         <div id="ad-slot-leaderboard" class="rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-card"></div>
       </section>
+<!-- DETAIL INFO HARIAN (Emas & Kurs / Layanan) -->
+      <div id="kr-info-holder" class="hidden" aria-hidden="true"><div id="kr-market" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+                <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                  <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                      <svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 3 14l3-3h12l3 3-3 6Z"/><path d="m10 11 2-6 2 6"/></svg>
+                    </span>
+                    Emas &amp; Kurs
+                  </h3>
+                  <span class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400"><span id="kr-mkt-dot" class="kr-live-dot" aria-hidden="true"></span><span id="kr-mkt-date">Memuat…</span></span>
+                </div>
+
+                <div class="text-[11px] font-semibold text-slate-500">Emas 24K, per gram</div>
+                <div id="kr-mkt-price" class="font-headline font-extrabold text-[28px] leading-tight text-brandSlate tabular-nums">-</div>
+                <div id="kr-mkt-chg" class="text-[12px] font-bold tabular-nums min-h-[18px]"></div>
+                <div id="kr-mkt-meta" class="mt-2"></div>
+
+                <div class="kr-sep"></div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="kr-sec-label">Grafik harga</div>
+                  <div class="kr-seg" role="tablist" aria-label="Rentang grafik">
+                    <button type="button" role="tab" data-kr-range="d" class="is-on">Harian</button>
+                    <button type="button" role="tab" data-kr-range="m">Bulanan</button>
+                    <button type="button" role="tab" data-kr-range="y">Tahunan</button>
+                  </div>
+                </div>
+                <div id="kr-mkt-chart" class="relative" style="min-height:156px"></div>
+                <div id="kr-mkt-cap" class="text-[10px] text-slate-400 mt-1"></div>
+                <div id="kr-mkt-stats" class="mt-2"></div>
+
+                <div class="kr-sep"></div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="kr-sec-label">Harga per berat</div>
+                  <div class="kr-seg" role="tablist" aria-label="Kadar emas">
+                    <button type="button" role="tab" data-kr-karat="1" class="is-on">24K</button>
+                    <button type="button" role="tab" data-kr-karat="0.916">22K</button>
+                    <button type="button" role="tab" data-kr-karat="0.75">18K</button>
+                  </div>
+                </div>
+                <div id="kr-mkt-table"></div>
+
+                <div class="kr-sep"></div>
+                <div class="kr-sec-label mb-1">Kurs rupiah</div>
+                <div id="kr-mkt-kurs"></div>
+
+                <p id="kr-mkt-note" class="mt-4 text-[10px] leading-snug text-slate-400"></p>
+              </div><div id="kr-services" class="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-headline font-extrabold text-sm sm:text-base text-brandSlate flex items-center gap-2"><i data-lucide="layout-grid" aria-hidden="true" class="w-4 h-4 text-sky-500"></i> Layanan Harian</h3>
+                  <select id="kr-svc-city" onchange="window.svcSetCity(this.value)" aria-label="Pilih kota" class="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5"></select>
+                </div>
+                <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100 mb-3" role="tablist">
+                  <button type="button" id="kr-svc-t-salat" onclick="window.svcSetTab('salat')" class="kr-svc-tab">Salat</button>
+                  <button type="button" id="kr-svc-t-cuaca" onclick="window.svcSetTab('cuaca')" class="kr-svc-tab">Cuaca</button>
+                  <button type="button" id="kr-svc-t-bbm" onclick="window.svcSetTab('bbm')" class="kr-svc-tab">BBM</button>
+                </div>
+                <div id="kr-svc-body" class="text-sm min-h-[190px]"></div>
+              </div></div>
+      <div id="kr-info-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-3" role="dialog" aria-modal="true" aria-label="Detail info harian">
+        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="window.krInfoClose()"></div>
+        <div class="kr-info-panel relative w-full max-w-[430px] max-h-[88vh] overflow-y-auto rounded-2xl">
+          <button type="button" onclick="window.krInfoClose()" aria-label="Tutup" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm font-bold">✕</button>
+          <div id="kr-info-slot"></div>
+        </div>
+      </div>
     </main>
 
     <!-- FOOTER GELAP + 4 HALAMAN WAJIB ADSENSE -->
@@ -3213,6 +3252,67 @@
       } catch (err) { showToast('Pendaftaran belum bisa diproses. Coba lagi nanti.', 'error'); }
     };
 
+    // ===== Band Info Harian =====
+    async function svcFetch(tab, city) {
+      const key = tab + ':' + city; svc.fail = svc.fail || {};
+      if (svc.cache[key]) return svc.cache[key];
+      if (svc.fail[key] && Date.now() - svc.fail[key] < 60000) throw new Error('recent-fail');
+      const c = KR_CITIES.find(x => x[0] === city) || KR_CITIES[0];
+      try {
+        if (tab === 'salat') {
+          const j = await (await fetch(`https://api.aladhan.com/v1/timings?latitude=${c[1]}&longitude=${c[2]}&method=20`)).json();
+          svc.cache[key] = { t: j.data.timings, tz: j.data.meta.timezone };
+        } else {
+          svc.cache[key] = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c[1]}&longitude=${c[2]}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`)).json();
+        }
+      } catch (e) { svc.fail[key] = Date.now(); throw e; }
+      return svc.cache[key];
+    }
+    function krSyncBand() {
+      const set = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
+      const pr = document.getElementById('kr-mkt-price'), ch = document.getElementById('kr-mkt-chg');
+      if (pr && /\d/.test(pr.textContent)) set('kr-bd-gold', pr.textContent.replace(/\.\d{3}$/, m => m).trim());
+      if (ch) {
+        const t = ch.textContent, pct = (t.match(/\(([^)]*%)\)/) || [])[1], down = t.includes('▼'), g = document.getElementById('kr-bd-gold-s');
+        if (g && pct) { g.textContent = (down ? '▼ ' : '▲ ') + pct.replace(/^[+-]/, ''); g.className = 'kr-tile-s ' + (down ? 'text-rose-600' : 'text-emerald-600'); }
+      }
+      const row = [...document.querySelectorAll('#kr-mkt-kurs .kr-row')].find(r => r.textContent.includes('USD'));
+      const v = row && row.querySelector('.text-right b'); if (v) set('kr-bd-usd', v.textContent);
+    }
+    async function renderBand() {
+      const set = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
+      set('kr-bd-bbm', 'Rp' + KR_BBM[0][1].toLocaleString('id-ID')); set('kr-bd-bbm-s', 'Pertamax Rp' + KR_BBM[2][1].toLocaleString('id-ID'));
+      const mk = document.getElementById('kr-market');
+      if (mk && !window.__krMo) { window.__krMo = new MutationObserver(krSyncBand); window.__krMo.observe(mk, { childList: true, subtree: true, characterData: true }); }
+      krSyncBand();
+      const city = svc.city; set('kr-bd-wx-l', city);
+      try { const w = await svcFetch('cuaca', city); set('kr-bd-wx', WXI(w.current.weather_code) + ' ' + Math.round(w.current.temperature_2m) + '°C'); set('kr-bd-wx-s', WX(w.current.weather_code)); } catch (e) { set('kr-bd-wx', '–'); }
+      try {
+        const d = await svcFetch('salat', city); const names = [['Fajr', 'Subuh'], ['Dhuhr', 'Zuhur'], ['Asr', 'Asar'], ['Maghrib', 'Magrib'], ['Isha', 'Isya']];
+        let now = ''; try { now = new Date().toLocaleTimeString('en-GB', { timeZone: d.tz, hour: '2-digit', minute: '2-digit' }); } catch (e) {}
+        const n = names.find(x => d.t[x[0]].slice(0, 5) > now) || names[0];
+        set('kr-bd-salat', n[1] + ' ' + d.t[n[0]].slice(0, 5)); set('kr-bd-salat-s', city + (n === names[0] && now > d.t.Fajr.slice(0, 5) ? ' · besok' : ''));
+      } catch (e) { set('kr-bd-salat', '–'); }
+    }
+    window.krInfoOpen = (kind) => {
+      const slot = document.getElementById('kr-info-slot'), holder = document.getElementById('kr-info-holder'), modal = document.getElementById('kr-info-modal');
+      if (!slot || !holder || !modal) return;
+      while (slot.firstChild) holder.appendChild(slot.firstChild);
+      if (kind !== 'market') svc.tab = kind;
+      slot.appendChild(document.getElementById(kind === 'market' ? 'kr-market' : 'kr-services'));
+      modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+      if (kind !== 'market') renderServices();
+      try { renderIcons(); } catch (e) {}
+    };
+    window.krInfoClose = () => {
+      const slot = document.getElementById('kr-info-slot'), holder = document.getElementById('kr-info-holder'), modal = document.getElementById('kr-info-modal');
+      if (!slot || !holder || !modal) return;
+      while (slot.firstChild) holder.appendChild(slot.firstChild);
+      modal.classList.add('hidden'); document.body.style.overflow = '';
+      renderBand();
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') window.krInfoClose(); });
+
     function renderLatestIndex() {
       const card = document.getElementById('latest-index-card');
       const list = document.getElementById('latest-index-list');
@@ -3302,6 +3402,10 @@
       renderSlot('leaderboard', 'ad-slot-leaderboard', 'Leaderboard', 'h-28 sm:h-36');
       renderSlot('rail_left', 'ad-slot-rail-left', 'Samping Kiri 160x600', 'h-[600px]');
       renderSlot('rail_right', 'ad-slot-rail-right', 'Samping Kanan 160x600', 'h-[600px]');
+      [['rail_left', 'ad-slot-rail-left'], ['rail_right', 'ad-slot-rail-right']].forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (el && !state.ads.find(a => a.slot === k)) el.innerHTML = `<button type="button" onclick="window.openLegalModal('contact')" class="kr-rail-ph"><span class="kr-rail-tag">IKLAN</span><span class="em" aria-hidden="true">📣</span><b>Pasang Iklan Anda di Sini</b><small>160 × 600</small><i>Hubungi Redaksi →</i></button>`;
+      });
     }
 
     // =========================================================================
@@ -5376,6 +5480,7 @@
       renderLatestIndex();
       renderEditorial();
       renderServices();
+      renderBand();
       renderAdSlots();
       updateHeaderMeta();
       renderIcons();
