@@ -230,15 +230,16 @@
     .kr-s2-slide img{transform:scale(1.03);transition:transform 6s ease-out}
     .kr-s2-slide.is-on img{transform:scale(1.1)}
     .kr-s2-dot{width:7px;height:7px;border-radius:999px;background:rgba(255,255,255,.65);transition:all .25s;padding:0;border:0}
-    .kr-s2-dot.is-on{background:#e11d48;width:18px}
+    .kr-s2-dot.is-on{background:#38bdf8;width:18px}
     .kr-s2-arrow{opacity:0;transition:opacity .2s,background .2s}
-    #kr-s2-stage:hover .kr-s2-arrow,.kr-s2-arrow:focus-visible{opacity:1}
+    #kr-s2-stage:hover .kr-s2-arrow,.kr-fill:hover .kr-s2-arrow,.kr-s2-arrow:focus-visible{opacity:1}
     @media (hover:none){.kr-s2-arrow{opacity:.9}}
     .kr-s2-list{scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent}
     .kr-s2-list::-webkit-scrollbar{width:5px}
     .kr-s2-list::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:9px}
     .kr-s2-item.is-on .kr-s2-t{color:#0284c7}
     .kr-s2-item.is-on{background:rgba(2,132,199,.08)}
+    #kr-sb-picks{transition:opacity .28s ease}
     .kr-cat-card .kr-cat-sum{display:none}
     @media (min-width:640px){.kr-cat-card .kr-cat-sum{display:-webkit-box}}
     .kr-tab{font-size:11px;font-weight:800;padding:6px 12px;border-radius:999px;color:#64748b;background:transparent;border:0;transition:all .2s}
@@ -806,8 +807,8 @@
             </div>
             <div class="lg:col-span-4 relative">
               <div class="rounded-2xl overflow-hidden border border-slate-200/80 bg-sky-50 shadow-card flex flex-col max-h-[460px] lg:max-h-none lg:absolute lg:inset-0">
-                <div class="shrink-0 px-4 py-2.5 flex items-center justify-between text-white" style="background:linear-gradient(90deg,#be123c,#e11d48)">
-                  <span class="font-headline font-extrabold text-sm flex items-center gap-2"><span class="kr-live-dot is-live" style="background:#fff"></span> Berita Terkini</span>
+                <div class="shrink-0 px-4 py-2.5 flex items-center justify-between text-white" style="background:linear-gradient(135deg,#0f172a,#0c4a6e)">
+                  <span class="font-headline font-extrabold text-sm flex items-center gap-2"><span class="kr-live-dot is-live"></span> Berita Terkini</span>
                   <span class="text-[10px] font-bold opacity-90">WIB</span>
                 </div>
                 <div id="kr-s2-list" class="kr-s2-list flex-1 min-h-0 overflow-y-auto divide-y divide-slate-200/70"></div>
@@ -848,7 +849,7 @@
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start">
 
             <!-- KOLOM KIRI: DAFTAR BERITA + PILL FILTER -->
-            <div class="lg:col-span-8 space-y-5">
+            <div class="lg:col-span-8 space-y-5 lg:self-stretch lg:flex lg:flex-col">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                 <div class="flex items-center gap-2.5">
                   <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
@@ -882,6 +883,9 @@
                 </div>
                 <ol id="latest-index-list" class="kr-index"></ol>
               </section>
+
+              <!-- Pengisi ruang kosong: slider berita yang melar mengikuti tinggi sidebar -->
+              <section id="kr-fill-left" class="lg:flex-1 lg:flex lg:flex-col min-w-0" aria-label="Sedang ramai dibaca"></section>
             </div>
 
             <!-- KOLOM KANAN: SIDEBAR STICKY -->
@@ -955,6 +959,7 @@
                   Pilihan Editor
                 </h3>
                 <div id="kr-sb-picks" class="space-y-3"></div>
+                <div id="kr-ed-dots" class="flex justify-center gap-1.5 mt-3"></div>
               </div>
 
               <!-- Widget: Jelajah Kanal -->
@@ -3449,7 +3454,7 @@
           ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="${escapeHtml(a.title)}" ${i === 0 ? '' : 'loading="lazy"'} class="absolute inset-0 w-full h-full object-cover" />` : `<span class="absolute inset-0 bg-gradient-to-br from-slate-800 to-sky-900"></span>`}
           <span class="absolute inset-0" style="background:linear-gradient(to top,rgba(2,6,23,.92) 0%,rgba(2,6,23,.55) 38%,rgba(2,6,23,0) 70%)"></span>
           <span class="absolute left-4 right-4 sm:left-6 sm:right-6 bottom-9 sm:bottom-10 block">
-            <span class="inline-block px-2.5 py-1 rounded bg-rose-600 text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wide mb-2">${escapeHtml(getCategoryName(a.category_id))}</span>
+            <span class="inline-block px-2.5 py-1 rounded bg-sky-600 text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wide mb-2">${escapeHtml(getCategoryName(a.category_id))}</span>
             <span class="block font-headline font-extrabold text-white text-lg sm:text-2xl lg:text-[28px] leading-tight line-clamp-3 text-shadow-hero">${escapeHtml(a.title)}</span>
             <span class="hidden sm:block mt-1.5 text-xs text-slate-300 font-medium">${escapeHtml(formatRelativeTime(a.created_at))}</span>
           </span>
@@ -3500,7 +3505,7 @@
         const cards = items.map(art => {
           const saved = state.bookmarks.includes(art.id);
           return `
-          <article class="kr-cat-card group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition overflow-hidden flex">
+          <article class="kr-cat-card group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition overflow-hidden flex flex-1">
             <button type="button" ${krOpenAttr(art)} aria-label="Baca berita: ${escapeHtml(art.title)}" class="w-[36%] sm:w-[34%] shrink-0 bg-slate-100 overflow-hidden relative text-left min-h-[132px]">
               ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : `<span class="absolute inset-0 flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`}
               ${art.is_trending ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold shadow">VIRAL</span>` : ''}
@@ -3526,7 +3531,7 @@
           </article>`;
         }).join('');
         return `
-          <div class="min-w-0">
+          <div class="min-w-0 flex flex-col">
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
               <div class="flex items-center gap-2.5">
                 <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
@@ -3534,14 +3539,149 @@
               </div>
               <button type="button" onclick="window.selectCategory('${escapeHtml(cat.id)}')" class="min-h-[36px] px-2 text-xs font-bold text-sky-600 hover:text-sky-800 transition">Lihat semua &rarr;</button>
             </div>
-            <div class="space-y-3">${cards}</div>
+            <div class="flex flex-col gap-3 flex-1">${cards}</div>
           </div>`;
-      }).filter(Boolean).join('');
-      wrap.innerHTML = html;
-      sec.classList.toggle('hidden', !html);
+      }).filter(Boolean);
+      const odd = html.length % 2 === 1;
+      wrap.innerHTML = html.join('') + (odd ? '<div id="kr-cat-fill" class="min-w-0 hidden lg:flex lg:flex-col"></div>' : '');
+      sec.classList.toggle('hidden', !html.length);
+      if (odd) krFillCarousel(document.getElementById('kr-cat-fill'), krFillItems(4), 'Kabar Pilihan', 6500);
       renderIcons();
     }
     window.krRenderCatBlocks = krRenderCatBlocks;
+
+
+    // ----- Slider pengisi ruang kosong (melar mengikuti tinggi wadah, geser & otomatis) -----
+    const krFills = {};
+    function krFillItems(offset) {
+      const pop = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+      const withImg = pop.filter(a => a.image_url);
+      const base = withImg.length >= 4 ? withImg : pop;
+      const rotated = base.length > offset + 3 ? base.slice(offset).concat(base.slice(0, offset)) : base;
+      return rotated.slice(0, 8);
+    }
+    function krFillCarousel(host, items, heading, interval) {
+      if (!host) return;
+      const old = krFills[host.id];
+      if (old && old.timer) clearInterval(old.timer);
+      if (!items || !items.length) { host.innerHTML = ''; return; }
+      const st = { idx: 0, hold: false, timer: null };
+      krFills[host.id] = st;
+      host.innerHTML = `
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
+            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(heading)}</h2>
+          </div>
+          <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">Geser untuk berita lain</span>
+        </div>
+        <div class="kr-fill relative flex-1 min-h-[300px] rounded-2xl overflow-hidden bg-slate-900 shadow-card">
+          ${items.map((a, i) => `
+            <a href="javascript:void(0)" ${krOpenAttr(a)} class="kr-s2-slide ${i === 0 ? 'is-on' : ''} block group" aria-label="${escapeHtml(a.title)}">
+              ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="${escapeHtml(a.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover" />` : `<span class="absolute inset-0 bg-gradient-to-br from-slate-800 to-sky-900"></span>`}
+              <span class="absolute inset-0" style="background:linear-gradient(to top,rgba(2,6,23,.92) 0%,rgba(2,6,23,.5) 40%,rgba(2,6,23,0) 72%)"></span>
+              <span class="absolute left-4 right-4 sm:left-6 sm:right-6 bottom-10 block">
+                <span class="inline-block px-2.5 py-1 rounded bg-sky-600 text-white text-[10px] font-extrabold uppercase tracking-wide mb-2">${escapeHtml(getCategoryName(a.category_id))}</span>
+                <span class="block font-headline font-extrabold text-white text-lg sm:text-xl leading-tight line-clamp-3 text-shadow-hero">${escapeHtml(a.title)}</span>
+                <span class="hidden sm:block mt-1.5 text-xs text-slate-300 line-clamp-2">${escapeHtml(a.summary)}</span>
+                <span class="block mt-1.5 text-[11px] text-slate-400 font-medium">${escapeHtml(formatRelativeTime(a.created_at))} · ${formatNumber(a.views_count)} dibaca</span>
+              </span>
+            </a>`).join('')}
+          <button type="button" data-d="-1" aria-label="Sebelumnya" class="kr-s2-arrow absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center"><i data-lucide="chevron-left" aria-hidden="true" class="w-5 h-5"></i></button>
+          <button type="button" data-d="1" aria-label="Berikutnya" class="kr-s2-arrow absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center"><i data-lucide="chevron-right" aria-hidden="true" class="w-5 h-5"></i></button>
+          <div class="absolute bottom-3 inset-x-0 z-10 flex items-center justify-center gap-1.5">${items.map((a, i) => `<button type="button" data-i="${i}" aria-label="Slide ${i + 1}" class="kr-s2-dot ${i === 0 ? 'is-on' : ''}"></button>`).join('')}</div>
+        </div>`;
+      const box = host.querySelector('.kr-fill');
+      const go = (i, user) => {
+        const n = items.length; st.idx = (i + n) % n;
+        box.querySelectorAll('.kr-s2-slide').forEach((el, k) => el.classList.toggle('is-on', k === st.idx));
+        box.querySelectorAll('.kr-s2-dot').forEach((el, k) => el.classList.toggle('is-on', k === st.idx));
+        if (user) restart();
+      };
+      const restart = () => {
+        if (st.timer) clearInterval(st.timer);
+        st.timer = setInterval(() => {
+          if (st.hold || document.hidden || state.currentView !== 'home' || !document.body.contains(box)) return;
+          go(st.idx + 1, false);
+        }, interval || 5500);
+      };
+      box.addEventListener('click', e => {
+        const b = e.target.closest('[data-d],[data-i]'); if (!b) return;
+        e.preventDefault();
+        go(b.dataset.d ? st.idx + Number(b.dataset.d) : Number(b.dataset.i), true);
+      });
+      let sx = null;
+      box.addEventListener('mouseenter', () => { st.hold = true; });
+      box.addEventListener('mouseleave', () => { st.hold = false; });
+      box.addEventListener('touchstart', e => { st.hold = true; sx = e.touches[0].clientX; }, { passive: true });
+      box.addEventListener('touchend', e => {
+        st.hold = false;
+        if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(st.idx + (dx < 0 ? 1 : -1), true); }
+        sx = null;
+      }, { passive: true });
+      restart();
+    }
+    function renderFillers() {
+      krFillCarousel(document.getElementById('kr-fill-left'), krFillItems(0), 'Sedang Ramai Dibaca', 5500);
+      renderIcons();
+    }
+
+    // ----- Pilihan Editor: berganti-ganti otomatis (3 berita per halaman) -----
+    const krEd = { page: 0, timer: null, hold: false, pages: [], sig: '' };
+    function krEdShow(p, fade) {
+      const el = document.getElementById('kr-sb-picks'); const dots = document.getElementById('kr-ed-dots');
+      if (!el || !krEd.pages.length) return;
+      const n = krEd.pages.length; krEd.page = (p + n) % n;
+      const draw = () => {
+        el.innerHTML = krEd.pages[krEd.page].map((a, i) => i === 0 ? `
+          <button type="button" ${krOpenAttr(a)} class="group block w-full text-left">
+            <span class="block aspect-[16/9] rounded-xl overflow-hidden bg-slate-100 relative">${krThumb(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-extrabold">PILIHAN</span></span>
+            <span class="block mt-2 font-headline font-extrabold text-sm leading-snug text-brandSlate line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span>
+          </button>` : `
+          <button type="button" ${krOpenAttr(a)} class="group w-full flex items-start gap-3 text-left">
+            <span class="block w-20 aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 shrink-0">${krThumb(a, 'w-full h-full object-cover')}</span>
+            <span class="block min-w-0 flex-1 font-headline font-bold text-[13px] leading-snug text-brandSlate line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span>
+          </button>`).join('');
+        el.style.opacity = 1; renderIcons();
+      };
+      if (dots) dots.innerHTML = krEd.pages.map((_, i) => `<button type="button" data-p="${i}" aria-label="Halaman ${i + 1}" class="kr-s2-dot ${i === krEd.page ? 'is-on' : ''}" style="background:${i === krEd.page ? '#0284c7' : '#cbd5e1'}"></button>`).join('');
+      if (fade) { el.style.opacity = 0; setTimeout(draw, 260); } else draw();
+    }
+    function krRenderEditor() {
+      const el = document.getElementById('kr-sb-picks'); if (!el) return;
+      const pool = [], seen = new Set();
+      const push = a => { if (a && !seen.has(a.id)) { seen.add(a.id); pool.push(a); } };
+      state.articles.filter(a => krHasPick(a.search_keywords)).sort(krByDate).forEach(push);
+      state.articles.filter(a => a.is_headline).sort(krByDate).forEach(push);
+      [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0)).forEach(push);
+      [...state.articles].sort(krByDate).forEach(push);
+      const use = pool.slice(0, 9);
+      const pages = [];
+      for (let i = 0; i < use.length; i += 3) pages.push(use.slice(i, i + 3));
+      if (pages.length > 1 && pages[pages.length - 1].length < 3) pages.pop();
+      const sig = pages.map(pg => pg.map(a => a.id).join('.')).join('|');
+      const changed = sig !== krEd.sig;
+      krEd.pages = pages; krEd.sig = sig;
+      if (changed) krEd.page = pages.length ? Math.floor(Math.random() * pages.length) : 0;
+      krEdShow(krEd.page, false);
+      const dots = document.getElementById('kr-ed-dots');
+      if (!el.dataset.bound) {
+        el.dataset.bound = '1';
+        const restart = () => {
+          if (krEd.timer) clearInterval(krEd.timer);
+          krEd.timer = setInterval(() => { if (krEd.hold || document.hidden || state.currentView !== 'home' || krEd.pages.length < 2) return; krEdShow(krEd.page + 1, true); }, 6000);
+        };
+        el.__restart = restart;
+        const host = el.parentElement;
+        host.addEventListener('mouseenter', () => { krEd.hold = true; });
+        host.addEventListener('mouseleave', () => { krEd.hold = false; });
+        let sx = null;
+        host.addEventListener('touchstart', e => { krEd.hold = true; sx = e.touches[0].clientX; }, { passive: true });
+        host.addEventListener('touchend', e => { krEd.hold = false; if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) { krEdShow(krEd.page + (dx < 0 ? 1 : -1), true); restart(); } } sx = null; }, { passive: true });
+        dots.addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) { krEdShow(Number(b.dataset.p), true); restart(); } });
+        restart();
+      }
+    }
 
     let krSbMode = 'new';
     window.krSbTab = mode => { krSbMode = mode; renderSidebarExtra(); };
@@ -3564,24 +3704,7 @@
             </span>
           </button>`).join('');
       }
-      const picksEl = document.getElementById('kr-sb-picks');
-      if (picksEl) {
-        let picks = state.articles.filter(a => krHasPick(a.search_keywords)).sort(krByDate);
-        if (picks.length < 3) {
-          const seen = new Set(picks.map(a => a.id));
-          state.articles.filter(a => a.is_headline && !seen.has(a.id)).sort(krByDate).forEach(a => { if (picks.length < 3) { picks.push(a); seen.add(a.id); } });
-          [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0)).forEach(a => { if (picks.length < 3 && !seen.has(a.id)) { picks.push(a); seen.add(a.id); } });
-        }
-        picksEl.innerHTML = picks.slice(0, 3).map((a, i) => i === 0 ? `
-          <button type="button" ${krOpenAttr(a)} class="group block w-full text-left">
-            <span class="block aspect-[16/9] rounded-xl overflow-hidden bg-slate-100 relative">${krThumb(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-extrabold">PILIHAN</span></span>
-            <span class="block mt-2 font-headline font-extrabold text-sm leading-snug text-brandSlate line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span>
-          </button>` : `
-          <button type="button" ${krOpenAttr(a)} class="group w-full flex items-start gap-3 text-left">
-            <span class="block w-20 aspect-[4/3] rounded-lg overflow-hidden bg-slate-100 shrink-0">${krThumb(a, 'w-full h-full object-cover')}</span>
-            <span class="block min-w-0 flex-1 font-headline font-bold text-[13px] leading-snug text-brandSlate line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span>
-          </button>`).join('');
-      }
+      krRenderEditor();
       const catsEl = document.getElementById('kr-sb-cats');
       if (catsEl) {
         catsEl.innerHTML = navCats().map(c => {
@@ -6040,6 +6163,7 @@
       renderHeroSlider2();
       krRenderCatBlocks();
       renderSidebarExtra();
+      renderFillers();
       renderServices();
       renderBand();
       renderAdSlots();
