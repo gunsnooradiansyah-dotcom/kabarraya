@@ -333,6 +333,12 @@
     .hero-progress-paused {
       animation-play-state: paused !important;
     }
+    .kr-picks-track { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; }
+    .kr-pick-card { flex-shrink: 0; scroll-snap-align: start; }
+    .kr-picks-track::-webkit-scrollbar { display: none; }
+    .kr-pick-card { width: calc((100% - 16px) / 2); }
+    @media (min-width: 1024px) { .kr-pick-card { width: calc((100% - 48px) / 4); } }
+    @media (max-width: 479px) { .kr-pick-card { width: 78%; } }
     .text-shadow-hero {
       text-shadow: 0 2px 14px rgba(15, 23, 42, 0.72);
     }
@@ -2417,7 +2423,7 @@
 
     const KR_CATEGORY_ORDER = [
       ['Daerah','daerah'],['Ekonomi','ekonomi'],['Gaya Hidup','gaya-hidup'],['Hiburan','hiburan'],
-      ['Internasional','internasional'],['Nasional','nasional'],['Olahraga','olahraga'],['Otomotif','otomotif'],['Teknologi','teknologi']
+      ['Internasional','internasional'],['Kesehatan','kesehatan'],['Nasional','nasional'],['Olahraga','olahraga'],['Otomotif','otomotif'],['Teknologi','teknologi']
     ];
     const KR_EXTRA_CATEGORIES = [];
     const KR_DROPPED_SLUGS = ['opini', 'cek-fakta', 'infografik'];
@@ -2801,7 +2807,20 @@
         }
         return new Date(b.created_at) - new Date(a.created_at);
       });
-      return pool;
+      if (state.selectedCategoryId) return pool;
+      // Beranda: ambil bergiliran 1 berita teratas per kategori, supaya sorotan tidak didominasi satu kategori.
+      const groups = new Map();
+      pool.forEach(a => {
+        const key = a.category_id || 'lainnya';
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(a);
+      });
+      const lanes = [...groups.values()];
+      const mixed = [];
+      for (let round = 0; mixed.length < pool.length; round++) {
+        lanes.forEach(lane => { if (lane[round]) mixed.push(lane[round]); });
+      }
+      return mixed;
     }
 
     // Autoplay hero berbasis requestAnimationFrame: timer & progress bar selalu sinkron,
@@ -3230,15 +3249,70 @@
       const open = a => `onclick="window.openArticleDetail('${escapeHtml(a.id)}')"`;
       const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
 
-      // 1. Pilihan Redaksi
+      // 1. Pilihan Redaksi (carousel geser otomatis + panah kiri/kanan)
       let picks = state.articles.filter(a => krHasPick(a.search_keywords)).sort(byDate);
-      if (!picks.length) picks = state.articles.filter(a => a.is_headline).sort(byDate);
-      picks = picks.slice(0, 4);
-      set('kr-picks', picks.length ? head('Pilihan Redaksi', 'Dikurasi tim redaksi untuk Anda', 'star') + `<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">${picks.map(a => `
-        <button type="button" ${open(a)} class="group text-left bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
-          <span class="relative block aspect-[16/10] bg-slate-100 overflow-hidden">${img(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-extrabold">PILIHAN</span></span>
-          <span class="p-3.5 space-y-1"><span class="block text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(catOf(a)?.name || 'Berita')}</span><span class="block font-headline font-extrabold text-sm leading-snug line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span></span>
-        </button>`).join('')}</div>` : '');
+      if (picks.length < 8) {
+        const seen = new Set(picks.map(a => a.id));
+        state.articles.filter(a => a.is_headline && !seen.has(a.id)).sort(byDate).forEach(a => { if (picks.length < 8) { picks.push(a); seen.add(a.id); } });
+        state.articles.filter(a => !seen.has(a.id)).sort(byDate).forEach(a => { if (picks.length < 8) { picks.push(a); seen.add(a.id); } });
+      }
+      picks = picks.slice(0, 10);
+      const arrowBtn = (dir, icon, label) => `<button type="button" data-picks-nav="${dir}" aria-label="${label}" class="kr-picks-arrow w-9 h-9 rounded-full bg-white border border-slate-200 shadow-card flex items-center justify-center text-slate-700 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 transition disabled:opacity-40 disabled:cursor-default"><i data-lucide="${icon}" aria-hidden="true" class="w-4 h-4"></i></button>`;
+      set('kr-picks', picks.length ? `
+        <div class="flex items-end justify-between gap-3">
+          <div class="flex-1 min-w-0">${head('Pilihan Redaksi', 'Dikurasi tim redaksi untuk Anda', 'star')}</div>
+          <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-200">${arrowBtn('prev', 'chevron-left', 'Pilihan sebelumnya')}${arrowBtn('next', 'chevron-right', 'Pilihan berikutnya')}</div>
+        </div>
+        <div class="relative">
+          <div id="kr-picks-track" class="kr-picks-track flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1">${picks.map(a => `
+            <button type="button" ${open(a)} class="kr-pick-card group snap-start shrink-0 text-left bg-white rounded-2xl border border-slate-200/80 shadow-card overflow-hidden flex flex-col">
+              <span class="relative block aspect-[16/10] bg-slate-100 overflow-hidden">${img(a, 'w-full h-full object-cover group-hover:scale-105 transition duration-500')}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-extrabold">PILIHAN</span></span>
+              <span class="p-3.5 space-y-1"><span class="block text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(catOf(a)?.name || 'Berita')}</span><span class="block font-headline font-extrabold text-sm leading-snug line-clamp-3 group-hover:text-sky-700 transition">${escapeHtml(a.title)}</span></span>
+            </button>`).join('')}
+          </div>
+        </div>` : '');
+      initPicksCarousel();
+    }
+
+    // Carousel Pilihan Redaksi: geser 1 kartu tiap 4,5 detik, kembali ke awal saat sampai ujung.
+    const KR_PICKS_INTERVAL_MS = 4500;
+    let krPicksTimer = null;
+    let krPicksHold = false;
+    function initPicksCarousel() {
+      if (krPicksTimer) { clearInterval(krPicksTimer); krPicksTimer = null; }
+      const track = document.getElementById('kr-picks-track');
+      const wrap = document.getElementById('kr-picks');
+      if (!track || !wrap) return;
+      const step = () => { const card = track.querySelector('.kr-pick-card'); return card ? card.getBoundingClientRect().width + 16 : track.clientWidth; };
+      const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      const updateArrows = () => {
+        const noScroll = track.scrollWidth <= track.clientWidth + 4;
+        wrap.querySelectorAll('[data-picks-nav]').forEach(b => { b.classList.toggle('invisible', noScroll); });
+      };
+      const go = dir => {
+        if (dir > 0 && atEnd()) track.scrollTo({ left: 0, behavior: 'smooth' });
+        else if (dir < 0 && track.scrollLeft <= 4) track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+        else track.scrollBy({ left: dir * step(), behavior: 'smooth' });
+      };
+      const restart = () => {
+        if (krPicksTimer) clearInterval(krPicksTimer);
+        krPicksTimer = setInterval(() => {
+          if (krPicksHold || document.hidden || state.currentView !== 'home') return;
+          if (track.scrollWidth <= track.clientWidth + 4) return;
+          go(1);
+        }, KR_PICKS_INTERVAL_MS);
+      };
+      wrap.querySelectorAll('[data-picks-nav]').forEach(b => b.addEventListener('click', () => { go(b.dataset.picksNav === 'next' ? 1 : -1); restart(); }));
+      track.addEventListener('mouseenter', () => { krPicksHold = true; });
+      track.addEventListener('mouseleave', () => { krPicksHold = false; });
+      track.addEventListener('touchstart', () => { krPicksHold = true; }, { passive: true });
+      track.addEventListener('touchend', () => { krPicksHold = false; restart(); }, { passive: true });
+      track.addEventListener('focusin', () => { krPicksHold = true; });
+      track.addEventListener('focusout', () => { krPicksHold = false; });
+      updateArrows();
+      if (!wrap.dataset.resizeBound) { wrap.dataset.resizeBound = '1'; window.addEventListener('resize', () => { const t = document.getElementById('kr-picks-track'); if (t) wrap.querySelectorAll('[data-picks-nav]').forEach(b => b.classList.toggle('invisible', t.scrollWidth <= t.clientWidth + 4)); }, { passive: true }); }
+      krPicksHold = false;
+      restart();
     }
 
     // ===== Layanan Harian: Salat, Cuaca, BBM =====
