@@ -2384,6 +2384,8 @@
 
         // Daftarkan listener perubahan sesi terlebih dahulu agar token OAuth dari URL langsung tertangkap
         supabase.auth.onAuthStateChange((_event, session) => {
+          // Abaikan event sesi yang masih "nyangkut" saat proses keluar akun berjalan
+          if (window.__krLoggingOut && session) return;
           const u = session?.user || null;
           if (u && (u.email || '').toLowerCase() === ADMIN_EMAIL) {
             state.adminUser = u;
@@ -3863,15 +3865,68 @@
       }
     };
 
+    // Hapus paksa token sesi Supabase yang tersimpan di browser (cadangan bila signOut gagal)
+    function krClearSupabaseAuthStorage() {
+      try {
+        const ref = (SUPABASE_URL.match(/https?:\/\/([^.]+)\./) || [])[1] || '';
+        [localStorage, sessionStorage].forEach(store => {
+          Object.keys(store).forEach(k => {
+            if (k.startsWith('sb-') && (k.includes('auth-token') || (ref && k.includes(ref)))) store.removeItem(k);
+          });
+        });
+      } catch (e) {}
+    }
+
     window.logoutCommentSocial = async () => {
-      if (!USE_LOCAL_MODE && supabase) {
-        try { await supabase.auth.signOut(); } catch (e) {}
+      if (window.__krLoggingOut) return;
+      window.__krLoggingOut = true;
+      try {
+        // 1) Bersihkan tampilan & state lokal lebih dulu agar tombol langsung bereaksi
+        const wasAdminProfile = !state.commentUser && !!state.adminUser;
+        state.commentUser = null;
+        cSave(COMMENT_KEYS.localUser, null);
+        if (!USE_LOCAL_MODE && supabase) {
+          // Sesi Supabase hanya satu, jadi sesi admin di browser ini ikut berakhir
+          state.adminUser = null;
+          safeSetStorage(STORAGE_KEYS.adminSession, null);
+        } else if (wasAdminProfile) {
+          state.adminUser = null;
+          safeSetStorage(STORAGE_KEYS.adminSession, null);
+        }
+        updateCommentAuthUI();
+        if (typeof updateHeaderMeta === 'function') updateHeaderMeta();
+        renderArticleComments();
+
+        // 2) Akhiri sesi di Supabase. signOut() mengembalikan error (tidak melempar),
+        //    dan bila gagal token lama tetap tersimpan -> akun "nyangkut" setelah reload.
+        if (!USE_LOCAL_MODE && supabase) {
+          try {
+            await Promise.race([
+              supabase.auth.signOut({ scope: 'global' }),
+              new Promise(r => setTimeout(r, 4000))
+            ]);
+          } catch (e) {}
+          try { await supabase.auth.signOut({ scope: 'local' }); } catch (e) {}
+          krClearSupabaseAuthStorage();
+        }
+
+        // 3) Buang sisa token OAuth di URL agar tidak login ulang saat halaman dimuat ulang
+        try {
+          const h = window.location.hash || '';
+          const url = new URL(window.location.href);
+          let dirty = false;
+          if (/access_token|refresh_token|provider_token/.test(h)) { url.hash = ''; dirty = true; }
+          if (url.searchParams.has('code')) { url.searchParams.delete('code'); dirty = true; }
+          if (dirty) window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+        } catch (e) {}
+        cSave(COMMENT_KEYS.pendingArticle, null);
+
+        state.commentUser = null;
+        updateCommentAuthUI();
+        showToast('Anda telah keluar dari akun komentar.', 'info');
+      } finally {
+        setTimeout(() => { window.__krLoggingOut = false; }, 800);
       }
-      state.commentUser = null;
-      cSave(COMMENT_KEYS.localUser, null);
-      updateCommentAuthUI();
-      renderArticleComments();
-      showToast('Anda telah keluar dari akun komentar.', 'info');
     };
 
     function commentErrorMessage(err) {
