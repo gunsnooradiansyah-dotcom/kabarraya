@@ -3277,6 +3277,7 @@
         loadMoreWrap.classList.toggle('hidden', visible.length >= filtered.length);
       }
       renderIcons();
+      if (window.krFitFill) setTimeout(window.krFitFill, 80);
     }
 
     function renderSidebarWidgets() {
@@ -3545,84 +3546,136 @@
       const odd = html.length % 2 === 1;
       wrap.innerHTML = html.join('') + (odd ? '<div id="kr-cat-fill" class="min-w-0 hidden lg:flex lg:flex-col"></div>' : '');
       sec.classList.toggle('hidden', !html.length);
-      if (odd) krFillCarousel(document.getElementById('kr-cat-fill'), krFillItems(4), 'Kabar Pilihan', 6500);
+      if (odd) krRotator(document.getElementById('kr-cat-fill'), { heading: 'Kabar Pilihan', count: 3, interval: 8000, start: 5 });
       renderIcons();
     }
     window.krRenderCatBlocks = krRenderCatBlocks;
 
 
-    // ----- Slider pengisi ruang kosong (melar mengikuti tinggi wadah, geser & otomatis) -----
-    const krFills = {};
-    function krFillItems(offset) {
-      const pop = [...state.articles].sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
-      const withImg = pop.filter(a => a.image_url);
-      const base = withImg.length >= 4 ? withImg : pop;
-      const rotated = base.length > offset + 3 ? base.slice(offset).concat(base.slice(0, offset)) : base;
-      return rotated.slice(0, 8);
+    // ----- Kartu berita pengisi ruang (ukuran normal, berganti otomatis, bisa digeser) -----
+    const krRot = {};
+    let krPoolIds = null;
+    function krPool() {
+      const byId = new Map(state.articles.map(a => [a.id, a]));
+      if (!krPoolIds) { krPoolIds = state.articles.map(a => a.id); for (let i = krPoolIds.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [krPoolIds[i], krPoolIds[j]] = [krPoolIds[j], krPoolIds[i]]; } }
+      state.articles.forEach(a => { if (!krPoolIds.includes(a.id)) krPoolIds.push(a.id); });
+      return krPoolIds.map(id => byId.get(id)).filter(Boolean);
     }
-    function krFillCarousel(host, items, heading, interval) {
+    function krCardHtml(art) {
+      const saved = state.bookmarks.includes(art.id);
+      return `
+      <article class="kr-cat-card group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition overflow-hidden flex flex-1">
+        <button type="button" ${krOpenAttr(art)} aria-label="Baca berita: ${escapeHtml(art.title)}" class="w-[36%] sm:w-[34%] shrink-0 bg-slate-100 overflow-hidden relative text-left min-h-[132px]">
+          ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : `<span class="absolute inset-0 flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`}
+          ${art.is_trending ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold shadow">VIRAL</span>` : ''}
+        </button>
+        <div class="p-3 sm:p-4 flex-1 min-w-0 flex flex-col justify-between gap-2">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-600">${escapeHtml(getCategoryName(art.category_id))}</span>
+              <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">${escapeHtml(formatRelativeTime(art.created_at))}</span>
+            </div>
+            <h3 class="font-headline font-extrabold text-sm sm:text-[15px] leading-snug text-brandSlate">
+              <button type="button" ${krOpenAttr(art)} class="text-left group-hover:text-sky-700 transition line-clamp-3 sm:line-clamp-2">${escapeHtml(art.title)}</button>
+            </h3>
+            <p class="kr-cat-sum text-[11px] text-slate-500 line-clamp-2 leading-relaxed">${escapeHtml(art.summary)}</p>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px] sm:text-[11px] text-slate-500">
+            <span class="flex items-center gap-1"><i data-lucide="eye" aria-hidden="true" class="w-3.5 h-3.5 text-slate-400"></i> ${formatNumber(art.views_count)} dibaca</span>
+            <button type="button" onclick="window.toggleBookmark('${escapeHtml(art.id)}')" class="min-h-[32px] px-1 inline-flex items-center gap-1 font-bold ${saved ? 'text-amber-600' : 'text-slate-500 hover:text-amber-600'} transition">
+              <i data-lucide="bookmark" aria-hidden="true" class="w-3.5 h-3.5 ${saved ? 'fill-amber-500' : ''}"></i>${saved ? 'Tersimpan' : 'Simpan Berita'}
+            </button>
+          </div>
+        </div>
+      </article>`;
+    }
+    function krRotDraw(id, fade) {
+      const st = krRot[id]; const host = document.getElementById(id);
+      if (!st || !host) return;
+      const box = host.querySelector('.kr-rot-cards'); if (!box) return;
+      const pool = krPool(); const len = pool.length;
+      const n = Math.min(st.n, len);
+      const draw = () => {
+        box.innerHTML = Array.from({ length: n }, (_, i) => krCardHtml(pool[(st.off + i) % len])).join('');
+        box.style.opacity = 1; renderIcons();
+      };
+      if (fade) { box.style.opacity = 0; setTimeout(draw, 260); } else draw();
+    }
+    function krRotStep(id, dir) {
+      const st = krRot[id]; if (!st) return;
+      const len = krPool().length; if (!len) return;
+      st.off = ((st.off + dir * Math.max(1, st.n)) % len + len) % len;
+      krRotDraw(id, true);
+    }
+    function krRotator(host, opts) {
       if (!host) return;
-      const old = krFills[host.id];
-      if (old && old.timer) clearInterval(old.timer);
-      if (!items || !items.length) { host.innerHTML = ''; return; }
-      const st = { idx: 0, hold: false, timer: null };
-      krFills[host.id] = st;
+      const id = host.id;
+      const prev = krRot[id];
+      const st = prev || { off: opts.start || 0, n: opts.count, hold: false, timer: null };
+      if (prev && prev.timer) clearInterval(prev.timer);
+      st.count = opts.count; krRot[id] = st;
+      if (!prev) st.n = opts.count;
       host.innerHTML = `
         <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
           <div class="flex items-center gap-2.5">
             <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
-            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(heading)}</h2>
+            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(opts.heading)}</h2>
           </div>
-          <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">Geser untuk berita lain</span>
+          <div class="flex items-center gap-2">
+            <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-400"><span class="kr-live-dot is-live"></span>Berganti otomatis</span>
+            <button type="button" data-rot="-1" aria-label="Berita sebelumnya" class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-card flex items-center justify-center text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition"><i data-lucide="chevron-left" aria-hidden="true" class="w-4 h-4"></i></button>
+            <button type="button" data-rot="1" aria-label="Berita berikutnya" class="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-card flex items-center justify-center text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition"><i data-lucide="chevron-right" aria-hidden="true" class="w-4 h-4"></i></button>
+          </div>
         </div>
-        <div class="kr-fill relative flex-1 min-h-[300px] rounded-2xl overflow-hidden bg-slate-900 shadow-card">
-          ${items.map((a, i) => `
-            <a href="javascript:void(0)" ${krOpenAttr(a)} class="kr-s2-slide ${i === 0 ? 'is-on' : ''} block group" aria-label="${escapeHtml(a.title)}">
-              ${a.image_url ? `<img src="${escapeHtml(a.image_url)}" alt="${escapeHtml(a.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover" />` : `<span class="absolute inset-0 bg-gradient-to-br from-slate-800 to-sky-900"></span>`}
-              <span class="absolute inset-0" style="background:linear-gradient(to top,rgba(2,6,23,.92) 0%,rgba(2,6,23,.5) 40%,rgba(2,6,23,0) 72%)"></span>
-              <span class="absolute left-4 right-4 sm:left-6 sm:right-6 bottom-10 block">
-                <span class="inline-block px-2.5 py-1 rounded bg-sky-600 text-white text-[10px] font-extrabold uppercase tracking-wide mb-2">${escapeHtml(getCategoryName(a.category_id))}</span>
-                <span class="block font-headline font-extrabold text-white text-lg sm:text-xl leading-tight line-clamp-3 text-shadow-hero">${escapeHtml(a.title)}</span>
-                <span class="hidden sm:block mt-1.5 text-xs text-slate-300 line-clamp-2">${escapeHtml(a.summary)}</span>
-                <span class="block mt-1.5 text-[11px] text-slate-400 font-medium">${escapeHtml(formatRelativeTime(a.created_at))} · ${formatNumber(a.views_count)} dibaca</span>
-              </span>
-            </a>`).join('')}
-          <button type="button" data-d="-1" aria-label="Sebelumnya" class="kr-s2-arrow absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center"><i data-lucide="chevron-left" aria-hidden="true" class="w-5 h-5"></i></button>
-          <button type="button" data-d="1" aria-label="Berikutnya" class="kr-s2-arrow absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center"><i data-lucide="chevron-right" aria-hidden="true" class="w-5 h-5"></i></button>
-          <div class="absolute bottom-3 inset-x-0 z-10 flex items-center justify-center gap-1.5">${items.map((a, i) => `<button type="button" data-i="${i}" aria-label="Slide ${i + 1}" class="kr-s2-dot ${i === 0 ? 'is-on' : ''}"></button>`).join('')}</div>
-        </div>`;
-      const box = host.querySelector('.kr-fill');
-      const go = (i, user) => {
-        const n = items.length; st.idx = (i + n) % n;
-        box.querySelectorAll('.kr-s2-slide').forEach((el, k) => el.classList.toggle('is-on', k === st.idx));
-        box.querySelectorAll('.kr-s2-dot').forEach((el, k) => el.classList.toggle('is-on', k === st.idx));
-        if (user) restart();
-      };
-      const restart = () => {
+        <div class="kr-rot-cards flex flex-col gap-3 lg:flex-1" style="transition:opacity .28s ease"></div>`;
+      krRotDraw(id, false);
+      host.querySelectorAll('[data-rot]').forEach(b => b.addEventListener('click', () => { krRotStep(id, Number(b.dataset.rot)); restart(); }));
+      let sx = null;
+      host.addEventListener('mouseenter', () => { st.hold = true; });
+      host.addEventListener('mouseleave', () => { st.hold = false; });
+      host.addEventListener('touchstart', e => { st.hold = true; sx = e.touches[0].clientX; }, { passive: true });
+      host.addEventListener('touchend', e => { st.hold = false; if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) { krRotStep(id, dx < 0 ? 1 : -1); restart(); } } sx = null; }, { passive: true });
+      function restart() {
         if (st.timer) clearInterval(st.timer);
         st.timer = setInterval(() => {
-          if (st.hold || document.hidden || state.currentView !== 'home' || !document.body.contains(box)) return;
-          go(st.idx + 1, false);
-        }, interval || 5500);
-      };
-      box.addEventListener('click', e => {
-        const b = e.target.closest('[data-d],[data-i]'); if (!b) return;
-        e.preventDefault();
-        go(b.dataset.d ? st.idx + Number(b.dataset.d) : Number(b.dataset.i), true);
-      });
-      let sx = null;
-      box.addEventListener('mouseenter', () => { st.hold = true; });
-      box.addEventListener('mouseleave', () => { st.hold = false; });
-      box.addEventListener('touchstart', e => { st.hold = true; sx = e.touches[0].clientX; }, { passive: true });
-      box.addEventListener('touchend', e => {
-        st.hold = false;
-        if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(st.idx + (dx < 0 ? 1 : -1), true); }
-        sx = null;
-      }, { passive: true });
+          if (st.hold || document.hidden || state.currentView !== 'home' || !document.body.contains(host)) return;
+          krRotStep(id, 1);
+        }, opts.interval || 7000);
+      }
       restart();
     }
+    // Hitung berapa kartu yang muat agar kolom kiri sama tinggi dengan sidebar (tanpa celah)
+    function krFitFill() {
+      const id = 'kr-fill-left'; const st = krRot[id]; const host = document.getElementById(id);
+      if (!st || !host || state.currentView !== 'home') return;
+      const col = host.parentElement; const aside = document.querySelector('#subview-home aside');
+      host.style.display = '';
+      if (window.innerWidth < 960 || !aside) { st.n = st.count; krRotDraw(id, false); return; }
+      const box = host.querySelector('.kr-rot-cards');
+      col.style.alignSelf = 'start'; aside.style.alignSelf = 'start';
+      const target = aside.offsetHeight;
+      if (box) box.innerHTML = '';
+      let best = 0;
+      if (col.offsetHeight < target - 60) {
+        const max = Math.min(12, krPool().length);
+        for (let n = 1; n <= max; n++) {
+          st.n = n; krRotDraw(id, false);
+          if (col.offsetHeight > target) break;
+          best = n;
+        }
+      }
+      col.style.alignSelf = ''; aside.style.alignSelf = '';
+      if (best < 1) { host.style.display = 'none'; return; }
+      st.n = best; krRotDraw(id, false);
+    }
+    window.krFitFill = krFitFill;
+    window.krRotRefresh = () => Object.keys(krRot).forEach(id => krRotDraw(id, false));
+    let krFitT = null;
+    window.addEventListener('resize', () => { clearTimeout(krFitT); krFitT = setTimeout(krFitFill, 250); }, { passive: true });
+    window.addEventListener('load', () => setTimeout(krFitFill, 300));
     function renderFillers() {
-      krFillCarousel(document.getElementById('kr-fill-left'), krFillItems(0), 'Sedang Ramai Dibaca', 5500);
+      krRotator(document.getElementById('kr-fill-left'), { heading: 'Berita Lainnya', count: 4, interval: 7000, start: 0 });
+      [200, 800, 2000, 4500].forEach(t => setTimeout(krFitFill, t));
       renderIcons();
     }
 
@@ -4155,7 +4208,7 @@
       }
       safeSetStorage(STORAGE_KEYS.bookmarks, state.bookmarks);
       updateHeaderMeta();
-      if (state.currentView === 'home') { renderPortalFeed(); krRenderCatBlocks(); }
+      if (state.currentView === 'home') { renderPortalFeed(); krRenderCatBlocks(); if (window.krRotRefresh) window.krRotRefresh(); }
       if (state.currentView === 'bookmarks') renderBookmarksView();
     };
 
