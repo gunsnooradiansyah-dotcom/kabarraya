@@ -3546,7 +3546,7 @@
       const odd = html.length % 2 === 1;
       wrap.innerHTML = html.join('') + (odd ? '<div id="kr-cat-fill" class="min-w-0 hidden lg:flex lg:flex-col"></div>' : '');
       sec.classList.toggle('hidden', !html.length);
-      if (odd) krRotator(document.getElementById('kr-cat-fill'), { heading: 'Kabar Pilihan', count: 3, interval: 8000, start: 5 });
+      if (odd) krRotator(document.getElementById('kr-cat-fill'), { heading: 'Kabar Pilihan', count: 3, interval: 8000, start: 5, perCard: true });
       renderIcons();
     }
     window.krRenderCatBlocks = krRenderCatBlocks;
@@ -3561,14 +3561,24 @@
       state.articles.forEach(a => { if (!krPoolIds.includes(a.id)) krPoolIds.push(a.id); });
       return krPoolIds.map(id => byId.get(id)).filter(Boolean);
     }
-    function krCardHtml(art) {
+    function krCardHtml(art, arrows) {
       const saved = state.bookmarks.includes(art.id);
       return `
       <article class="kr-cat-card group bg-white rounded-2xl border border-slate-200/80 shadow-card hover:shadow-md transition overflow-hidden flex flex-1">
+        ${arrows ? `
+        <div class="w-[36%] sm:w-[34%] shrink-0 bg-slate-100 overflow-hidden relative min-h-[132px]">
+          <button type="button" ${krOpenAttr(art)} aria-label="Baca berita: ${escapeHtml(art.title)}" class="absolute inset-0 w-full h-full text-left">
+            ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : `<span class="absolute inset-0 flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`}
+            ${art.is_trending ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold shadow">VIRAL</span>` : ''}
+          </button>
+          <button type="button" data-slot-step="-1" aria-label="Berita sebelumnya" class="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/25 hover:bg-black/50 text-white flex items-center justify-center transition"><i data-lucide="chevron-left" aria-hidden="true" class="w-4 h-4"></i></button>
+          <button type="button" data-slot-step="1" aria-label="Berita berikutnya" class="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-black/25 hover:bg-black/50 text-white flex items-center justify-center transition"><i data-lucide="chevron-right" aria-hidden="true" class="w-4 h-4"></i></button>
+        </div>` : `
         <button type="button" ${krOpenAttr(art)} aria-label="Baca berita: ${escapeHtml(art.title)}" class="w-[36%] sm:w-[34%] shrink-0 bg-slate-100 overflow-hidden relative text-left min-h-[132px]">
           ${art.image_url ? `<img src="${escapeHtml(art.image_url)}" alt="${escapeHtml(art.title)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />` : `<span class="absolute inset-0 flex items-center justify-center text-slate-300"><i data-lucide="newspaper" aria-hidden="true" class="w-8 h-8"></i></span>`}
           ${art.is_trending ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold shadow">VIRAL</span>` : ''}
         </button>
+        `}
         <div class="p-3 sm:p-4 flex-1 min-w-0 flex flex-col justify-between gap-2">
           <div class="space-y-1">
             <div class="flex items-center justify-between gap-2">
@@ -3592,6 +3602,7 @@
     function krRotDraw(id, fade) {
       const st = krRot[id]; const host = document.getElementById(id);
       if (!st || !host) return;
+      if (st.slots) { st.slots.forEach((_, i) => krSlotDraw(id, i, false)); return; }
       const box = host.querySelector('.kr-rot-cards'); if (!box) return;
       const pool = krPool(); const len = pool.length;
       const n = Math.min(st.n, len);
@@ -3607,10 +3618,62 @@
       st.off = ((st.off + dir * Math.max(1, st.n)) % len + len) % len;
       krRotDraw(id, true);
     }
+    // Mode per kartu: tiap kartu berganti sendiri-sendiri, panah transparan ada di dalam foto
+    function krSlotDraw(id, i, fade) {
+      const host = document.getElementById(id); const st = krRot[id];
+      if (!host || !st || !st.slots) return;
+      const slot = host.querySelector('.kr-slot[data-i="' + i + '"]'); if (!slot) return;
+      const pool = krPool(); const len = pool.length; if (!len) return;
+      const art = pool[((st.slots[i] % len) + len) % len];
+      const draw = () => { slot.innerHTML = krCardHtml(art, true); slot.style.opacity = 1; renderIcons(); };
+      if (fade) { slot.style.opacity = 0; setTimeout(draw, 260); } else draw();
+    }
+    function krSlotStep(id, i, dir) {
+      const st = krRot[id]; if (!st || !st.slots) return;
+      const len = krPool().length; if (!len) return;
+      const shown = new Set(st.slots.map(v => ((v % len) + len) % len));
+      let c = st.slots[i];
+      for (let k = 0; k < len; k++) { c = ((c + dir) % len + len) % len; if (!shown.has(c)) break; }
+      st.slots[i] = c; krSlotDraw(id, i, true);
+    }
+    function krSlotsInit(host, opts, prev) {
+      const id = host.id;
+      if (prev && prev.timers) prev.timers.forEach(clearInterval);
+      const n = Math.max(1, Math.min(opts.count, krPool().length || opts.count));
+      const st = { slots: (prev && prev.slots && prev.slots.length === n) ? prev.slots : Array.from({ length: n }, (_, i) => (opts.start || 0) + i), hold: [], timers: [], n, count: n };
+      krRot[id] = st;
+      host.innerHTML = `
+        <div class="flex items-center pb-3 mb-4 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
+            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(opts.heading)}</h2>
+          </div>
+        </div>
+        <div class="kr-rot-cards flex flex-col gap-3 lg:flex-1">${st.slots.map((_, i) => `<div class="kr-slot flex flex-col flex-1" data-i="${i}" style="transition:opacity .28s ease"></div>`).join('')}</div>`;
+      st.slots.forEach((_, i) => krSlotDraw(id, i, false));
+      host.addEventListener('click', e => {
+        const b = e.target.closest('[data-slot-step]'); if (!b) return;
+        const slot = b.closest('.kr-slot'); if (!slot) return;
+        krSlotStep(id, Number(slot.dataset.i), Number(b.dataset.slotStep));
+      });
+      host.querySelectorAll('.kr-slot').forEach(slot => {
+        const i = Number(slot.dataset.i); let sx = null;
+        slot.addEventListener('mouseenter', () => { st.hold[i] = true; });
+        slot.addEventListener('mouseleave', () => { st.hold[i] = false; });
+        slot.addEventListener('touchstart', e => { st.hold[i] = true; sx = e.touches[0].clientX; }, { passive: true });
+        slot.addEventListener('touchend', e => { st.hold[i] = false; if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) krSlotStep(id, i, dx < 0 ? 1 : -1); } sx = null; }, { passive: true });
+        // jeda tiap kartu dibuat berbeda supaya berganti bergantian, tidak serempak
+        st.timers.push(setInterval(() => {
+          if (st.hold[i] || document.hidden || state.currentView !== 'home' || !document.body.contains(host)) return;
+          krSlotStep(id, i, 1);
+        }, (opts.interval || 8000) + i * 1900));
+      });
+    }
     function krRotator(host, opts) {
       if (!host) return;
       const id = host.id;
       const prev = krRot[id];
+      if (opts.perCard) { krSlotsInit(host, opts, prev); return; }
       const st = prev || { off: opts.start || 0, n: opts.count, hold: false, timer: null };
       if (prev && prev.timer) clearInterval(prev.timer);
       st.count = opts.count; krRot[id] = st;
