@@ -751,7 +751,7 @@
 
         <!-- BILAH PROGRES 6 DETIK AUTO-SLIDE -->
         <div id="hero-progress-track" aria-hidden="true" class="absolute bottom-0 inset-x-0 h-1 bg-white/15 z-30 overflow-hidden">
-          <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-teal-400 to-amber-400 w-0"></div>
+          <div id="hero-progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-teal-400 to-amber-400" style="width:0%"></div>
         </div>
       </div>
     </section>
@@ -2804,40 +2804,61 @@
       return pool;
     }
 
-    function restartHeroProgressBar() {
+    // Autoplay hero berbasis requestAnimationFrame: timer & progress bar selalu sinkron,
+    // jeda menyimpan sisa waktu, dan TIDAK dijeda oleh hover/posisi kursor.
+    let heroElapsed = 0;
+    let heroLastTs = null;
+
+    function heroCanRun() {
+      return !state.heroAutoplayPaused && !document.hidden && state.currentView === 'home'
+        && Math.min(3, getPrioritizedHeroArticles().length) > 1;
+    }
+
+    function setHeroProgress(ratio) {
       const bar = document.getElementById('hero-progress-bar');
-      if (!bar) return;
-      bar.classList.remove('hero-progress-running', 'hero-progress-paused');
-      void bar.offsetWidth;
-      bar.classList.add('hero-progress-running');
-      if (state.heroAutoplayPaused || state.heroHoverPaused) {
-        bar.classList.add('hero-progress-paused');
+      if (bar) bar.style.width = (Math.max(0, Math.min(1, ratio)) * 100) + '%';
+    }
+
+    function heroTick(ts) {
+      if (!state.heroTimer) return;
+      if (heroLastTs === null) heroLastTs = ts;
+      const dt = Math.min(ts - heroLastTs, 250); // cegah lompatan besar setelah tab kembali aktif
+      heroLastTs = ts;
+      if (heroCanRun()) {
+        heroElapsed += dt;
+        if (heroElapsed >= HERO_SLIDE_INTERVAL_MS) {
+          heroElapsed = 0;
+          const total = Math.min(3, getPrioritizedHeroArticles().length);
+          state.heroSlideIndex = (state.heroSlideIndex + 1) % total;
+          renderCinematicHero(false);
+        }
+        setHeroProgress(heroElapsed / HERO_SLIDE_INTERVAL_MS);
       }
+      state.heroTimer = requestAnimationFrame(heroTick);
+    }
+
+    function restartHeroProgressBar() {
+      heroElapsed = 0;
+      setHeroProgress(0);
     }
 
     function stopHeroAutoplay() {
       if (state.heroTimer) {
-        clearInterval(state.heroTimer);
+        cancelAnimationFrame(state.heroTimer);
         state.heroTimer = null;
       }
+      heroLastTs = null;
     }
 
     function startHeroAutoplay() {
       stopHeroAutoplay();
-      if (state.currentView !== 'home') return;
-      const slides = getPrioritizedHeroArticles().slice(0, 3);
-      if (slides.length <= 1) return;
-
       restartHeroProgressBar();
-      state.heroTimer = setInterval(() => {
-        if (state.heroAutoplayPaused || state.heroHoverPaused || state.currentView !== 'home') return;
-        const total = Math.min(3, getPrioritizedHeroArticles().length);
-        if (total <= 1) return;
-        state.heroSlideIndex = (state.heroSlideIndex + 1) % total;
-        renderCinematicHero(false);
-        restartHeroProgressBar();
-      }, HERO_SLIDE_INTERVAL_MS);
+      if (state.currentView !== 'home') return;
+      if (Math.min(3, getPrioritizedHeroArticles().length) <= 1) return;
+      state.heroTimer = requestAnimationFrame(heroTick);
     }
+
+    document.addEventListener('visibilitychange', () => { heroLastTs = null; });
 
     window.selectHeroSlide = (idx) => {
       state.heroSlideIndex = idx;
@@ -2848,11 +2869,8 @@
     window.toggleHeroAutoplay = () => {
       state.heroAutoplayPaused = !state.heroAutoplayPaused;
       updateAutoplayButtonUI();
-      const bar = document.getElementById('hero-progress-bar');
-      if (bar) {
-        bar.classList.toggle('hero-progress-paused', state.heroAutoplayPaused || state.heroHoverPaused);
-      }
-      if (!state.heroAutoplayPaused) {
+      heroLastTs = null;
+      if (!state.heroAutoplayPaused && !state.heroTimer) {
         startHeroAutoplay();
       }
     };
@@ -5671,25 +5689,9 @@
       renderIcons();
     }
 
-    function bindHeroHoverPause() {
-      const surface = document.getElementById('hero-stage-surface');
-      if (!surface) return;
-      surface.addEventListener('mouseenter', () => {
-        state.heroHoverPaused = true;
-        document.getElementById('hero-progress-bar')?.classList.add('hero-progress-paused');
-      });
-      surface.addEventListener('mouseleave', () => {
-        state.heroHoverPaused = false;
-        if (!state.heroAutoplayPaused) {
-          document.getElementById('hero-progress-bar')?.classList.remove('hero-progress-paused');
-        }
-      });
-    }
-
     async function bootstrapApp() {
       await initSupabaseClient();
       await loadAllData();
-      bindHeroHoverPause();
       window.addEventListener('scroll', updateReadingProgressBar, { passive: true });
       window.addEventListener('resize', updateReadingProgressBar, { passive: true });
       document.addEventListener('keydown', (e) => {
