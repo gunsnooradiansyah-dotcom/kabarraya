@@ -3636,28 +3636,21 @@
       for (let k = 0; k < len; k++) { c = ((c + dir) % len + len) % len; if (!shown.has(c)) break; }
       st.slots[i] = c; krSlotDraw(id, i, true);
     }
-    function krSlotsInit(host, opts, prev) {
-      const id = host.id;
-      if (prev && prev.timers) prev.timers.forEach(clearInterval);
-      const n = Math.max(1, Math.min(opts.count, krPool().length || opts.count));
-      const st = { slots: (prev && prev.slots && prev.slots.length === n) ? prev.slots : Array.from({ length: n }, (_, i) => (opts.start || 0) + i), hold: [], timers: [], n, count: n };
-      krRot[id] = st;
-      host.innerHTML = `
-        <div class="flex items-center pb-3 mb-4 border-b border-slate-200">
-          <div class="flex items-center gap-2.5">
-            <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
-            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(opts.heading)}</h2>
-          </div>
-        </div>
-        <div class="kr-rot-cards flex flex-col gap-3 lg:flex-1">${st.slots.map((_, i) => `<div class="kr-slot flex flex-col flex-1" data-i="${i}" style="transition:opacity .28s ease"></div>`).join('')}</div>`;
-      st.slots.forEach((_, i) => krSlotDraw(id, i, false));
-      host.addEventListener('click', e => {
-        const b = e.target.closest('[data-slot-step]'); if (!b) return;
-        const slot = b.closest('.kr-slot'); if (!slot) return;
-        krSlotStep(id, Number(slot.dataset.i), Number(b.dataset.slotStep));
-      });
-      host.querySelectorAll('.kr-slot').forEach(slot => {
+    // Susun ulang N kartu (tiap kartu punya indeks & jeda ganti sendiri)
+    function krSlotsSet(id, n) {
+      const st = krRot[id]; const host = document.getElementById(id);
+      if (!st || !st.slots || !host) return;
+      const box = host.querySelector('.kr-rot-cards'); if (!box) return;
+      const len = krPool().length;
+      n = Math.max(0, Math.min(n, len || n));
+      (st.timers || []).forEach(clearInterval); st.timers = []; st.hold = [];
+      let next = st.slots.length ? st.slots[st.slots.length - 1] + 1 : (st.start || 0);
+      while (st.slots.length < n) st.slots.push(next++);
+      st.slots.length = n; st.n = n;
+      box.innerHTML = st.slots.map((_, i) => `<div class="kr-slot flex flex-col flex-1" data-i="${i}" style="transition:opacity .28s ease"></div>`).join('');
+      box.querySelectorAll('.kr-slot').forEach(slot => {
         const i = Number(slot.dataset.i); let sx = null;
+        krSlotDraw(id, i, false);
         slot.addEventListener('mouseenter', () => { st.hold[i] = true; });
         slot.addEventListener('mouseleave', () => { st.hold[i] = false; });
         slot.addEventListener('touchstart', e => { st.hold[i] = true; sx = e.touches[0].clientX; }, { passive: true });
@@ -3666,8 +3659,28 @@
         st.timers.push(setInterval(() => {
           if (st.hold[i] || document.hidden || state.currentView !== 'home' || !document.body.contains(host)) return;
           krSlotStep(id, i, 1);
-        }, (opts.interval || 8000) + i * 1900));
+        }, (st.interval || 8000) + i * 1900));
       });
+    }
+    function krSlotsInit(host, opts, prev) {
+      const id = host.id;
+      if (prev && prev.timers) prev.timers.forEach(clearInterval);
+      const st = { slots: (prev && prev.slots) ? prev.slots : [], hold: [], timers: [], n: 0, count: opts.count, start: opts.start || 0, interval: opts.interval || 8000 };
+      krRot[id] = st;
+      host.innerHTML = `
+        <div class="flex items-center pb-3 mb-4 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <span aria-hidden="true" class="w-1.5 h-6 rounded-full bg-gradient-to-b from-sky-500 to-teal-600"></span>
+            <h2 class="font-headline font-extrabold text-lg sm:text-xl text-brandSlate">${escapeHtml(opts.heading)}</h2>
+          </div>
+        </div>
+        <div class="kr-rot-cards flex flex-col gap-3 lg:flex-1"></div>`;
+      host.addEventListener('click', e => {
+        const b = e.target.closest('[data-slot-step]'); if (!b) return;
+        const slot = b.closest('.kr-slot'); if (!slot) return;
+        krSlotStep(id, Number(slot.dataset.i), Number(b.dataset.slotStep));
+      });
+      krSlotsSet(id, opts.count);
     }
     function krRotator(host, opts) {
       if (!host) return;
@@ -3713,7 +3726,8 @@
       if (!st || !host || state.currentView !== 'home') return;
       const col = host.parentElement; const aside = document.querySelector('#subview-home aside');
       host.style.display = '';
-      if (window.innerWidth < 960 || !aside) { st.n = st.count; krRotDraw(id, false); return; }
+      const put = n => { if (st.slots) krSlotsSet(id, n); else { st.n = n; krRotDraw(id, false); } };
+      if (window.innerWidth < 960 || !aside) { put(st.count); return; }
       const box = host.querySelector('.kr-rot-cards');
       col.style.alignSelf = 'start'; aside.style.alignSelf = 'start';
       const target = aside.offsetHeight;
@@ -3722,14 +3736,14 @@
       if (col.offsetHeight < target - 60) {
         const max = Math.min(12, krPool().length);
         for (let n = 1; n <= max; n++) {
-          st.n = n; krRotDraw(id, false);
+          put(n);
           if (col.offsetHeight > target) break;
           best = n;
         }
       }
       col.style.alignSelf = ''; aside.style.alignSelf = '';
       if (best < 1) { host.style.display = 'none'; return; }
-      st.n = best; krRotDraw(id, false);
+      put(best);
     }
     window.krFitFill = krFitFill;
     window.krRotRefresh = () => Object.keys(krRot).forEach(id => krRotDraw(id, false));
@@ -3737,7 +3751,7 @@
     window.addEventListener('resize', () => { clearTimeout(krFitT); krFitT = setTimeout(krFitFill, 250); }, { passive: true });
     window.addEventListener('load', () => setTimeout(krFitFill, 300));
     function renderFillers() {
-      krRotator(document.getElementById('kr-fill-left'), { heading: 'Berita Lainnya', count: 4, interval: 7000, start: 0 });
+      krRotator(document.getElementById('kr-fill-left'), { heading: 'Berita Lainnya', count: 4, interval: 7000, start: 0, perCard: true });
       [200, 800, 2000, 4500].forEach(t => setTimeout(krFitFill, t));
       renderIcons();
     }
